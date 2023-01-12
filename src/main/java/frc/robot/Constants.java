@@ -54,7 +54,7 @@ public final class Constants {
     public static final double BACK_RIGHT_MODULE_STEER_OFFSET = -Math.toRadians(252.33398960257415); // FIXME Measure and set back right steer offset
 
     static class FieldConstants {
-        static final double length = Units.feetToMeters(54);
+        static final double length = Units.feetToMeters(5); // 54
         static final double width = Units.feetToMeters(27);
     }
 

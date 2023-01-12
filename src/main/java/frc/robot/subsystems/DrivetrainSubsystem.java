@@ -178,18 +178,19 @@ public class DrivetrainSubsystem extends SubsystemBase {
                 pcw = new PhotonCameraWrapper();
 
                 m_poseEstimator = new SwerveDrivePoseEstimator(m_kinematics, m_navx.getRotation2d(),
-                                new SwerveModulePosition[] {new SwerveModulePosition(0.0,
+                                new SwerveModulePosition[] {
+                                 new SwerveModulePosition(m_frontLeftModule.getDriveDistance(),
                                                 Rotation2d.fromDegrees(
                                                                 m_frontLeftModule.getSteerAngle())),
-                                                new SwerveModulePosition(0.0, Rotation2d
-                                                                .fromDegrees(m_frontRightModule
-                                                                                .getSteerAngle())),
-                                                new SwerveModulePosition(0.0, Rotation2d
-                                                                .fromDegrees(m_backLeftModule
-                                                                                .getSteerAngle())),
-                                                new SwerveModulePosition(0.0, Rotation2d
-                                                                .fromDegrees(m_backRightModule
-                                                                                .getSteerAngle()))},
+                                new SwerveModulePosition(m_frontRightModule.getDriveDistance(),
+                                                Rotation2d.fromDegrees(
+                                                                m_frontRightModule.getSteerAngle())),
+                                new SwerveModulePosition(m_backLeftModule.getDriveDistance(),
+                                                Rotation2d.fromDegrees(
+                                                                m_backLeftModule.getSteerAngle())),
+                                new SwerveModulePosition(m_backRightModule.getDriveDistance(),
+                                                Rotation2d.fromDegrees(
+                                                                m_backRightModule.getSteerAngle()))},
                                 new Pose2d());
 
                 // Send gyro information, too.
@@ -263,11 +264,18 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
         public void updateOdometry() {
                 m_poseEstimator.update(m_navx.getRotation2d(), new SwerveModulePosition[] {
-                                new SwerveModulePosition(0,
+                                new SwerveModulePosition(m_frontLeftModule.getDriveDistance(),
+                                                Rotation2d.fromDegrees(
+                                                                m_frontLeftModule.getSteerAngle())),
+                                new SwerveModulePosition(m_frontRightModule.getDriveDistance(),
+                                                Rotation2d.fromDegrees(
+                                                                m_frontRightModule.getSteerAngle())),
+                                new SwerveModulePosition(m_backLeftModule.getDriveDistance(),
                                                 Rotation2d.fromDegrees(
                                                                 m_backLeftModule.getSteerAngle())),
-                                new SwerveModulePosition(), new SwerveModulePosition(),
-                                new SwerveModulePosition()});
+                                new SwerveModulePosition(m_backRightModule.getDriveDistance(),
+                                                Rotation2d.fromDegrees(
+                                                                m_backRightModule.getSteerAngle()))});
 
                 // Also apply vision measurements. We use 0.3 seconds in the past as an example
                 // -- on

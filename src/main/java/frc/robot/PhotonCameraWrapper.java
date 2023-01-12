@@ -47,6 +47,7 @@ public class PhotonCameraWrapper {
                 // PhotonVision UI.
 
                 // ... Add other cameras here
+                // Multiple cameras???
 
                 // Assemble the list of cameras & mount locations
                 var camList = new ArrayList<Pair<PhotonCamera, Transform3d>>();
@@ -54,7 +55,7 @@ public class PhotonCameraWrapper {
                                 VisionConstants.robotToCam));
 
                 robotPoseEstimator = new RobotPoseEstimator(atfl,
-                                PoseStrategy.CLOSEST_TO_REFERENCE_POSE, camList);
+                                PoseStrategy.LOWEST_AMBIGUITY, camList);
         }
 
         /**
