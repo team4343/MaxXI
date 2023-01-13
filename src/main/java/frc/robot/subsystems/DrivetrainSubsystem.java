@@ -4,16 +4,12 @@
 
 package frc.robot.subsystems;
 
-import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.kauailabs.navx.frc.AHRS;
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.swervedrivespecialties.swervelib.Mk4iSwerveModuleHelper;
 import com.swervedrivespecialties.swervelib.SdsModuleConfigurations;
 import com.swervedrivespecialties.swervelib.SwerveModule;
 
 import edu.wpi.first.wpilibj.SPI;
-import edu.wpi.first.wpilibj.motorcontrol.Spark;
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -26,6 +22,7 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.PhotonCameraWrapper;
 
@@ -103,7 +100,9 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
         private final SwerveDrivePoseEstimator m_poseEstimator;
 
-        private PhotonCameraWrapper pcw;
+        private final PhotonCameraWrapper pcw;
+
+        private final Field2d m_field = new Field2d(); 
 
         public DrivetrainSubsystem() {
                 ShuffleboardTab tab = Shuffleboard.getTab("Drivetrain");
@@ -200,6 +199,9 @@ public class DrivetrainSubsystem extends SubsystemBase {
                 navxTab.addNumber("Yaw", () -> m_navx.getYaw());
                 navxTab.addNumber("Pitch", () -> m_navx.getPitch());
                 navxTab.addNumber("Roll", () -> m_navx.getRoll());
+
+                // Send the field data, too.
+                tab.add(m_field);
         }
 
         /**
@@ -260,6 +262,9 @@ public class DrivetrainSubsystem extends SubsystemBase {
                                 states[3].angle.getRadians());
 
                 updateOdometry();
+
+                // Send the current estimated pose to the field object, which will send it to Shuffleboard.
+                m_field.setRobotPose(m_poseEstimator.getEstimatedPosition());
         }
 
         public void updateOdometry() {
