@@ -61,11 +61,11 @@ public final class Constants {
     static class VisionConstants {
         static final Transform3d robotToCam =
                 new Transform3d(
-                        new Translation3d(0.5, 0.0, 0.5),
+                        new Translation3d(-.13, .30, .23),
                         new Rotation3d(
                                 0, 0,
-                                0)); // Cam mounted facing forward, half a meter forward of center, half a meter up
+                                Math.PI / 2)); // Cam mounted facing forward, half a meter forward of center, half a meter up
         // from center.
-        static final String cameraName = "YOUR CAMERA NAME";
+        static final String cameraName = "OV5647";
     }
 }

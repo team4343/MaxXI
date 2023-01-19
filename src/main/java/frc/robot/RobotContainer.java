@@ -4,6 +4,16 @@
 
 package frc.robot;
 
+import java.util.HashMap;
+
+import com.pathplanner.lib.PathConstraints;
+import com.pathplanner.lib.PathPlanner;
+import com.pathplanner.lib.PathPlannerTrajectory;
+import com.pathplanner.lib.PathPoint;
+
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -21,7 +31,7 @@ import frc.robot.subsystems.DrivetrainSubsystem;
  */
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
-  private final DrivetrainSubsystem m_drivetrainSubsystem = new DrivetrainSubsystem();
+  public final DrivetrainSubsystem m_drivetrainSubsystem = new DrivetrainSubsystem();
 
   private final XboxController m_controller = new XboxController(0);
 
@@ -40,6 +50,8 @@ public class RobotContainer {
             () -> -modifyAxis(m_controller.getLeftX()) * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
             () -> -modifyAxis(m_controller.getRightX()) * DrivetrainSubsystem.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND
     ));
+
+    // ChassisSpeeds.fromFieldRelativeSpeeds(new ChassisSpeeds(), m_drivetrainSubsystem.getGyroscopeRotation());
 
     // Configure the button bindings
     configureButtonBindings();
@@ -67,7 +79,13 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // An ExampleCommand will run in autonomous
-    return new InstantCommand();
+    PathPlannerTrajectory traj1 = PathPlanner.generatePath(
+      new PathConstraints(4, .5), 
+      new PathPoint(new Translation2d(1.0, 1.0), Rotation2d.fromDegrees(0)), // position, heading
+      new PathPoint(new Translation2d(3.0, 3.0), Rotation2d.fromDegrees(45)), // position, heading
+      new PathPoint(new Translation2d(-3.0, -3.0), Rotation2d.fromDegrees(0)) // position, heading
+    );
+    return m_drivetrainSubsystem.followTrajectoryCommand(traj1, true);
   }
 
   private static double deadband(double value, double deadband) {
