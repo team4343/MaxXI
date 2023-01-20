@@ -26,6 +26,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -38,6 +39,9 @@ import frc.robot.PhotonCameraWrapper;
 import io.github.oblarg.oblog.annotations.Log;
 import static frc.robot.Constants.*;
 import java.util.HashMap;
+import java.util.Optional;
+
+import org.photonvision.EstimatedRobotPose;
 
 public class DrivetrainSubsystem extends SubsystemBase {
         /**
@@ -226,6 +230,8 @@ public class DrivetrainSubsystem extends SubsystemBase {
                 tab.addNumber("Y", () -> m_poseEstimator.getEstimatedPosition().getY());
                 tab.addNumber("theta", () -> m_poseEstimator.getEstimatedPosition().getRotation().getDegrees());
 
+                tab.addBoolean("detecting", () -> pcw.detecting);
+
                 // Send the field data, too.
                 tab.add(m_field);
         }
@@ -306,6 +312,8 @@ public class DrivetrainSubsystem extends SubsystemBase {
                 m_field.setRobotPose(m_poseEstimator.getEstimatedPosition());
         }
 
+        private double internalTicker = 0;
+
         public void updateOdometry() {
                 m_poseEstimator.update(getGyroscopeRotation(), new SwerveModulePosition[] {
                                 new SwerveModulePosition(m_frontLeftModule.getDriveDistance() * rotationsToMetersRatio,
@@ -324,11 +332,17 @@ public class DrivetrainSubsystem extends SubsystemBase {
                 // Also apply vision measurements. We use 0.3 seconds in the past as an example
                 // -- on
                 // a real robot, this must be calculated based either on latency or timestamps.
-                Pair<Pose2d, Double> result = pcw.getEstimatedGlobalPose(m_poseEstimator.getEstimatedPosition());
-                var camPose = result.getFirst();
-                var camPoseObsTime = result.getSecond();
-                if ((camPose != null) && (camPoseObsTime % .03 == 0)) {
-                        m_poseEstimator.addVisionMeasurement(camPose, camPoseObsTime);
+                Optional<EstimatedRobotPose> result = pcw
+                                .getEstimatedGlobalPose(m_poseEstimator.getEstimatedPosition());
+                if (result.isPresent()) {
+                        EstimatedRobotPose camPose = result.get();
+                        internalTicker += 1;
+                        if (internalTicker > 500) {
+                                internalTicker = 0;
+                                System.out.println("Added vision measurement.");
+                                m_poseEstimator.addVisionMeasurement(camPose.estimatedPose.toPose2d(),
+                                                camPose.timestampSeconds);
+                        }
                 }
         }
 
