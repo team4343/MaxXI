@@ -12,11 +12,12 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import frc.robot.Constants.FieldConstants;
 import frc.robot.Constants.VisionConstants;
 import java.util.ArrayList;
 import java.util.Optional;
-
+import java.util.function.DoubleSupplier;
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
@@ -25,7 +26,10 @@ import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 public class PhotonCameraWrapper {
         public PhotonCamera photonCamera;
         public PhotonPoseEstimator robotPoseEstimator;
-        public boolean detecting = false;
+
+        private double x = 0;
+        private double y = 0;
+        private double t = 0;
 
         public PhotonCameraWrapper() {
                 // Set up a test arena of two apriltags at the center of each driver station set
@@ -59,6 +63,11 @@ public class PhotonCameraWrapper {
 
                 robotPoseEstimator = new PhotonPoseEstimator(atfl,
                                 PoseStrategy.LOWEST_AMBIGUITY, photonCamera, VisionConstants.robotToCam);
+
+                var tab = Shuffleboard.getTab("PhotonVision");
+                tab.addNumber("Camera-estimated X", () -> { return this.x; });
+                tab.addNumber("Camera-estimated Y", () -> { return this.y; });
+                tab.addNumber("Camera-estimated T", () -> { return this.t; });
         }
 
         /**
@@ -71,6 +80,12 @@ public class PhotonCameraWrapper {
          */
         public Optional<EstimatedRobotPose> getEstimatedGlobalPose(Pose2d prevEstimatedRobotPose) {
                 robotPoseEstimator.setReferencePose(prevEstimatedRobotPose);
-                return robotPoseEstimator.update();
+                var estimatedPose = robotPoseEstimator.update();
+
+                estimatedPose.ifPresent((EstimatedRobotPose p) -> { this.x = p.estimatedPose.getX(); });
+                estimatedPose.ifPresent((EstimatedRobotPose p) -> { this.y = p.estimatedPose.getY(); });
+                estimatedPose.ifPresent((EstimatedRobotPose p) -> { this.t = 180 / Math.PI * p.estimatedPose.getRotation().getAngle(); });
+
+                return estimatedPose;
         }
 }

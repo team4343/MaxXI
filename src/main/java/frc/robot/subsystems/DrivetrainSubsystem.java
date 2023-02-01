@@ -16,6 +16,7 @@ import com.swervedrivespecialties.swervelib.SdsModuleConfigurations;
 import com.swervedrivespecialties.swervelib.SwerveModule;
 
 import edu.wpi.first.wpilibj.SPI;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
@@ -24,6 +25,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.networktables.NetworkTable;
@@ -47,8 +49,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
         /**
          * The maximum voltage that will be delivered to the drive motors.
          * <p>
-         * This can be reduced to cap the robot's maximum speed. Typically, this is
-         * useful during
+         * This can be reduced to cap the robot's maximum speed. Typically, this is useful during
          * initial testing of the robot.
          */
         public static final double MAX_VOLTAGE = 11.0;
@@ -64,8 +65,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
         /**
          * The maximum velocity of the robot in meters per second.
          * <p>
-         * This is a measure of how fast the robot should be able to drive in a straight
-         * line.
+         * This is a measure of how fast the robot should be able to drive in a straight line.
          */
         public static final double MAX_VELOCITY_METERS_PER_SECOND = 6380.0 / 60.0
                         * SdsModuleConfigurations.MK4I_L1.getDriveReduction()
@@ -78,9 +78,10 @@ public class DrivetrainSubsystem extends SubsystemBase {
          */
         // Here we calculate the theoretical maximum angular velocity. You can also
         // replace this with a measured amount.
-        public static final double MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND = MAX_VELOCITY_METERS_PER_SECOND
-                        / Math.hypot(DRIVETRAIN_TRACKWIDTH_METERS / 2.0,
-                                        DRIVETRAIN_WHEELBASE_METERS / 2.0);
+        public static final double MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND =
+                        MAX_VELOCITY_METERS_PER_SECOND
+                                        / Math.hypot(DRIVETRAIN_TRACKWIDTH_METERS / 2.0,
+                                                        DRIVETRAIN_WHEELBASE_METERS / 2.0);
 
         private final SwerveDriveKinematics m_kinematics = new SwerveDriveKinematics(
                         // Front left
@@ -115,6 +116,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
         private ChassisSpeeds m_chassisSpeeds = new ChassisSpeeds(0.0, 0.0, 0.0);
 
         private final SwerveDrivePoseEstimator m_poseEstimator;
+        // private final SwerveDriveOdometry m_odometry;
 
         private final PhotonCameraWrapper pcw;
 
@@ -154,18 +156,16 @@ public class DrivetrainSubsystem extends SubsystemBase {
                                 .withDriveMotor(MotorType.NEO, FRONT_LEFT_MODULE_DRIVE_MOTOR)
                                 .withSteerMotor(MotorType.NEO, FRONT_LEFT_MODULE_STEER_MOTOR)
                                 .withSteerEncoderPort(FRONT_LEFT_MODULE_STEER_ENCODER)
-                                .withSteerOffset(FRONT_LEFT_MODULE_STEER_OFFSET)
-                                .build();
+                                .withSteerOffset(FRONT_LEFT_MODULE_STEER_OFFSET).build();
 
-                m_frontRightModule = new MkSwerveModuleBuilder()
-                                .withLayout(tab.getLayout("Front Right Module", BuiltInLayouts.kList)
+                m_frontRightModule = new MkSwerveModuleBuilder().withLayout(
+                                tab.getLayout("Front Right Module", BuiltInLayouts.kList)
                                                 .withSize(2, 4).withPosition(2, 0))
                                 .withGearRatio(SdsModuleConfigurations.MK4I_L1)
                                 .withDriveMotor(MotorType.NEO, FRONT_RIGHT_MODULE_DRIVE_MOTOR)
                                 .withSteerMotor(MotorType.NEO, FRONT_RIGHT_MODULE_STEER_MOTOR)
                                 .withSteerEncoderPort(FRONT_RIGHT_MODULE_STEER_ENCODER)
-                                .withSteerOffset(FRONT_RIGHT_MODULE_STEER_OFFSET)
-                                .build();
+                                .withSteerOffset(FRONT_RIGHT_MODULE_STEER_OFFSET).build();
 
                 m_backLeftModule = new MkSwerveModuleBuilder()
                                 .withLayout(tab.getLayout("Back Left Module", BuiltInLayouts.kList)
@@ -174,8 +174,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
                                 .withDriveMotor(MotorType.NEO, BACK_LEFT_MODULE_DRIVE_MOTOR_OG)
                                 .withSteerMotor(MotorType.NEO, BACK_LEFT_MODULE_STEER_MOTOR_OG)
                                 .withSteerEncoderPort(BACK_LEFT_MODULE_STEER_ENCODER)
-                                .withSteerOffset(BACK_LEFT_MODULE_STEER_OFFSET)
-                                .build();
+                                .withSteerOffset(BACK_LEFT_MODULE_STEER_OFFSET).build();
 
                 m_backRightModule = new MkSwerveModuleBuilder()
                                 .withLayout(tab.getLayout("Back Right Module", BuiltInLayouts.kList)
@@ -184,38 +183,50 @@ public class DrivetrainSubsystem extends SubsystemBase {
                                 .withDriveMotor(MotorType.NEO, BACK_RIGHT_MODULE_DRIVE_MOTOR)
                                 .withSteerMotor(MotorType.NEO, BACK_RIGHT_MODULE_STEER_MOTOR)
                                 .withSteerEncoderPort(BACK_RIGHT_MODULE_STEER_ENCODER)
-                                .withSteerOffset(BACK_RIGHT_MODULE_STEER_OFFSET)
-                                .build();
+                                .withSteerOffset(BACK_RIGHT_MODULE_STEER_OFFSET).build();
 
                 // Connect to the Photon camera.
                 pcw = new PhotonCameraWrapper();
 
                 m_poseEstimator = new SwerveDrivePoseEstimator(m_kinematics, m_navx.getRotation2d(),
-                                new SwerveModulePosition[] { new SwerveModulePosition(
-                                                m_frontLeftModule.getDriveDistance() * rotationsToMetersRatio,
+                                new SwerveModulePosition[] {new SwerveModulePosition(
+                                                m_frontLeftModule.getDriveDistance()
+                                                                * rotationsToMetersRatio,
                                                 Rotation2d.fromDegrees(
                                                                 m_frontLeftModule.getSteerAngle())),
-                                                new SwerveModulePosition(
-                                                                m_frontRightModule
-                                                                                .getDriveDistance()
-                                                                                * rotationsToMetersRatio,
+                                                new SwerveModulePosition(m_frontRightModule
+                                                                .getDriveDistance()
+                                                                * rotationsToMetersRatio,
                                                                 Rotation2d.fromDegrees(
                                                                                 m_frontRightModule
                                                                                                 .getSteerAngle())),
-                                                new SwerveModulePosition(
-                                                                m_backLeftModule.getDriveDistance()
-                                                                                * rotationsToMetersRatio,
+                                                new SwerveModulePosition(m_backLeftModule
+                                                                .getDriveDistance()
+                                                                * rotationsToMetersRatio,
                                                                 Rotation2d.fromDegrees(
                                                                                 m_backLeftModule.getSteerAngle())),
-                                                new SwerveModulePosition(
-                                                                m_backRightModule
-                                                                                .getDriveDistance() *
-                                                                                rotationsToMetersRatio,
+                                                new SwerveModulePosition(m_backRightModule
+                                                                .getDriveDistance()
+                                                                * rotationsToMetersRatio,
                                                                 Rotation2d.fromDegrees(
                                                                                 m_backRightModule
-                                                                                                .getSteerAngle())) },
+                                                                                                .getSteerAngle()))},
                                 new Pose2d(0., 0., new Rotation2d(0.)));
 
+                // TODO maybe this should use this.getRotation
+                /*
+                 * m_odometry = new SwerveDriveOdometry(m_kinematics, this.getGyroscopeRotation(),
+                 * new SwerveModulePosition[] {new SwerveModulePosition(
+                 * m_frontLeftModule.getDriveDistance() rotationsToMetersRatio,
+                 * Rotation2d.fromDegrees( m_frontLeftModule.getSteerAngle())), new
+                 * SwerveModulePosition(m_frontRightModule .getDriveDistance()
+                 * rotationsToMetersRatio, Rotation2d.fromDegrees( m_frontRightModule
+                 * .getSteerAngle())), new SwerveModulePosition(m_backLeftModule .getDriveDistance()
+                 * rotationsToMetersRatio, Rotation2d.fromDegrees(
+                 * m_backLeftModule.getSteerAngle())), new SwerveModulePosition(m_backRightModule
+                 * .getDriveDistance() rotationsToMetersRatio, Rotation2d.fromDegrees(
+                 * m_backRightModule .getSteerAngle()))}, new Pose2d(0., 0., new Rotation2d(0.)));
+                 */
                 // Send gyro information, too.
                 var navxTab = tab.getLayout("NavX", BuiltInLayouts.kList).withSize(2, 4)
                                 .withPosition(8, 0);
@@ -228,17 +239,15 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
                 tab.addNumber("X", () -> m_poseEstimator.getEstimatedPosition().getX());
                 tab.addNumber("Y", () -> m_poseEstimator.getEstimatedPosition().getY());
-                tab.addNumber("theta", () -> m_poseEstimator.getEstimatedPosition().getRotation().getDegrees());
-
-                tab.addBoolean("detecting", () -> pcw.detecting);
+                tab.addNumber("theta", () ->
+                m_poseEstimator.getEstimatedPosition().getRotation().getDegrees());
 
                 // Send the field data, too.
                 tab.add(m_field);
         }
 
         /**
-         * Sets the gyroscope angle to zero. This can be used to set the direction the
-         * robot is
+         * Sets the gyroscope angle to zero. This can be used to set the direction the robot is
          * currently facing to the 'forwards' direction.
          */
         public void zeroGyroscope() {
@@ -252,6 +261,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
         public Pose2d getPose() {
                 // May need to be just `m_poseEstimator.getEstimatedPosition() instead`.
                 return m_poseEstimator.getEstimatedPosition();
+                // return m_odometry.getPoseMeters();
                 // return pcw.getEstimatedGlobalPose(m_poseEstimator.getEstimatedPosition())
                 // .getFirst();
         }
@@ -305,73 +315,88 @@ public class DrivetrainSubsystem extends SubsystemBase {
                                 / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE,
                                 states[3].angle.getRadians());
 
+                m_field.setRobotPose(getPose());
+
                 updateOdometry();
 
                 // Send the current estimated pose to the field object, which will send it to
                 // Shuffleboard.
-                m_field.setRobotPose(m_poseEstimator.getEstimatedPosition());
+                // m_field.setRobotPose(m_poseEstimator.getEstimatedPosition());
         }
-
-        private double internalTicker = 0;
 
         public void updateOdometry() {
                 m_poseEstimator.update(getGyroscopeRotation(), new SwerveModulePosition[] {
-                                new SwerveModulePosition(m_frontLeftModule.getDriveDistance() * rotationsToMetersRatio,
+                                new SwerveModulePosition(m_frontLeftModule.getDriveDistance()
+                                                * rotationsToMetersRatio,
                                                 Rotation2d.fromDegrees(
                                                                 m_frontLeftModule.getSteerAngle())),
-                                new SwerveModulePosition(m_frontRightModule.getDriveDistance() * rotationsToMetersRatio,
+                                new SwerveModulePosition(
+                                                m_frontRightModule.getDriveDistance()
+                                                                * rotationsToMetersRatio,
                                                 Rotation2d.fromDegrees(m_frontRightModule
                                                                 .getSteerAngle())),
-                                new SwerveModulePosition(m_backLeftModule.getDriveDistance() * rotationsToMetersRatio,
+                                new SwerveModulePosition(
+                                                m_backLeftModule.getDriveDistance()
+                                                                * rotationsToMetersRatio,
                                                 Rotation2d.fromDegrees(
                                                                 m_backLeftModule.getSteerAngle())),
-                                new SwerveModulePosition(m_backRightModule.getDriveDistance() * rotationsToMetersRatio,
+                                new SwerveModulePosition(
+                                                m_backRightModule.getDriveDistance()
+                                                                * rotationsToMetersRatio,
                                                 Rotation2d.fromDegrees(m_backRightModule
-                                                                .getSteerAngle())) });
+                                                                .getSteerAngle()))});
 
                 // Also apply vision measurements. We use 0.3 seconds in the past as an example
                 // -- on
                 // a real robot, this must be calculated based either on latency or timestamps.
-                Optional<EstimatedRobotPose> result = pcw
-                                .getEstimatedGlobalPose(m_poseEstimator.getEstimatedPosition());
+                // TODO: remove ticker
+                Optional<EstimatedRobotPose> result = pcw.getEstimatedGlobalPose(getPose());
                 if (result.isPresent()) {
                         EstimatedRobotPose camPose = result.get();
-                        internalTicker += 1;
-                        if (internalTicker > 500) {
-                                internalTicker = 0;
-                                System.out.println("Added vision measurement.");
-                                m_poseEstimator.addVisionMeasurement(camPose.estimatedPose.toPose2d(),
+
+                        // Workaround for SwerveDrivePoseEstimator ConccurentModificationException
+                        var currentTime = Timer.getFPGATimestamp();
+                        var camTime = camPose.timestampSeconds;
+
+                        if (currentTime - camTime < 1.5) {
+                                System.out.print("Updating odometry...");
+
+                                m_poseEstimator.addVisionMeasurement(
+                                                camPose.estimatedPose.toPose2d(),
                                                 camPose.timestampSeconds);
+                        } else {
+                                System.out.println("Current time " + currentTime + ", pose info time " + camTime);
                         }
                 }
         }
 
         public Command followTrajectoryCommand(PathPlannerTrajectory traj, boolean isFirstPath) {
-                return new SequentialCommandGroup(
-                                new InstantCommand(() -> {
-                                        m_field.getObject("traj").setTrajectory(traj);
-                                        // Reset odometry for the first path you run during auto
-                                        if (isFirstPath) {
-                                                // this.resetOdometry(traj.getInitialHolonomicPose());
-                                        }
-                                }),
-                                new PPSwerveControllerCommand(
-                                                traj,
-                                                this::getPose, // Pose supplier
-                                                this.m_kinematics, // SwerveDriveKinematics
-                                                new PIDController(0, 0, 0), // X controller. Tune these values for your
-                                                                            // robot. Leaving them 0 will only use
-                                                                            // feedforwards.
-                                                new PIDController(0, 0, 0), // Y controller (usually the same values as
-                                                                            // X controller)
-                                                new PIDController(0, 0, 0), // Rotation controller. Tune these values
-                                                                            // for your robot. Leaving them 0 will only
-                                                                            // use feedforwards.
-                                                this::driveWithStates, // Module states consumer
-                                                true, // Should the path be automatically mirrored depending on alliance
-                                                      // color. Optional, defaults to true
-                                                this // Requires this drive subsystem
-                                ));
+                return new SequentialCommandGroup(new InstantCommand(() -> {
+                        m_field.getObject("traj").setTrajectory(traj);
+                        // Reset odometry for the first path you run during auto
+                        if (isFirstPath) {
+                                // this.resetOdometry(traj.getInitialHolonomicPose());
+                        }
+                }), new PPSwerveControllerCommand(traj, this::getPose, // Pose supplier
+                                this.m_kinematics, // SwerveDriveKinematics
+                                new PIDController(0, 0, 0), // X controller. Tune these values for
+                                                            // your
+                                                            // robot. Leaving them 0 will only use
+                                                            // feedforwards.
+                                new PIDController(0, 0, 0), // Y controller (usually the same values
+                                                            // as
+                                                            // X controller)
+                                new PIDController(0, 0, 0), // Rotation controller. Tune these
+                                                            // values
+                                                            // for your robot. Leaving them 0 will
+                                                            // only
+                                                            // use feedforwards.
+                                this::driveWithStates, // Module states consumer
+                                true, // Should the path be automatically mirrored depending on
+                                      // alliance
+                                      // color. Optional, defaults to true
+                                this // Requires this drive subsystem
+                ));
         }
 
         // The conversion ratio between drive rotations and meters. Goes from motor rots
