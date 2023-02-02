@@ -14,7 +14,8 @@ import edu.wpi.first.math.util.Units;
  * constants. This class should not be used for any other purpose. All constants should be declared
  * globally (i.e. public static). Do not put anything functional in this class.
  *
- * <p>It is advised to statically import this class (or one of its inner classes) wherever the
+ * <p>
+ * It is advised to statically import this class (or one of its inner classes) wherever the
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
@@ -33,25 +34,59 @@ public final class Constants {
 
     // public static final int DRIVETRAIN_PIGEON_ID = 0; // FIXME Set Pigeon ID
 
-    public static final int FRONT_LEFT_MODULE_DRIVE_MOTOR = 11; // FIXME Set front left module drive motor ID
-    public static final int FRONT_LEFT_MODULE_STEER_MOTOR = 10; // FIXME Set front left module steer motor ID
-    public static final int FRONT_LEFT_MODULE_STEER_ENCODER = 20; // FIXME Set front left steer encoder ID
-    public static final double FRONT_LEFT_MODULE_STEER_OFFSET = -Math.toRadians(328.44729544887844); // FIXME Measure and set front left steer offset
+    public static final int FRONT_LEFT_MODULE_DRIVE_MOTOR = 11; // FIXME Set front left module drive
+                                                                // motor ID
+    public static final int FRONT_LEFT_MODULE_STEER_MOTOR = 10; // FIXME Set front left module steer
+                                                                // motor ID
+    public static final int FRONT_LEFT_MODULE_STEER_ENCODER = 20; // FIXME Set front left steer
+                                                                  // encoder ID
+    public static final double FRONT_LEFT_MODULE_STEER_OFFSET = -Math.toRadians(328.44729544887844); // FIXME
+                                                                                                     // Measure
+                                                                                                     // and
+                                                                                                     // set
+                                                                                                     // front
+                                                                                                     // left
+                                                                                                     // steer
+                                                                                                     // offset
 
-    public static final int FRONT_RIGHT_MODULE_DRIVE_MOTOR = 13; // FIXME Set front right drive motor ID
-    public static final int FRONT_RIGHT_MODULE_STEER_MOTOR = 12; // FIXME Set front right steer motor ID
-    public static final int FRONT_RIGHT_MODULE_STEER_ENCODER = 21; // FIXME Set front right steer encoder ID
-    public static final double FRONT_RIGHT_MODULE_STEER_OFFSET = -Math.toRadians(232.73437928862904); // FIXME Measure and set front right steer offset
+    public static final int FRONT_RIGHT_MODULE_DRIVE_MOTOR = 13; // FIXME Set front right drive
+                                                                 // motor ID
+    public static final int FRONT_RIGHT_MODULE_STEER_MOTOR = 12; // FIXME Set front right steer
+                                                                 // motor ID
+    public static final int FRONT_RIGHT_MODULE_STEER_ENCODER = 21; // FIXME Set front right steer
+                                                                   // encoder ID
+    public static final double FRONT_RIGHT_MODULE_STEER_OFFSET =
+            -Math.toRadians(232.73437928862904); // FIXME Measure and set front right steer offset
 
-    public static final int BACK_LEFT_MODULE_DRIVE_MOTOR_OG = 15; // FIXME Set back left drive motor ID
-    public static final int BACK_LEFT_MODULE_STEER_MOTOR_OG = 14; // FIXME Set back left steer motor ID
-    public static final int BACK_LEFT_MODULE_STEER_ENCODER = 22; // FIXME Set back left steer encoder ID
-    public static final double BACK_LEFT_MODULE_STEER_OFFSET = -Math.toRadians(162.86132551334515); // FIXME Measure and set back left steer offset
+    public static final int BACK_LEFT_MODULE_DRIVE_MOTOR_OG = 15; // FIXME Set back left drive motor
+                                                                  // ID
+    public static final int BACK_LEFT_MODULE_STEER_MOTOR_OG = 14; // FIXME Set back left steer motor
+                                                                  // ID
+    public static final int BACK_LEFT_MODULE_STEER_ENCODER = 22; // FIXME Set back left steer
+                                                                 // encoder ID
+    public static final double BACK_LEFT_MODULE_STEER_OFFSET = -Math.toRadians(162.86132551334515); // FIXME
+                                                                                                    // Measure
+                                                                                                    // and
+                                                                                                    // set
+                                                                                                    // back
+                                                                                                    // left
+                                                                                                    // steer
+                                                                                                    // offset
 
-    public static final int BACK_RIGHT_MODULE_DRIVE_MOTOR = 17; // FIXME Set back right drive motor ID
-    public static final int BACK_RIGHT_MODULE_STEER_MOTOR = 16; // FIXME Set back right steer motor ID
-    public static final int BACK_RIGHT_MODULE_STEER_ENCODER = 23; // FIXME Set back right steer encoder ID
-    public static final double BACK_RIGHT_MODULE_STEER_OFFSET = -Math.toRadians(252.33398960257415); // FIXME Measure and set back right steer offset
+    public static final int BACK_RIGHT_MODULE_DRIVE_MOTOR = 17; // FIXME Set back right drive motor
+                                                                // ID
+    public static final int BACK_RIGHT_MODULE_STEER_MOTOR = 16; // FIXME Set back right steer motor
+                                                                // ID
+    public static final int BACK_RIGHT_MODULE_STEER_ENCODER = 23; // FIXME Set back right steer
+                                                                  // encoder ID
+    public static final double BACK_RIGHT_MODULE_STEER_OFFSET = -Math.toRadians(252.33398960257415); // FIXME
+                                                                                                     // Measure
+                                                                                                     // and
+                                                                                                     // set
+                                                                                                     // back
+                                                                                                     // right
+                                                                                                     // steer
+                                                                                                     // offset
 
     public static class FieldConstants {
         public static final double length = Units.feetToMeters(54); // 54
@@ -59,12 +94,17 @@ public final class Constants {
     }
 
     public static class VisionConstants {
-        public static final Transform3d robotToCam =
-                new Transform3d(
-                        new Translation3d(-.13, .30, .23),
-                        new Rotation3d(
-                                0, 0,
-                                Math.PI / 2)); // Cam mounted facing forward, half a meter forward of center, half a meter up
+        public static final Transform3d robotToCam = new Transform3d(
+                new Translation3d(-.13, .30, .23), new Rotation3d(0, 0, Math.PI / 2)); // Cam
+                                                                                       // mounted
+                                                                                       // facing
+                                                                                       // forward,
+                                                                                       // half a
+                                                                                       // meter
+                                                                                       // forward of
+                                                                                       // center,
+                                                                                       // half a
+                                                                                       // meter up
         // from center.
         public static final String cameraName = "OV5647";
     }
