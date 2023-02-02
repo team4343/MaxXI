@@ -15,8 +15,8 @@ public class AutoBalanceCommand extends CommandBase {
     @Override
     public void execute() {
         // Get these values in degrees.
-        var c_pitch_deg = m_drivetrainSubsystem.getGyroscopePitch();
-        var c_roll_deg = m_drivetrainSubsystem.getGyroscopeRoll();
+        var c_pitch_deg = m_drivetrainSubsystem.gyroscope.getGyroscopePitch();
+        var c_roll_deg = m_drivetrainSubsystem.gyroscope.getGyroscopeRoll();
 
         // Turn them into radians.
         var c_pitch_rad = c_pitch_deg * (Math.PI / 180.0);

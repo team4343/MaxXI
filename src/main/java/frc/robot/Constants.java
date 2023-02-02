@@ -53,19 +53,19 @@ public final class Constants {
     public static final int BACK_RIGHT_MODULE_STEER_ENCODER = 23; // FIXME Set back right steer encoder ID
     public static final double BACK_RIGHT_MODULE_STEER_OFFSET = -Math.toRadians(252.33398960257415); // FIXME Measure and set back right steer offset
 
-    static class FieldConstants {
-        static final double length = Units.feetToMeters(54); // 54
-        static final double width = Units.feetToMeters(27);
+    public static class FieldConstants {
+        public static final double length = Units.feetToMeters(54); // 54
+        public static final double width = Units.feetToMeters(27);
     }
 
-    static class VisionConstants {
-        static final Transform3d robotToCam =
+    public static class VisionConstants {
+        public static final Transform3d robotToCam =
                 new Transform3d(
                         new Translation3d(-.13, .30, .23),
                         new Rotation3d(
                                 0, 0,
                                 Math.PI / 2)); // Cam mounted facing forward, half a meter forward of center, half a meter up
         // from center.
-        static final String cameraName = "OV5647";
+        public static final String cameraName = "OV5647";
     }
 }

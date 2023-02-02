@@ -4,6 +4,9 @@
 
 package frc.robot.subsystems;
 
+import frc.robot.Constants.FieldConstants;
+import frc.robot.Constants.VisionConstants;
+
 import com.kauailabs.navx.frc.AHRS;
 import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.auto.PIDConstants;
@@ -17,10 +20,14 @@ import com.swervedrivespecialties.swervelib.SwerveModule;
 
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.interfaces.Gyro;
+import edu.wpi.first.apriltag.AprilTag;
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -37,22 +44,29 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.PhotonCameraWrapper;
 import io.github.oblarg.oblog.annotations.Log;
 import static frc.robot.Constants.*;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Optional;
 
 import org.photonvision.EstimatedRobotPose;
+import org.photonvision.PhotonCamera;
+import org.photonvision.PhotonPoseEstimator;
+import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 
 public class DrivetrainSubsystem extends SubsystemBase {
+        public Gyroscope gyroscope = new Gyroscope();
+
+        private ShuffleboardTab tab = Shuffleboard.getTab("Drivetrain");
+
         /**
          * The maximum voltage that will be delivered to the drive motors.
          * <p>
-         * This can be reduced to cap the robot's maximum speed. Typically, this is useful during
-         * initial testing of the robot.
+         * This can be reduced to cap the robot's maximum speed.
          */
         public static final double MAX_VOLTAGE = 11.0;
+
         // FIXME Measure the drivetrain's maximum velocity or calculate the theoretical.
         // The formula for calculating the theoretical maximum velocity is:
         // <Motor free speed RPM> / 60 * <Drive reduction> * <Wheel diameter meters> *
@@ -97,16 +111,6 @@ public class DrivetrainSubsystem extends SubsystemBase {
                         new Translation2d(-DRIVETRAIN_TRACKWIDTH_METERS / 2.0,
                                         -DRIVETRAIN_WHEELBASE_METERS / 2.0));
 
-        // By default we use a Pigeon for our gyroscope. But if you use another
-        // gyroscope, like a NavX, you can change this.
-        // The important thing about how you configure your gyroscope is that rotating
-        // the robot counter-clockwise should
-        // cause the angle reading to increase until it wraps back over to zero.
-        // FIXME Remove if you are using a Pigeon
-        // private final PigeonIMU m_pigeon = new PigeonIMU(DRIVETRAIN_PIGEON_ID);
-        // FIXME Uncomment if you are using a NavX
-        private final AHRS m_navx = new AHRS(SPI.Port.kMXP); // NavX connected over MXP
-
         // These are our modules. We initialize them in the constructor.
         private final SwerveModule m_frontLeftModule;
         private final SwerveModule m_frontRightModule;
@@ -123,32 +127,6 @@ public class DrivetrainSubsystem extends SubsystemBase {
         private final Field2d m_field = new Field2d();
 
         public DrivetrainSubsystem() {
-                ShuffleboardTab tab = Shuffleboard.getTab("Drivetrain");
-
-                // There are 4 methods you can call to create your swerve modules.
-                // The method you use depends on what motors you are using.
-                //
-                // Mk4iSwerveModuleHelper.createFalcon500(...)
-                // Your module has two Falcon 500s on it. One for steering and one for driving.
-                //
-                // Mk4iSwerveModuleHelper.createNeo(...)
-                // Your module has two NEOs on it. One for steering and one for driving.
-                //
-                // Mk4iSwerveModuleHelper.createFalcon500Neo(...)
-                // Your module has a Falcon 500 and a NEO on it. The Falcon 500 is for driving
-                // and the NEO is for steering.
-                //
-                // Mk4iSwerveModuleHelper.createNeoFalcon500(...)
-                // Your module has a NEO and a Falcon 500 on it. The NEO is for driving and the
-                // Falcon 500 is for steering.
-                //
-                // Similar helpers also exist for Mk4 modules using the Mk4SwerveModuleHelper
-                // class.
-
-                // By default we will use Falcon 500s in standard configuration. But if you use
-                // a different configuration or motors
-                // you MUST change it. If you do not, your code will crash on startup.
-                // FIXME Setup motor configuration
                 m_frontLeftModule = new MkSwerveModuleBuilder()
                                 .withLayout(tab.getLayout("Front Left Module", BuiltInLayouts.kList)
                                                 .withSize(2, 4).withPosition(0, 0))
@@ -188,7 +166,8 @@ public class DrivetrainSubsystem extends SubsystemBase {
                 // Connect to the Photon camera.
                 pcw = new PhotonCameraWrapper();
 
-                m_poseEstimator = new SwerveDrivePoseEstimator(m_kinematics, m_navx.getRotation2d(),
+                m_poseEstimator = new SwerveDrivePoseEstimator(m_kinematics,
+                                gyroscope.getRotation2d(),
                                 new SwerveModulePosition[] {new SwerveModulePosition(
                                                 m_frontLeftModule.getDriveDistance()
                                                                 * rotationsToMetersRatio,
@@ -213,49 +192,13 @@ public class DrivetrainSubsystem extends SubsystemBase {
                                                                                                 .getSteerAngle()))},
                                 new Pose2d(0., 0., new Rotation2d(0.)));
 
-                // TODO maybe this should use this.getRotation
-                /*
-                 * m_odometry = new SwerveDriveOdometry(m_kinematics, this.getGyroscopeRotation(),
-                 * new SwerveModulePosition[] {new SwerveModulePosition(
-                 * m_frontLeftModule.getDriveDistance() rotationsToMetersRatio,
-                 * Rotation2d.fromDegrees( m_frontLeftModule.getSteerAngle())), new
-                 * SwerveModulePosition(m_frontRightModule .getDriveDistance()
-                 * rotationsToMetersRatio, Rotation2d.fromDegrees( m_frontRightModule
-                 * .getSteerAngle())), new SwerveModulePosition(m_backLeftModule .getDriveDistance()
-                 * rotationsToMetersRatio, Rotation2d.fromDegrees(
-                 * m_backLeftModule.getSteerAngle())), new SwerveModulePosition(m_backRightModule
-                 * .getDriveDistance() rotationsToMetersRatio, Rotation2d.fromDegrees(
-                 * m_backRightModule .getSteerAngle()))}, new Pose2d(0., 0., new Rotation2d(0.)));
-                 */
-                // Send gyro information, too.
-                var navxTab = tab.getLayout("NavX", BuiltInLayouts.kList).withSize(2, 4)
-                                .withPosition(8, 0);
-
-                navxTab.addNumber("Yaw", () -> m_navx.getYaw());
-                navxTab.addNumber("Pitch", () -> m_navx.getPitch());
-                navxTab.addNumber("Roll", () -> m_navx.getRoll());
-                navxTab.addNumber("Rotation", () -> this.getGyroscopeRotation().getDegrees());
-                navxTab.addBoolean("Mag calibrated", () -> m_navx.isMagnetometerCalibrated());
-
                 tab.addNumber("X", () -> m_poseEstimator.getEstimatedPosition().getX());
                 tab.addNumber("Y", () -> m_poseEstimator.getEstimatedPosition().getY());
-                tab.addNumber("theta", () ->
-                m_poseEstimator.getEstimatedPosition().getRotation().getDegrees());
+                tab.addNumber("theta", () -> m_poseEstimator.getEstimatedPosition().getRotation()
+                                .getDegrees());
 
                 // Send the field data, too.
                 tab.add(m_field);
-        }
-
-        /**
-         * Sets the gyroscope angle to zero. This can be used to set the direction the robot is
-         * currently facing to the 'forwards' direction.
-         */
-        public void zeroGyroscope() {
-                // FIXME Remove if you are using a Pigeon
-                // m_pigeon.setFusedHeading(0.0);
-
-                // FIXME Uncomment if you are using a NavX
-                m_navx.zeroYaw();
         }
 
         public Pose2d getPose() {
@@ -266,29 +209,6 @@ public class DrivetrainSubsystem extends SubsystemBase {
                 // .getFirst();
         }
 
-        // Equivalent to the "Yaw".
-        public Rotation2d getGyroscopeRotation() {
-                // FIXME Remove if you are using a Pigeon
-                // return Rotation2d.fromDegrees(m_pigeon.getFusedHeading());
-
-                // FIXME Uncomment if you are using a NavX
-                if (m_navx.isMagnetometerCalibrated()) {
-                        // We will only get valid fused headings if the magnetometer is calibrated
-                        return Rotation2d.fromDegrees(m_navx.getFusedHeading());
-                }
-
-                // We have to invert the angle of the NavX so that rotating the robot
-                // counter-clockwise makes the angle increase.
-                return Rotation2d.fromDegrees(m_navx.getYaw() + 180);
-        }
-
-        public float getGyroscopePitch() {
-                return m_navx.getPitch();
-        }
-
-        public float getGyroscopeRoll() {
-                return m_navx.getRoll();
-        }
 
         public void drive(ChassisSpeeds chassisSpeeds) {
                 m_chassisSpeeds = chassisSpeeds;
@@ -325,7 +245,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
         }
 
         public void updateOdometry() {
-                m_poseEstimator.update(getGyroscopeRotation(), new SwerveModulePosition[] {
+                m_poseEstimator.update(gyroscope.getRotation2d(), new SwerveModulePosition[] {
                                 new SwerveModulePosition(m_frontLeftModule.getDriveDistance()
                                                 * rotationsToMetersRatio,
                                                 Rotation2d.fromDegrees(
@@ -349,7 +269,6 @@ public class DrivetrainSubsystem extends SubsystemBase {
                 // Also apply vision measurements. We use 0.3 seconds in the past as an example
                 // -- on
                 // a real robot, this must be calculated based either on latency or timestamps.
-                // TODO: remove ticker
                 Optional<EstimatedRobotPose> result = pcw.getEstimatedGlobalPose(getPose());
                 if (result.isPresent()) {
                         EstimatedRobotPose camPose = result.get();
@@ -365,7 +284,8 @@ public class DrivetrainSubsystem extends SubsystemBase {
                                                 camPose.estimatedPose.toPose2d(),
                                                 camPose.timestampSeconds);
                         } else {
-                                System.out.println("Current time " + currentTime + ", pose info time " + camTime);
+                                System.out.println("Current time " + currentTime
+                                                + ", pose info time " + camTime);
                         }
                 }
         }
@@ -402,4 +322,139 @@ public class DrivetrainSubsystem extends SubsystemBase {
         // The conversion ratio between drive rotations and meters. Goes from motor rots
         // -> wheel rots -> meters.
         private static double rotationsToMetersRatio = 1;
+
+        public class Gyroscope {
+                private final AHRS m_navx = new AHRS(SPI.Port.kMXP); // NavX connected over MXP
+
+                public Gyroscope() {
+                        // Send gyro information, too.
+                        var navxTab = tab.getLayout("NavX", BuiltInLayouts.kList).withSize(2, 4)
+                                        .withPosition(8, 0);
+
+                        navxTab.addNumber("Yaw", () -> m_navx.getYaw());
+                        navxTab.addNumber("Pitch", () -> m_navx.getPitch());
+                        navxTab.addNumber("Roll", () -> m_navx.getRoll());
+                        navxTab.addNumber("Rotation", () -> getRotation2d().getDegrees());
+                        navxTab.addBoolean("Mag calibrated",
+                                        () -> m_navx.isMagnetometerCalibrated());
+                }
+
+                /**
+                 * Sets the gyroscope angle to zero. This can be used to set the direction the robot
+                 * is currently facing to the 'forwards' direction.
+                 */
+                public void reset() {
+                        m_navx.zeroYaw();
+                }
+
+                // Equivalent to the "Yaw".
+                public Rotation2d getRotation2d() {
+                        if (m_navx.isMagnetometerCalibrated()) {
+                                // We will only get valid fused headings if the magnetometer is
+                                // calibrated
+                                return Rotation2d.fromDegrees(m_navx.getFusedHeading());
+                        }
+
+                        // We have to invert the angle of the NavX so that rotating the robot
+                        // counter-clockwise makes the angle increase.
+                        // TODO: verify this.
+                        return Rotation2d.fromDegrees(m_navx.getYaw() + 180);
+                }
+
+                public float getGyroscopePitch() {
+                        return m_navx.getPitch();
+                }
+
+                public float getGyroscopeRoll() {
+                        return m_navx.getRoll();
+                }
+        }
+
+        public class PhotonCameraWrapper {
+                public PhotonCamera photonCamera;
+                public PhotonPoseEstimator robotPoseEstimator;
+
+                private double x = 0;
+                private double y = 0;
+                private double t = 0;
+
+                public PhotonCameraWrapper() {
+                        // Set up a test arena of two apriltags at the center of each driver station
+                        // set
+                        final AprilTag tag08 = new AprilTag(8,
+                                        new Pose3d(new Pose2d(FieldConstants.length,
+                                                        FieldConstants.width / 2.0,
+                                                        Rotation2d.fromDegrees(180))));
+                        final AprilTag tag01 = new AprilTag(1, new Pose3d(new Pose2d(0.0,
+                                        FieldConstants.width / 2.0, Rotation2d.fromDegrees(0.0))));
+                        ArrayList<AprilTag> atList = new ArrayList<AprilTag>();
+                        atList.add(tag08);
+                        atList.add(tag01);
+
+                        // TODO - once 2023 happens, replace this with just loading the 2023 field
+                        // arrangement
+                        AprilTagFieldLayout atfl = new AprilTagFieldLayout(atList,
+                                        FieldConstants.length, FieldConstants.width);
+
+                        // Forward Camera
+                        photonCamera = new PhotonCamera(VisionConstants.cameraName); // Change the
+                                                                                     // name of
+                                                                                     // your camera
+                                                                                     // here to
+                                                                                     // whatever it
+                                                                                     // is in
+                                                                                     // the
+                        // PhotonVision UI.
+
+                        // ... Add other cameras here
+                        // Multiple cameras???
+
+                        // Assemble the list of cameras & mount locations
+                        photonCamera = new PhotonCamera(VisionConstants.cameraName); // Change the
+                                                                                     // name of your
+                                                                                     // camera here
+                                                                                     // to whatever
+                                                                                     // it is in
+                                                                                     // the
+
+                        robotPoseEstimator =
+                                        new PhotonPoseEstimator(atfl, PoseStrategy.LOWEST_AMBIGUITY,
+                                                        photonCamera, VisionConstants.robotToCam);
+
+                        var tab = Shuffleboard.getTab("PhotonVision");
+                        tab.addNumber("Camera-estimated X", () -> {
+                                return this.x;
+                        });
+                        tab.addNumber("Camera-estimated Y", () -> {
+                                return this.y;
+                        });
+                        tab.addNumber("Camera-estimated T", () -> {
+                                return this.t;
+                        });
+                }
+
+                /**
+                 * @param estimatedRobotPose The current best guess at robot pose
+                 * @return A pair of the fused camera observations to a single Pose2d on the field,
+                 *         and the time of the observation. Assumes a planar field and the robot is
+                 *         always firmly on the ground
+                 */
+                public Optional<EstimatedRobotPose> getEstimatedGlobalPose(
+                                Pose2d prevEstimatedRobotPose) {
+                        robotPoseEstimator.setReferencePose(prevEstimatedRobotPose);
+                        var estimatedPose = robotPoseEstimator.update();
+
+                        estimatedPose.ifPresent((EstimatedRobotPose p) -> {
+                                this.x = p.estimatedPose.getX();
+                        });
+                        estimatedPose.ifPresent((EstimatedRobotPose p) -> {
+                                this.y = p.estimatedPose.getY();
+                        });
+                        estimatedPose.ifPresent((EstimatedRobotPose p) -> {
+                                this.t = 180 / Math.PI * p.estimatedPose.getRotation().getAngle();
+                        });
+
+                        return estimatedPose;
+                }
+        }
 }
