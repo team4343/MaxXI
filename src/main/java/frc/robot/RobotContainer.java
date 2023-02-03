@@ -15,10 +15,12 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.GenericHID;
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.Button;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.commands.AutoBalanceCommand;
 import frc.robot.commands.SuppliedDriveCommand;
@@ -31,10 +33,11 @@ import frc.robot.subsystems.DrivetrainSubsystem;
  * subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
-    // The robot's subsystems and commands are defined here...
-    public final DrivetrainSubsystem m_drivetrainSubsystem = new DrivetrainSubsystem();
+    private final DrivetrainSubsystem m_drivetrainSubsystem = new DrivetrainSubsystem();
 
-    private final XboxController m_controller = new XboxController(0);
+    private final HID hid = new HID();
+
+    // private final XboxController m_controller = new XboxController(1);
 
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -45,13 +48,16 @@ public class RobotContainer {
         // Left stick Y axis -> forward and backwards movement
         // Left stick X axis -> left and right movement
         // Right stick X axis -> rotation
-        m_drivetrainSubsystem.setDefaultCommand(new SuppliedDriveCommand(m_drivetrainSubsystem,
-                () -> -modifyAxis(m_controller.getLeftY())
-                        * DriveConstants.MAX_VELOCITY_METERS_PER_SECOND,
-                () -> -modifyAxis(m_controller.getLeftX())
-                        * DriveConstants.MAX_VELOCITY_METERS_PER_SECOND,
-                () -> -modifyAxis(m_controller.getRightX())
-                        * DriveConstants.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND));
+        /*
+         * m_drivetrainSubsystem.setDefaultCommand(new SuppliedDriveCommand(m_drivetrainSubsystem,
+         * () -> -modifyAxis(m_controller.getLeftY()) DriveConstants.MAX_VELOCITY_METERS_PER_SECOND,
+         * () -> -modifyAxis(m_controller.getLeftX()) DriveConstants.MAX_VELOCITY_METERS_PER_SECOND,
+         * () -> -modifyAxis(m_controller.getRightX())
+         * DriveConstants.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND));
+         */
+
+        m_drivetrainSubsystem.setDefaultCommand(
+                new SuppliedDriveCommand(m_drivetrainSubsystem, hid::getX, hid::getY, hid::getT));
 
         // ChassisSpeeds.fromFieldRelativeSpeeds(new ChassisSpeeds(),
         // m_drivetrainSubsystem.getGyroscopeRotation());
@@ -67,13 +73,17 @@ public class RobotContainer {
      * {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
      */
     private void configureButtonBindings() {
-        // Back button zeros the gyroscope
-        new Button(m_controller::getBackButton)
-                // No requirements because we don't need to interrupt anything
-                .whenPressed(m_drivetrainSubsystem.gyroscope::reset);
-
-        new Button(m_controller::getYButton)
-                .whenHeld(new AutoBalanceCommand(m_drivetrainSubsystem));
+        /*
+         * // Back button zeros the gyroscope new Button(m_controller::getBackButton) // No
+         * requirements because we don't need to interrupt anything
+         * .whenPressed(m_drivetrainSubsystem.gyroscope::reset);
+         * 
+         * new Button(m_controller::getYButton) .whenHeld(new
+         * AutoBalanceCommand(m_drivetrainSubsystem));
+         */
+        hid.getGyroResetButton().onTrue(new InstantCommand(
+                () -> m_drivetrainSubsystem.gyroscope.reset(), m_drivetrainSubsystem));
+        hid.getAutoBalanceButton().whileTrue(new AutoBalanceCommand(m_drivetrainSubsystem));
     }
 
     /**
@@ -94,25 +104,63 @@ public class RobotContainer {
         return m_drivetrainSubsystem.followTrajectoryCommand(traj1, true);
     }
 
-    private static double deadband(double value, double deadband) {
-        if (Math.abs(value) > deadband) {
-            if (value > 0.0) {
-                return (value - deadband) / (1.0 - deadband);
-            } else {
-                return (value + deadband) / (1.0 - deadband);
-            }
-        } else {
-            return 0.0;
+
+    public class HID {
+        private final Joystick m_flightStick = new Joystick(0);
+
+        /*
+         * Get the joystick's X value in meters per second.
+         */
+        public double getX() {
+            return -modifyAxis(m_flightStick.getX())
+                    * DriveConstants.MAX_VELOCITY_METERS_PER_SECOND;
         }
-    }
 
-    private static double modifyAxis(double value) {
-        // Deadband
-        value = deadband(value, 0.05);
+        /*
+         * Get the joystick's Y value in meters per second.
+         */
+        public double getY() {
+            return -modifyAxis(m_flightStick.getY())
+                    * DriveConstants.MAX_VELOCITY_METERS_PER_SECOND;
+        }
 
-        // Square the axis
-        value = Math.copySign(value * value, value);
+        /*
+         * Get the joystick's rotational value in radians per second.
+         */
+        public double getT() {
+            return -modifyAxis(m_flightStick.getTwist())
+                    * DriveConstants.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND;
+        }
 
-        return value;
+        public JoystickButton getGyroResetButton() {
+            return new JoystickButton(m_flightStick, 1);
+        }
+
+        public JoystickButton getAutoBalanceButton() {
+            return new JoystickButton(m_flightStick, 2);
+        }
+
+        private double deadband(double value, double deadband) {
+            if (Math.abs(value) > deadband) {
+                if (value > 0.0) {
+                    return (value - deadband) / (1.0 - deadband);
+                } else {
+                    return (value + deadband) / (1.0 - deadband);
+                }
+            } else {
+                return 0.0;
+            }
+        }
+
+        private double modifyAxis(double value) {
+            // Deadband
+            value = deadband(value, 0.05);
+
+            // Square the axis
+            value = Math.copySign(value * value, value);
+
+            return value;
+        }
+
     }
 }
