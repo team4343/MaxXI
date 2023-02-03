@@ -22,6 +22,13 @@ import edu.wpi.first.math.util.Units;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
+    public static class ArmConstants {
+        public static final int SHOULDER_ID = 30;
+        public static final int SHOULDER_FOLLOWER_ID = 31;
+        public static final int ELBOW_ID = 32;
+        public static final int INTAKE_ID = 33;
+    }
+
     public static class DriveConstants {
         /**
          * The left-to-right distance between the drivetrain wheels
@@ -123,7 +130,7 @@ public final class Constants {
          * This is a measure of how fast the robot should be able to drive in a straight line.
          */
         public static final double MAX_VELOCITY_METERS_PER_SECOND =
-                6380.0 / 60.0 * SdsModuleConfigurations.MK4I_L1.getDriveReduction()
+                5676.0 / 60.0 * SdsModuleConfigurations.MK4I_L1.getDriveReduction()
                         * SdsModuleConfigurations.MK4I_L1.getWheelDiameter() * Math.PI;
 
         /**
