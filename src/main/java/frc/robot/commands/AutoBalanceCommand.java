@@ -2,6 +2,7 @@ package frc.robot.commands;
 
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.Constants.DriveConstants;
 import frc.robot.subsystems.DrivetrainSubsystem;
 
 public class AutoBalanceCommand extends CommandBase {
@@ -25,9 +26,9 @@ public class AutoBalanceCommand extends CommandBase {
 
         // Create the rates, in meters per second.
         var c_xAxisRate =
-                Math.sin(c_roll_rad) * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND / 5;
+                Math.sin(c_roll_rad) * DriveConstants.MAX_VELOCITY_METERS_PER_SECOND / 5;
         var c_yAxisRate =
-                Math.sin(c_pitch_rad) * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND / 5;
+                Math.sin(c_pitch_rad) * DriveConstants.MAX_VELOCITY_METERS_PER_SECOND / 5;
 
         // Drive in the opposite direction
         m_drivetrainSubsystem.drive(new ChassisSpeeds(c_xAxisRate, c_yAxisRate, 0));

@@ -35,6 +35,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -44,8 +45,10 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
 import static frc.robot.Constants.*;
+import static frc.robot.Constants.DriveConstants.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Optional;
@@ -55,60 +58,11 @@ import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 
-public class DrivetrainSubsystem extends SubsystemBase {
+public class DrivetrainSubsystem extends SubsystemBase implements Loggable {
     public Gyroscope gyroscope = new Gyroscope();
+    public Odometry odometry = new Odometry();
 
     private ShuffleboardTab tab = Shuffleboard.getTab("Drivetrain");
-
-    /**
-     * The maximum voltage that will be delivered to the drive motors.
-     * <p>
-     * This can be reduced to cap the robot's maximum speed.
-     */
-    public static final double MAX_VOLTAGE = 11.0;
-
-    // FIXME Measure the drivetrain's maximum velocity or calculate the theoretical.
-    // The formula for calculating the theoretical maximum velocity is:
-    // <Motor free speed RPM> / 60 * <Drive reduction> * <Wheel diameter meters> *
-    // pi
-    // By default this value is setup for a Mk4i standard module using Falcon500s to
-    // drive.
-    // An example of this constant for a Mk4 L2 module with NEOs to drive is:
-    // 5880.0 / 60.0 / SdsModuleConfigurations.MK4_L2.getDriveReduction() *
-    // SdsModuleConfigurations.MK4_L2.getWheelDiameter() * Math.PI
-    /**
-     * The maximum velocity of the robot in meters per second.
-     * <p>
-     * This is a measure of how fast the robot should be able to drive in a straight line.
-     */
-    public static final double MAX_VELOCITY_METERS_PER_SECOND =
-            6380.0 / 60.0 * SdsModuleConfigurations.MK4I_L1.getDriveReduction()
-                    * SdsModuleConfigurations.MK4I_L1.getWheelDiameter() * Math.PI;
-
-    /**
-     * The maximum angular velocity of the robot in radians per second.
-     * <p>
-     * This is a measure of how fast the robot can rotate in place.
-     */
-    // Here we calculate the theoretical maximum angular velocity. You can also
-    // replace this with a measured amount.
-    public static final double MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND =
-            MAX_VELOCITY_METERS_PER_SECOND / Math.hypot(DRIVETRAIN_TRACKWIDTH_METERS / 2.0,
-                    DRIVETRAIN_WHEELBASE_METERS / 2.0);
-
-    private final SwerveDriveKinematics m_kinematics = new SwerveDriveKinematics(
-            // Front left
-            new Translation2d(DRIVETRAIN_TRACKWIDTH_METERS / 2.0,
-                    DRIVETRAIN_WHEELBASE_METERS / 2.0),
-            // Front right
-            new Translation2d(DRIVETRAIN_TRACKWIDTH_METERS / 2.0,
-                    -DRIVETRAIN_WHEELBASE_METERS / 2.0),
-            // Back left
-            new Translation2d(-DRIVETRAIN_TRACKWIDTH_METERS / 2.0,
-                    DRIVETRAIN_WHEELBASE_METERS / 2.0),
-            // Back right
-            new Translation2d(-DRIVETRAIN_TRACKWIDTH_METERS / 2.0,
-                    -DRIVETRAIN_WHEELBASE_METERS / 2.0));
 
     // These are our modules. We initialize them in the constructor.
     private final SwerveModule m_frontLeftModule;
@@ -118,12 +72,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
     private ChassisSpeeds m_chassisSpeeds = new ChassisSpeeds(0.0, 0.0, 0.0);
 
-    private final SwerveDrivePoseEstimator m_poseEstimator;
-    // private final SwerveDriveOdometry m_odometry;
-
     private final PhotonCameraWrapper pcw;
-
-    private final Field2d m_field = new Field2d();
 
     public DrivetrainSubsystem() {
         m_frontLeftModule = new MkSwerveModuleBuilder()
@@ -164,57 +113,19 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
         // Connect to the Photon camera.
         pcw = new PhotonCameraWrapper();
-
-        m_poseEstimator =
-                new SwerveDrivePoseEstimator(m_kinematics, gyroscope.getRotation2d(),
-                        new SwerveModulePosition[] {
-                                new SwerveModulePosition(
-                                        m_frontLeftModule.getDriveDistance()
-                                                * rotationsToMetersRatio,
-                                        Rotation2d.fromDegrees(m_frontLeftModule.getSteerAngle())),
-                                new SwerveModulePosition(
-                                        m_frontRightModule.getDriveDistance()
-                                                * rotationsToMetersRatio,
-                                        Rotation2d.fromDegrees(m_frontRightModule.getSteerAngle())),
-                                new SwerveModulePosition(
-                                        m_backLeftModule.getDriveDistance()
-                                                * rotationsToMetersRatio,
-                                        Rotation2d.fromDegrees(m_backLeftModule.getSteerAngle())),
-                                new SwerveModulePosition(
-                                        m_backRightModule.getDriveDistance()
-                                                * rotationsToMetersRatio,
-                                        Rotation2d.fromDegrees(m_backRightModule.getSteerAngle()))},
-                        new Pose2d(0., 0., new Rotation2d(0.)));
-
-        tab.addNumber("X", () -> m_poseEstimator.getEstimatedPosition().getX());
-        tab.addNumber("Y", () -> m_poseEstimator.getEstimatedPosition().getY());
-        tab.addNumber("theta",
-                () -> m_poseEstimator.getEstimatedPosition().getRotation().getDegrees());
-
-        // Send the field data, too.
-        tab.add(m_field);
     }
-
-    public Pose2d getPose() {
-        // May need to be just `m_poseEstimator.getEstimatedPosition() instead`.
-        return m_poseEstimator.getEstimatedPosition();
-        // return m_odometry.getPoseMeters();
-        // return pcw.getEstimatedGlobalPose(m_poseEstimator.getEstimatedPosition())
-        // .getFirst();
-    }
-
 
     public void drive(ChassisSpeeds chassisSpeeds) {
         m_chassisSpeeds = chassisSpeeds;
     }
 
     public void driveWithStates(SwerveModuleState[] states) {
-        m_chassisSpeeds = m_kinematics.toChassisSpeeds(states);
+        m_chassisSpeeds = KINEMATICS.toChassisSpeeds(states);
     }
 
     @Override
     public void periodic() {
-        SwerveModuleState[] states = m_kinematics.toSwerveModuleStates(m_chassisSpeeds);
+        SwerveModuleState[] states = KINEMATICS.toSwerveModuleStates(m_chassisSpeeds);
         SwerveDriveKinematics.desaturateWheelSpeeds(states, MAX_VELOCITY_METERS_PER_SECOND);
 
         m_frontLeftModule.set(
@@ -230,68 +141,23 @@ public class DrivetrainSubsystem extends SubsystemBase {
                 states[3].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE,
                 states[3].angle.getRadians());
 
-        m_field.setRobotPose(getPose());
-
-        updateOdometry();
+        odometry.updateOdometry();
 
         // Send the current estimated pose to the field object, which will send it to
         // Shuffleboard.
         // m_field.setRobotPose(m_poseEstimator.getEstimatedPosition());
     }
 
-    public void updateOdometry() {
-        m_poseEstimator
-                .update(gyroscope.getRotation2d(),
-                        new SwerveModulePosition[] {
-                                new SwerveModulePosition(
-                                        m_frontLeftModule.getDriveDistance()
-                                                * rotationsToMetersRatio,
-                                        Rotation2d.fromDegrees(m_frontLeftModule.getSteerAngle())),
-                                new SwerveModulePosition(
-                                        m_frontRightModule.getDriveDistance()
-                                                * rotationsToMetersRatio,
-                                        Rotation2d.fromDegrees(m_frontRightModule.getSteerAngle())),
-                                new SwerveModulePosition(
-                                        m_backLeftModule.getDriveDistance()
-                                                * rotationsToMetersRatio,
-                                        Rotation2d.fromDegrees(m_backLeftModule.getSteerAngle())),
-                                new SwerveModulePosition(
-                                        m_backRightModule.getDriveDistance()
-                                                * rotationsToMetersRatio,
-                                        Rotation2d
-                                                .fromDegrees(m_backRightModule.getSteerAngle()))});
-
-        // Also apply vision measurements. We use 0.3 seconds in the past as an example
-        // -- on
-        // a real robot, this must be calculated based either on latency or timestamps.
-        Optional<EstimatedRobotPose> result = pcw.getEstimatedGlobalPose(getPose());
-        if (result.isPresent()) {
-            EstimatedRobotPose camPose = result.get();
-
-            // Workaround for SwerveDrivePoseEstimator ConccurentModificationException
-            var currentTime = Timer.getFPGATimestamp();
-            var camTime = camPose.timestampSeconds;
-
-            if (currentTime - camTime < 1.5) {
-                System.out.print("Updating odometry...");
-
-                m_poseEstimator.addVisionMeasurement(camPose.estimatedPose.toPose2d(),
-                        camPose.timestampSeconds);
-            } else {
-                System.out.println("Current time " + currentTime + ", pose info time " + camTime);
-            }
-        }
-    }
-
     public Command followTrajectoryCommand(PathPlannerTrajectory traj, boolean isFirstPath) {
         return new SequentialCommandGroup(new InstantCommand(() -> {
-            m_field.getObject("traj").setTrajectory(traj);
+            odometry.setFieldTrajectory(traj);
             // Reset odometry for the first path you run during auto
             if (isFirstPath) {
+
                 // this.resetOdometry(traj.getInitialHolonomicPose());
             }
-        }), new PPSwerveControllerCommand(traj, this::getPose, // Pose supplier
-                this.m_kinematics, // SwerveDriveKinematics
+        }), new PPSwerveControllerCommand(traj, odometry::getPose, // Pose supplier
+                KINEMATICS, // SwerveDriveKinematics
                 new PIDController(0, 0, 0), // X controller. Tune these values for
                                             // your
                                             // robot. Leaving them 0 will only use
@@ -359,6 +225,98 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
         public float getGyroscopeRoll() {
             return m_navx.getRoll();
+        }
+    }
+
+    public class Odometry {
+        private final SwerveDrivePoseEstimator m_poseEstimator;
+
+        @Log.Field2d(name = "Estimated position")
+        private final Field2d m_field = new Field2d();
+
+        public Odometry() {
+            m_poseEstimator =
+                    new SwerveDrivePoseEstimator(KINEMATICS, gyroscope.getRotation2d(),
+                            new SwerveModulePosition[] {new SwerveModulePosition(
+                                    m_frontLeftModule.getDriveDistance() * rotationsToMetersRatio,
+                                    Rotation2d.fromDegrees(m_frontLeftModule.getSteerAngle())),
+                                    new SwerveModulePosition(
+                                            m_frontRightModule.getDriveDistance()
+                                                    * rotationsToMetersRatio,
+                                            Rotation2d.fromDegrees(
+                                                    m_frontRightModule.getSteerAngle())),
+                                    new SwerveModulePosition(
+                                            m_backLeftModule.getDriveDistance()
+                                                    * rotationsToMetersRatio,
+                                            Rotation2d
+                                                    .fromDegrees(m_backLeftModule.getSteerAngle())),
+                                    new SwerveModulePosition(
+                                            m_backRightModule.getDriveDistance()
+                                                    * rotationsToMetersRatio,
+                                            Rotation2d.fromDegrees(
+                                                    m_backRightModule.getSteerAngle()))},
+                            new Pose2d(0., 0., new Rotation2d(0.)));
+
+            tab.addNumber("X", () -> m_poseEstimator.getEstimatedPosition().getX());
+            tab.addNumber("Y", () -> m_poseEstimator.getEstimatedPosition().getY());
+            tab.addNumber("theta",
+                    () -> m_poseEstimator.getEstimatedPosition().getRotation().getDegrees());
+        }
+
+        public void setFieldTrajectory(Trajectory trajectory) {
+            m_field.getObject("traj").setTrajectory(trajectory);
+        }
+
+        public Pose2d getPose() {
+            return m_poseEstimator.getEstimatedPosition();
+        }
+
+        public void updateOdometry() {
+            m_field.setRobotPose(getPose());
+
+            m_poseEstimator
+                    .update(gyroscope.getRotation2d(),
+                            new SwerveModulePosition[] {new SwerveModulePosition(
+                                    m_frontLeftModule.getDriveDistance() * rotationsToMetersRatio,
+                                    Rotation2d.fromDegrees(m_frontLeftModule.getSteerAngle())),
+                                    new SwerveModulePosition(
+                                            m_frontRightModule.getDriveDistance()
+                                                    * rotationsToMetersRatio,
+                                            Rotation2d.fromDegrees(
+                                                    m_frontRightModule.getSteerAngle())),
+                                    new SwerveModulePosition(
+                                            m_backLeftModule.getDriveDistance()
+                                                    * rotationsToMetersRatio,
+                                            Rotation2d
+                                                    .fromDegrees(m_backLeftModule.getSteerAngle())),
+                                    new SwerveModulePosition(
+                                            m_backRightModule.getDriveDistance()
+                                                    * rotationsToMetersRatio,
+                                            Rotation2d.fromDegrees(
+                                                    m_backRightModule.getSteerAngle()))});
+
+            // Also apply vision measurements. We use 0.3 seconds in the past as an
+            // example
+            // -- on
+            // a real robot, this must be calculated based either on latency or
+            // timestamps.
+            Optional<EstimatedRobotPose> result = pcw.getEstimatedGlobalPose(getPose());
+            if (result.isPresent()) {
+                EstimatedRobotPose camPose = result.get();
+
+                // Workaround for SwerveDrivePoseEstimator
+                // ConccurentModificationException
+                var currentTime = Timer.getFPGATimestamp();
+                var camTime = camPose.timestampSeconds;
+
+                if (currentTime - camTime < 1.5) {
+                    m_poseEstimator.addVisionMeasurement(camPose.estimatedPose.toPose2d(),
+                            camPose.timestampSeconds);
+                } else {
+                    System.out.println("Received outdated vision measurement, current time "
+                            + currentTime + ", pose info time " + camTime);
+                }
+            }
         }
     }
 
@@ -434,11 +392,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
             estimatedPose.ifPresent((EstimatedRobotPose p) -> {
                 this.x = p.estimatedPose.getX();
-            });
-            estimatedPose.ifPresent((EstimatedRobotPose p) -> {
                 this.y = p.estimatedPose.getY();
-            });
-            estimatedPose.ifPresent((EstimatedRobotPose p) -> {
                 this.t = 180 / Math.PI * p.estimatedPose.getRotation().getAngle();
             });
 
