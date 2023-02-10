@@ -17,6 +17,9 @@ public class ArmSubsystem extends SubsystemBase implements Loggable {
     private final CANSparkMax m_elbow = new CANSparkMax(ArmConstants.ELBOW_ID, MotorType.kBrushless);
     private final CANSparkMax m_intake = new CANSparkMax(ArmConstants.INTAKE_ID, MotorType.kBrushless);
 
+    private final double elbow_Encoder_to_Degrees = 599.9;
+    private final double shoulder_Encoder_to_Degrees = 342.8;
+
     private State m_state = State.Rest;
 
     public ArmSubsystem() {
@@ -93,7 +96,13 @@ public class ArmSubsystem extends SubsystemBase implements Loggable {
     private void placingEPeriodic() {
         // Go to this placing position
         // Turn intake on
-
+        double new_angle = convert(35.0);
+        // new_angle is encoder steps
         m_intake.set(-1);
     }
+
+    private double  convert(double desired) {
+        return desired * shoulder_Encoder_to_Degrees;
+    }
+
 }
