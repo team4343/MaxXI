@@ -8,7 +8,10 @@ import frc.robot.Constants.FieldConstants;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.RobotContainer.WorkBenchModerator;
 import com.kauailabs.navx.frc.AHRS;
+import com.pathplanner.lib.PathConstraints;
+import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
+import com.pathplanner.lib.PathPoint;
 import com.pathplanner.lib.auto.PIDConstants;
 import com.pathplanner.lib.auto.SwerveAutoBuilder;
 import com.pathplanner.lib.commands.PPSwerveControllerCommand;
@@ -37,12 +40,14 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import io.github.oblarg.oblog.Loggable;
@@ -189,6 +194,67 @@ public class DrivetrainSubsystem extends SubsystemBase implements Loggable {
                       // color. Optional, defaults to true
                 this // Requires this drive subsystem
         ));
+    }
+
+    public Command constructLiveTrajectoryCommand(ArmSubsystem armSubsystem) {
+        var commands = new SequentialCommandGroup();
+
+        var handle = NetworkTableInstance.getDefault();
+        var stepAmountHandle = handle.getEntry("/AutoSelector/steps/amount");
+        var steps = stepAmountHandle.getInteger(0);
+
+        var prevPose = odometry.getPose();
+
+        for (var i = 1; i <= steps; i++) {
+            var x = handle.getEntry("/AutoSelector/steps/" + i + "/x").getDouble(0);
+            var y = handle.getEntry("/AutoSelector/steps/" + i + "/y").getDouble(0);
+            var t = handle.getEntry("/AutoSelector/steps/" + i + "/t").getDouble(0);
+            var maxAccel = handle.getEntry("/AutoSelector/steps/" + i + "/maxVel").getDouble(0.5);
+            var maxVel = handle.getEntry("/AutoSelector/steps/" + i + "/maxAccel").getDouble(0.5);
+            var stateName =
+                    handle.getEntry("/AutoSelector/steps/" + i + "/state").getString("Rest");
+
+            var state = armSubsystem.deserializeStateFromString(stateName);
+            System.out.println("State is " + state);
+
+            var point = new PathPoint(new Translation2d(x, y), Rotation2d.fromDegrees(t));
+
+            ArrayList<PathPoint> points = new ArrayList<>();
+            points.add(new PathPoint(prevPose.getTranslation(), prevPose.getRotation()));
+            points.add(point);
+
+            prevPose = new Pose2d(new Translation2d(x, y), new Rotation2d(t));
+
+            PathPlannerTrajectory trajectory =
+                    PathPlanner.generatePath(new PathConstraints(maxVel, maxAccel), points);
+
+            commands.addCommands(new ParallelCommandGroup(new InstantCommand(() -> {
+                armSubsystem.setState(state);
+                System.out.println("Set state to " + state.toString());
+            }), new PPSwerveControllerCommand(trajectory, odometry::getPose, // Pose
+                    // supplier
+                    KINEMATICS, // SwerveDriveKinematics
+                    new PIDController(.6, 0, 0), // X controller. Tune these values for
+                                                 // your
+                                                 // robot. Leaving them 0 will only use
+                                                 // feedforwards.
+                    new PIDController(0.6, 0, 0), // Y controller (usually the same values
+                                                  // as
+                                                  // X controller)
+                    new PIDController(0.6, 0, 0), // Rotation controller. Tune these
+                                                  // values
+                                                  // for your robot. Leaving them 0 will
+                                                  // only
+                                                  // use feedforwards.
+                    this::driveWithStates, // Module states consumer
+                    true, // Should the path be automatically mirrored depending on
+                          // alliance
+                          // color. Optional, defaults to true
+                    this // Requires this drive subsystem
+            )));
+        }
+
+        return commands;
     }
 
     // The conversion ratio between drive rotations and meters. Goes from motor rots
@@ -348,13 +414,13 @@ public class DrivetrainSubsystem extends SubsystemBase implements Loggable {
         public PhotonCameraWrapper() {
             // Set up a test arena of two apriltags at the center of each driver station
             // set
-            final AprilTag tag08 = new AprilTag(8, new Pose3d(new Pose2d(FieldConstants.length,
-                    FieldConstants.width / 2.0, Rotation2d.fromDegrees(180))));
             final AprilTag tag01 =
                     new AprilTag(1, new Pose3d(new Pose2d(0.0, 0.0, Rotation2d.fromDegrees(0.0))));
+            final AprilTag tag08 = new AprilTag(8, new Pose3d(new Pose2d(FieldConstants.length,
+                    FieldConstants.width / 2.0, Rotation2d.fromDegrees(180))));
             ArrayList<AprilTag> atList = new ArrayList<AprilTag>();
-            atList.add(tag08);
             atList.add(tag01);
+            atList.add(tag08);
 
             // TODO - once 2023 happens, replace this with just loading the 2023 field
             // arrangement

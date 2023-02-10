@@ -12,10 +12,14 @@ public class ArmSubsystem extends SubsystemBase implements Loggable {
         Pickup, Rest, PlacingA, PlacingB, PlacingC, PlacingD, PlacingE,
     }
 
-    private final CANSparkMax m_shoulder = new CANSparkMax(ArmConstants.SHOULDER_ID, MotorType.kBrushless);
-    private final CANSparkMax m_shoulderFollower = new CANSparkMax(ArmConstants.SHOULDER_FOLLOWER_ID, MotorType.kBrushless);
-    private final CANSparkMax m_elbow = new CANSparkMax(ArmConstants.ELBOW_ID, MotorType.kBrushless);
-    private final CANSparkMax m_intake = new CANSparkMax(ArmConstants.INTAKE_ID, MotorType.kBrushless);
+    private final CANSparkMax m_shoulder =
+            new CANSparkMax(ArmConstants.SHOULDER_ID, MotorType.kBrushless);
+    private final CANSparkMax m_shoulderFollower =
+            new CANSparkMax(ArmConstants.SHOULDER_FOLLOWER_ID, MotorType.kBrushless);
+    private final CANSparkMax m_elbow =
+            new CANSparkMax(ArmConstants.ELBOW_ID, MotorType.kBrushless);
+    private final CANSparkMax m_intake =
+            new CANSparkMax(ArmConstants.INTAKE_ID, MotorType.kBrushless);
 
     private final double elbow_Encoder_to_Degrees = 599.9;
     private final double shoulder_Encoder_to_Degrees = 342.8;
@@ -34,20 +38,42 @@ public class ArmSubsystem extends SubsystemBase implements Loggable {
         m_state = state;
     }
 
+    public ArmSubsystem.State deserializeStateFromString(String stateName) {
+        System.out.println("Deserializing state for " + stateName);
+
+        if (stateName.equals("Rest")) {
+            return ArmSubsystem.State.Rest;
+        } else if (stateName.equals("Pickup")) {
+            return ArmSubsystem.State.Pickup;
+        } else if (stateName.equals("PlacingA")) {
+            return ArmSubsystem.State.PlacingA;
+        } else if (stateName.equals("PlacingB")) {
+            return ArmSubsystem.State.PlacingB;
+        } else if (stateName.equals("PlacingC")) {
+            return ArmSubsystem.State.PlacingC;
+        } else if (stateName.equals("PlacingD")) {
+            return ArmSubsystem.State.PlacingD;
+        } else if (stateName.equals("PlacingE")) {
+            return ArmSubsystem.State.PlacingE;
+        }
+
+        return ArmSubsystem.State.Rest;
+    }
+
     public void periodic() {
-        if (m_state == State.Pickup)
+        if (m_state.equals(State.Pickup))
             pickupPeriodic();
-        else if (m_state == State.Rest)
+        else if (m_state.equals(State.Rest))
             restPeriodic();
-        else if (m_state == State.PlacingA)
+        else if (m_state.equals(State.PlacingA))
             placingAPeriodic();
-        else if (m_state == State.PlacingB)
+        else if (m_state.equals(State.PlacingB))
             placingBPeriodic();
-        else if (m_state == State.PlacingC)
+        else if (m_state.equals(State.PlacingC))
             placingCPeriodic();
-        else if (m_state == State.PlacingD)
+        else if (m_state.equals(State.PlacingD))
             placingDPeriodic();
-        else if (m_state == State.PlacingE)
+        else if (m_state.equals(State.PlacingE))
             placingEPeriodic();
     }
 
