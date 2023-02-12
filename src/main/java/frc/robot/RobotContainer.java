@@ -29,11 +29,13 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.Button;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants.DriveConstants;
+import frc.robot.commands.ArmPositionCommand;
 import frc.robot.commands.AutoBalanceCommand;
 import frc.robot.commands.SuppliedDriveCommand;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.ArmSubsystem.State;
+import frc.robot.subsystems.IntakeSubsystem;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -48,6 +50,7 @@ public class RobotContainer {
     private final DrivetrainSubsystem m_drivetrainSubsystem =
             new DrivetrainSubsystem(m_workBenchModerator);
     private final ArmSubsystem m_armSubsystem = new ArmSubsystem();
+    private final IntakeSubsystem m_intakeSubsystem = new IntakeSubsystem();
 
     // private final XboxController m_controller = new XboxController(1);
 
@@ -70,7 +73,6 @@ public class RobotContainer {
 
         m_drivetrainSubsystem.setDefaultCommand(
                 new SuppliedDriveCommand(m_drivetrainSubsystem, hid::getX, hid::getY, hid::getT));
-
 
         // Mock the autonomous, for now.
 
@@ -167,7 +169,11 @@ public class RobotContainer {
         return m_drivetrainSubsystem.constructLiveTrajectoryCommand(m_armSubsystem);
     }
 
-    public class WorkBenchModerator {
+    public Command getArmCommand(State state) {
+        return new ArmPositionCommand(m_armSubsystem, state);
+    }
+
+    public static class WorkBenchModerator {
         private final boolean isBench;
 
         public WorkBenchModerator() {

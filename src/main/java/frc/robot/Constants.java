@@ -23,10 +23,10 @@ import edu.wpi.first.math.util.Units;
  */
 public final class Constants {
     public static class ArmConstants {
-        public static final int SHOULDER_ID = 30;
-        public static final int SHOULDER_FOLLOWER_ID = 31;
+        public static final int SHOULDER_ID = 33;
+        public static final int SHOULDER_FOLLOWER_ID = 30;
         public static final int ELBOW_ID = 32;
-        public static final int INTAKE_ID = 33;
+        public static final int INTAKE_ID = 31;
     }
 
     public static class DriveConstants {
