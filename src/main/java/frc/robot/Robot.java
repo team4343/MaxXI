@@ -19,7 +19,6 @@ import io.github.oblarg.oblog.Logger;
  */
 public class Robot extends TimedRobot {
     private Command m_autonomousCommand;
-
     private RobotContainer m_robotContainer;
 
     /**
@@ -84,18 +83,12 @@ public class Robot extends TimedRobot {
         // teleop starts running. If you want the autonomous to
         // continue until interrupted by another command, remove
         // this line or comment it out.
-        if (m_autonomousCommand != null) {
-            m_autonomousCommand.cancel();
-        }
+        CommandScheduler.getInstance().cancelAll();
     }
 
     /** This function is called periodically during operator control. */
     @Override
-    public void teleopPeriodic() {
-
-        Command extendArmCommand = m_robotContainer.getArmCommand(ArmSubsystem.State.Rest);
-        CommandScheduler.getInstance().schedule(extendArmCommand);
-    }
+    public void teleopPeriodic() {}
 
     @Override
     public void testInit() {

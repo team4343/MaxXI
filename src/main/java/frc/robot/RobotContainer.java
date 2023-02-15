@@ -47,9 +47,8 @@ public class RobotContainer {
     private final WorkBenchModerator m_workBenchModerator = new WorkBenchModerator();
     private final HID hid = new HID();
 
-    private final DrivetrainSubsystem m_drivetrainSubsystem =
-            new DrivetrainSubsystem(m_workBenchModerator);
-    private final ArmSubsystem m_armSubsystem = new ArmSubsystem();
+    private final DrivetrainSubsystem m_drivetrainSubsystem = new DrivetrainSubsystem(m_workBenchModerator);
+    public final ArmSubsystem m_armSubsystem = new ArmSubsystem();
     private final IntakeSubsystem m_intakeSubsystem = new IntakeSubsystem();
 
     // private final XboxController m_controller = new XboxController(1);
@@ -145,19 +144,13 @@ public class RobotContainer {
                 () -> m_drivetrainSubsystem.gyroscope.reset(), m_drivetrainSubsystem));
         hid.getAutoBalanceButton().whileTrue(new AutoBalanceCommand(m_drivetrainSubsystem));
 
-        hid.getPickupButton()
-                .onTrue(new InstantCommand(() -> m_armSubsystem.setState(State.Pickup)));
+        hid.getPickupButton().onTrue(new InstantCommand(() -> m_armSubsystem.setState(State.Pickup)));
         hid.getRestButton().onTrue(new InstantCommand(() -> m_armSubsystem.setState(State.Rest)));
-        hid.getPlacingAButton()
-                .onTrue(new InstantCommand(() -> m_armSubsystem.setState(State.PlacingA)));
-        hid.getPlacingBButton()
-                .onTrue(new InstantCommand(() -> m_armSubsystem.setState(State.PlacingB)));
-        hid.getPlacingCButton()
-                .onTrue(new InstantCommand(() -> m_armSubsystem.setState(State.PlacingC)));
-        hid.getPlacingDButton()
-                .onTrue(new InstantCommand(() -> m_armSubsystem.setState(State.PlacingD)));
-        hid.getPlacingEButton()
-                .onTrue(new InstantCommand(() -> m_armSubsystem.setState(State.PlacingE)));
+        hid.getPlacingAButton().onTrue(new InstantCommand(() -> m_armSubsystem.setState(State.PlacingA)));
+        hid.getPlacingBButton().onTrue(new InstantCommand(() -> m_armSubsystem.setState(State.PlacingB)));
+        hid.getPlacingCButton().onTrue(new InstantCommand(() -> m_armSubsystem.setState(State.PlacingC)));
+        hid.getPlacingDButton().onTrue(new InstantCommand(() -> m_armSubsystem.setState(State.PlacingD)));
+        hid.getPlacingEButton().onTrue(new InstantCommand(() -> m_armSubsystem.setState(State.PlacingE)));
     }
 
     /**
