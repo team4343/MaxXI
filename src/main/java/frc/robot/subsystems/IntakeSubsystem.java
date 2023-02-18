@@ -39,5 +39,17 @@ public class IntakeSubsystem extends SubsystemBase implements Loggable {
                 m_intake.set(0); break;
         }
     }
+    private static class Position{
+        public int intake = 0;
+        public Position(int intake){
+            this.intake = intake;
+        }
+    }
+
+    private final Position Cone_In = new Position(0);
+    private final Position Cone_Out = new Position(0);
+    private final Position Cube_In = new Position(0);
+    private final Position Cube_Out = new Position(0);
+    private final Position Stopped = new Position(0);
 
 }

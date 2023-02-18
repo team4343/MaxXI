@@ -6,20 +6,21 @@ import frc.robot.subsystems.IntakeSubsystem;
 
 public class IntakeSetCommand extends CommandBase {
 
-    public IntakeSetCommand(IntakeSubsystem intakeSubsystem) {
+    private final IntakeSubsystem m_intakeSubsystem;
+    private final IntakeSubsystem.IntakeState m_state;
+
+    public IntakeSetCommand(IntakeSubsystem intakeSubsystem, IntakeSubsystem.IntakeState state) {
         // Use addRequirements() here to declare subsystem dependencies.
         addRequirements(intakeSubsystem);
+        this.m_intakeSubsystem = intakeSubsystem;
+        this.m_state = state;
     }
 
-    // Called when the command is initially scheduled.
-    @Override
-    public void initialize() {
-
-    }
 
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
+        m_intakeSubsystem.setState(m_state);
     }
 
     // Called once the command ends or is interrupted.
@@ -30,6 +31,6 @@ public class IntakeSetCommand extends CommandBase {
     // Returns true when the command should end.
     @Override
     public boolean isFinished() {
-        return false;
+        return true;
     }
 }
