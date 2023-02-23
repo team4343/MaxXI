@@ -27,6 +27,14 @@ public final class Constants {
         public static final int SHOULDER_FOLLOWER_ID = 30;
         public static final int ELBOW_ID = 32;
         public static final int INTAKE_ID = 31;
+
+        public static double ELBOW_GEAR_RATIO(double desired) {
+            return (desired / (2 * Math.PI)) * 70 * 40 / 22;
+        }
+        
+        public static double SHOULDER_GEAR_RATIO(double desired) {
+            return (desired / (2 * Math.PI)) * 40 * 60 / 16;
+        }
     }
 
     public static class DriveConstants {
