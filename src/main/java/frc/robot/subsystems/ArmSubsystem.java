@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import java.util.Optional;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMax.SoftLimitDirection;
@@ -15,13 +16,15 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 import frc.robot.Constants.ArmConstants;
 import io.github.oblarg.oblog.Loggable;
 
 public class ArmSubsystem extends SubsystemBase implements Loggable {
     public enum State {
-        Pickup(0, 0), Rest(0, 0), PlacingA(Math.PI / 4, 0), PlacingB(0, 0), PlacingC(0,
-                Math.PI / 2), PlacingD(Math.PI / 2, Math.PI / 2), PlacingE(0, 0);
+        // TODO: tune this.
+        Pickup(0, 0), Rest(0, 0), PlacingA(0, 0), PlacingB(0, 0), PlacingC(0, 0), PlacingD(0,
+                0), PlacingE(0, 0);
 
         public final double elbow;
         public final double shoulder;
@@ -133,21 +136,39 @@ public class ArmSubsystem extends SubsystemBase implements Loggable {
         m_elbow.setSoftLimit(CANSparkMax.SoftLimitDirection.kReverse, -15);
     }
 
-    public void setState(State desiredState) {
-        this.m_desiredState = desiredState;
+    /*
+     * Set the state of the arm subsystem.
+     * 
+     * Optional.empty() means the change was not a valid transition and was rejected.
+     * Optional.of(null) means that the change was accepted and the subsystem's state was updated.
+     */
+    public Optional<Void> setState(State desiredState) {
+        // All state transitions are valid unless we are currently in the pickup state.
+        // If we are in the pickup state, and the desired state not the Rest state, the transition
+        // is invalid.
+        if (m_desiredState.equals(State.Pickup) && !desiredState.equals(State.Rest))
+            return Optional.empty();
+        else
+            this.m_desiredState = desiredState;
+        return Optional.of(null);
     }
 
+    /*
+     * Check whether the arm is at the desired state.
+     */
     public boolean atState() {
-        boolean shoulder_at_state = goalCalculator(m_shoulder.getEncoder().getPosition(), ArmConstants.SHOULDER_GEAR_RATIO(m_desiredState.shoulder));
-        boolean elbow_at_state = goalCalculator(m_elbow.getEncoder().getPosition(), ArmConstants.ELBOW_GEAR_RATIO(m_desiredState.elbow));
+        boolean shoulder_at_state = Constants.goalCalculator(m_shoulder.getEncoder().getPosition(),
+                ArmConstants.SHOULDER_GEAR_RATIO(m_desiredState.shoulder),
+                ArmConstants.STATE_EPSILON);
+        boolean elbow_at_state = Constants.goalCalculator(m_elbow.getEncoder().getPosition(),
+                ArmConstants.ELBOW_GEAR_RATIO(m_desiredState.elbow), ArmConstants.STATE_EPSILON);
         return shoulder_at_state && elbow_at_state;
     }
 
-    private boolean goalCalculator(double current, double desired) {
-        if (current == desired) return true;
-        return Math.abs(current - desired) <= 10;
-    }
-
+    /*
+     * Deserializes a string into an arm state. A dirty hack to deserialize autonomous commands from
+     * networktables.
+     */
     public ArmSubsystem.State deserializeStateFromString(String stateName) {
         System.out.println("Deserializing state for " + stateName);
 
@@ -172,9 +193,19 @@ public class ArmSubsystem extends SubsystemBase implements Loggable {
     }
 
     public void periodic() {
-        m_elbow.getPIDController().setReference(
-                ArmConstants.ELBOW_GEAR_RATIO(m_desiredState.elbow), ControlType.kPosition);
+        automaticPIDAdjuster();
+
+        m_elbow.getPIDController().setReference(ArmConstants.ELBOW_GEAR_RATIO(m_desiredState.elbow),
+                ControlType.kPosition);
         m_shoulder.getPIDController().setReference(
                 ArmConstants.SHOULDER_GEAR_RATIO(m_desiredState.shoulder), ControlType.kPosition);
+    }
+
+    /*
+     * A method that automatically adjusts the slot of the PID controller based on the desired
+     * state. To be called periodically.
+     */
+    private void automaticPIDAdjuster() {
+        // TODO
     }
 }

@@ -27,13 +27,16 @@ public final class Constants {
         public static final int SHOULDER_FOLLOWER_ID = 30;
         public static final int ELBOW_ID = 32;
         public static final int INTAKE_ID = 31;
+        public static final double STATE_EPSILON = 10;
 
         public static double ELBOW_GEAR_RATIO(double desired) {
-            return (desired / (2 * Math.PI)) * 70 * 40 / 22;
+            // return (desired / (2 * Math.PI)) * 70 * 40 / 22;
+            return desired * 70 * 40 / 22;
         }
-        
+
         public static double SHOULDER_GEAR_RATIO(double desired) {
-            return (desired / (2 * Math.PI)) * 40 * 60 / 16;
+            // return (desired / (2 * Math.PI)) * 40 * 60 / 16;
+            return desired * 40 * 60 / 16;
         }
     }
 
@@ -176,16 +179,29 @@ public final class Constants {
     public static class VisionConstants {
         public static final Transform3d robotToCam = new Transform3d(
                 new Translation3d(-.13, .30, .23), new Rotation3d(0, 0, Math.PI * 1.5)); // Cam
-                                                                                       // mounted
-                                                                                       // facing
-                                                                                       // forward,
-                                                                                       // half a
-                                                                                       // meter
-                                                                                       // forward of
-                                                                                       // center,
-                                                                                       // half a
-                                                                                       // meter up
+                                                                                         // mounted
+                                                                                         // facing
+                                                                                         // forward,
+                                                                                         // half a
+                                                                                         // meter
+                                                                                         // forward
+                                                                                         // of
+                                                                                         // center,
+                                                                                         // half a
+                                                                                         // meter up
         // from center.
         public static final String cameraName = "OV5647";
     }
+
+    /*
+     * Given a current and desired value, return whether the values are in each other's range based
+     * on a provided epsilon.
+     */
+    public static boolean goalCalculator(double current, double desired, double epsilon) {
+        if (current == desired)
+            return true;
+        return Math.abs(current - desired) <= epsilon;
+    }
+
+
 }
