@@ -193,19 +193,24 @@ public class ArmSubsystem extends SubsystemBase implements Loggable {
     }
 
     public void periodic() {
-        automaticPIDAdjuster();
+        getPIDSlot();
 
         m_elbow.getPIDController().setReference(ArmConstants.ELBOW_GEAR_RATIO(m_desiredState.elbow),
-                ControlType.kPosition);
+                ControlType.kPosition, getPIDSlot());
         m_shoulder.getPIDController().setReference(
-                ArmConstants.SHOULDER_GEAR_RATIO(m_desiredState.shoulder), ControlType.kPosition);
+                ArmConstants.SHOULDER_GEAR_RATIO(m_desiredState.shoulder), ControlType.kPosition,
+                getPIDSlot());
     }
 
     /*
-     * A method that automatically adjusts the slot of the PID controller based on the desired
-     * state. To be called periodically.
+     * A method that automatically decides the slot of the PID controller based on the desired
+     * state.
      */
-    private void automaticPIDAdjuster() {
-        // TODO
+    private int getPIDSlot() {
+        if (this.atState()) {
+            return 1;
+        } else {
+            return 0;
+        }
     }
 }

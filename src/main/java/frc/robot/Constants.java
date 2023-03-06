@@ -202,6 +202,4 @@ public final class Constants {
             return true;
         return Math.abs(current - desired) <= epsilon;
     }
-
-
 }
