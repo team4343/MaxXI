@@ -88,7 +88,7 @@ public class DrivetrainSubsystem extends SubsystemBase implements Loggable {
                     .withLayout(tab.getLayout("Front Left Module", BuiltInLayouts.kList)
                             .withSize(2, 4).withPosition(0, 0))
                     .withGearRatio(SdsModuleConfigurations.MK4I_L1)
-                    .withDriveMotor(MotorType.NEO, FRONT_LEFT_MODULE_DRIVE_MOTOR)
+                    .withDriveMotor(MotorType.FALCON, FRONT_LEFT_MODULE_DRIVE_MOTOR)
                     .withSteerMotor(MotorType.NEO, FRONT_LEFT_MODULE_STEER_MOTOR)
                     .withSteerEncoderPort(FRONT_LEFT_MODULE_STEER_ENCODER)
                     .withSteerOffset(FRONT_LEFT_MODULE_STEER_OFFSET).build();
@@ -97,7 +97,7 @@ public class DrivetrainSubsystem extends SubsystemBase implements Loggable {
                     .withLayout(tab.getLayout("Front Right Module", BuiltInLayouts.kList)
                             .withSize(2, 4).withPosition(2, 0))
                     .withGearRatio(SdsModuleConfigurations.MK4I_L1)
-                    .withDriveMotor(MotorType.NEO, FRONT_RIGHT_MODULE_DRIVE_MOTOR)
+                    .withDriveMotor(MotorType.FALCON, FRONT_RIGHT_MODULE_DRIVE_MOTOR)
                     .withSteerMotor(MotorType.NEO, FRONT_RIGHT_MODULE_STEER_MOTOR)
                     .withSteerEncoderPort(FRONT_RIGHT_MODULE_STEER_ENCODER)
                     .withSteerOffset(FRONT_RIGHT_MODULE_STEER_OFFSET).build();
@@ -106,7 +106,7 @@ public class DrivetrainSubsystem extends SubsystemBase implements Loggable {
                     .withLayout(tab.getLayout("Back Left Module", BuiltInLayouts.kList)
                             .withSize(2, 4).withPosition(4, 0))
                     .withGearRatio(SdsModuleConfigurations.MK4I_L1)
-                    .withDriveMotor(MotorType.NEO, BACK_LEFT_MODULE_DRIVE_MOTOR_OG)
+                    .withDriveMotor(MotorType.FALCON, BACK_LEFT_MODULE_DRIVE_MOTOR_OG)
                     .withSteerMotor(MotorType.NEO, BACK_LEFT_MODULE_STEER_MOTOR_OG)
                     .withSteerEncoderPort(BACK_LEFT_MODULE_STEER_ENCODER)
                     .withSteerOffset(BACK_LEFT_MODULE_STEER_OFFSET).build();
@@ -115,7 +115,7 @@ public class DrivetrainSubsystem extends SubsystemBase implements Loggable {
                     .withLayout(tab.getLayout("Back Right Module", BuiltInLayouts.kList)
                             .withSize(2, 4).withPosition(6, 0))
                     .withGearRatio(SdsModuleConfigurations.MK4I_L1)
-                    .withDriveMotor(MotorType.NEO, BACK_RIGHT_MODULE_DRIVE_MOTOR)
+                    .withDriveMotor(MotorType.FALCON, BACK_RIGHT_MODULE_DRIVE_MOTOR)
                     .withSteerMotor(MotorType.NEO, BACK_RIGHT_MODULE_STEER_MOTOR)
                     .withSteerEncoderPort(BACK_RIGHT_MODULE_STEER_ENCODER)
                     .withSteerOffset(BACK_RIGHT_MODULE_STEER_OFFSET).build();
