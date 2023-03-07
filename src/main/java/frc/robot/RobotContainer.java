@@ -4,38 +4,25 @@
 
 package frc.robot;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import com.pathplanner.lib.PathConstraints;
-import com.pathplanner.lib.PathPlanner;
-import com.pathplanner.lib.PathPlannerTrajectory;
-import com.pathplanner.lib.PathPoint;
-
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.networktables.NetworkTable;
-import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.wpilibj.Filesystem;
+import edu.wpi.first.apriltag.AprilTag;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.button.Button;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants.DriveConstants;
+import frc.robot.commands.AlignCommand;
 import frc.robot.commands.ArmPositionCommand;
 import frc.robot.commands.AutoBalanceCommand;
 import frc.robot.commands.SuppliedDriveCommand;
 import frc.robot.subsystems.ArmSubsystem;
-import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.ArmSubsystem.State;
+import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.IntakeSubsystem.IntakeState;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -44,14 +31,12 @@ import frc.robot.subsystems.IntakeSubsystem;
  * subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
-    private final WorkBenchModerator m_workBenchModerator = new WorkBenchModerator();
-    private final HID hid = new HID();
+    private final HID driver = new HID(0);
+    private final HID operator = new HID(1);
 
-    private final DrivetrainSubsystem m_drivetrainSubsystem = new DrivetrainSubsystem(m_workBenchModerator);
+    private final DrivetrainSubsystem m_drivetrainSubsystem = new DrivetrainSubsystem();
     public final ArmSubsystem m_armSubsystem = new ArmSubsystem();
     private final IntakeSubsystem m_intakeSubsystem = new IntakeSubsystem();
-
-    // private final XboxController m_controller = new XboxController(1);
 
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -70,53 +55,7 @@ public class RobotContainer {
          * DriveConstants.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND));
          */
 
-        m_drivetrainSubsystem.setDefaultCommand(
-                new SuppliedDriveCommand(m_drivetrainSubsystem, hid::getX, hid::getY, hid::getT));
-
-        // Mock the autonomous, for now.
-
-        var handle = NetworkTableInstance.getDefault();
-        var stepAmountHandle = handle.getEntry("/AutoSelector/steps/amount");
-        stepAmountHandle.setInteger(3); // Three-step program
-
-        var stepOneX = handle.getEntry("/AutoSelector/steps/1/x");
-        stepOneX.setDouble(1);
-        var stepOneY = handle.getEntry("/AutoSelector/steps/1/y");
-        stepOneY.setDouble(1);
-        var stepOneT = handle.getEntry("/AutoSelector/steps/1/t");
-        stepOneT.setDouble(0);
-        var stepOneMaxVel = handle.getEntry("/AutoSelector/steps/1/maxVel");
-        stepOneMaxVel.setDouble(.5);
-        var stepOneMaxAccel = handle.getEntry("/AutoSelector/steps/1/maxAccel");
-        stepOneMaxAccel.setDouble(.5);
-        var stepOneState = handle.getEntry("/AutoSelector/steps/1/state");
-        stepOneState.setString("Rest");
-
-        var stepTwoX = handle.getEntry("/AutoSelector/steps/2/x");
-        stepTwoX.setDouble(2);
-        var stepTwoY = handle.getEntry("/AutoSelector/steps/2/y");
-        stepTwoY.setDouble(2);
-        var stepTwoT = handle.getEntry("/AutoSelector/steps/2/t");
-        stepTwoT.setDouble(0);
-        var stepTwoMaxVel = handle.getEntry("/AutoSelector/steps/2/maxVel");
-        stepTwoMaxVel.setDouble(.5);
-        var stepTwoMaxAccel = handle.getEntry("/AutoSelector/steps/2/maxAccel");
-        stepTwoMaxAccel.setDouble(.5);
-        var stepTwoState = handle.getEntry("/AutoSelector/steps/2/state");
-        stepTwoState.setString("PlacingA");
-
-        var stepThreeX = handle.getEntry("/AutoSelector/steps/3/x");
-        stepThreeX.setDouble(1);
-        var stepThreeY = handle.getEntry("/AutoSelector/steps/3/y");
-        stepThreeY.setDouble(1);
-        var stepThreeT = handle.getEntry("/AutoSelector/steps/3/t");
-        stepThreeT.setDouble(0);
-        var stepThreeMaxVel = handle.getEntry("/AutoSelector/steps/3/maxVel");
-        stepThreeMaxVel.setDouble(5);
-        var stepThreeMaxAccel = handle.getEntry("/AutoSelector/steps/3/maxAccel");
-        stepThreeMaxAccel.setDouble(5);
-        var stepThreeState = handle.getEntry("/AutoSelector/steps/3/state");
-        stepThreeState.setString("Rest");
+        m_drivetrainSubsystem.setDefaultCommand(new SuppliedDriveCommand(m_drivetrainSubsystem, driver::getX, driver::getY, driver::getT));
 
         // ChassisSpeeds.fromFieldRelativeSpeeds(new ChassisSpeeds(),
         // m_drivetrainSubsystem.getGyroscopeRotation());
@@ -132,25 +71,30 @@ public class RobotContainer {
      * {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
      */
     private void configureButtonBindings() {
-        /*
-         * // Back button zeros the gyroscope new Button(m_controller::getBackButton) // No
-         * requirements because we don't need to interrupt anything
-         * .whenPressed(m_drivetrainSubsystem.gyroscope::reset);
-         * 
-         * new Button(m_controller::getYButton) .whenHeld(new
-         * AutoBalanceCommand(m_drivetrainSubsystem));
-         */
-        hid.getGyroResetButton().onTrue(new InstantCommand(
-                () -> m_drivetrainSubsystem.gyroscope.reset(), m_drivetrainSubsystem));
-        hid.getAutoBalanceButton().whileTrue(new AutoBalanceCommand(m_drivetrainSubsystem));
+        // Driver
+        driver.setCommand(1).onTrue(new InstantCommand(m_drivetrainSubsystem.gyroscope::reset, m_drivetrainSubsystem));
+        driver.setCommand(2).whileTrue(new AutoBalanceCommand(m_drivetrainSubsystem));
+        driver.setCommand(3).onTrue(new InstantCommand(() -> m_armSubsystem.setState(State.Pickup)));
 
-        hid.getPickupButton().onTrue(new InstantCommand(() -> m_armSubsystem.setState(State.Pickup)));
-        hid.getRestButton().onTrue(new InstantCommand(() -> m_armSubsystem.setState(State.Rest)));
-        hid.getPlacingAButton().onTrue(new InstantCommand(() -> m_armSubsystem.setState(State.PlacingA)));
-        hid.getPlacingBButton().onTrue(new InstantCommand(() -> m_armSubsystem.setState(State.PlacingB)));
-        hid.getPlacingCButton().onTrue(new InstantCommand(() -> m_armSubsystem.setState(State.PlacingC)));
-        hid.getPlacingDButton().onTrue(new InstantCommand(() -> m_armSubsystem.setState(State.PlacingD)));
-        hid.getPlacingEButton().onTrue(new InstantCommand(() -> m_armSubsystem.setState(State.PlacingE)));
+        // Operator
+        operator.setCommand(5).onTrue(new InstantCommand(() -> m_armSubsystem.setState(State.Rest)));
+        operator.setCommand(7).onTrue(new InstantCommand(() -> m_armSubsystem.setState(State.PlacingA)));
+        operator.setCommand(8).onTrue(new InstantCommand(() -> m_armSubsystem.setState(State.PlacingB)));
+        operator.setCommand(9).onTrue(new InstantCommand(() -> m_armSubsystem.setState(State.PlacingC)));
+        operator.setCommand(10).onTrue(new InstantCommand(() -> m_armSubsystem.setState(State.PlacingD)));
+        operator.setCommand(11).onTrue(new InstantCommand(() -> m_armSubsystem.setState(State.PlacingE)));
+
+        // Station Pickup
+        operator.setCommand(1).onTrue(
+                new ParallelCommandGroup(
+                        new AlignCommand(m_drivetrainSubsystem, new AprilTag[]{AprilTags.tag03}),
+                        new InstantCommand(() -> m_armSubsystem.setState(State.PlacingC)),
+                        new InstantCommand(() -> m_intakeSubsystem.setState(IntakeState.CUBE_IN))
+                ).andThen(
+                        new InstantCommand(() -> m_armSubsystem.setState(State.Rest)),
+                        new InstantCommand(() -> m_intakeSubsystem.setState(IntakeState.STOPPED))
+                )
+        );
     }
 
     /**
@@ -166,31 +110,11 @@ public class RobotContainer {
         return new ArmPositionCommand(m_armSubsystem, state);
     }
 
-    public static class WorkBenchModerator {
-        private final boolean isBench;
+    public static class HID {
+        private final Joystick m_flightStick;
 
-        public WorkBenchModerator() {
-            File benchFile = new File(Filesystem.getDeployDirectory(), "isBench");
-            if (benchFile.exists()) {
-                isBench = true;
-            } else {
-                isBench = false;
-            }
-        }
-
-        public boolean isBench() {
-            return isBench;
-        }
-
-        public boolean isReal() {
-            return !isBench;
-        }
-    }
-
-    public class HID {
-        private final Joystick m_flightStick = new Joystick(0);
-
-        public HID() {
+        public HID(int port) {
+            m_flightStick = new Joystick(port);
             var tab = Shuffleboard.getTab("HID");
             tab.addNumber("X", this::getX);
             tab.addNumber("Y", this::getY);
@@ -201,65 +125,35 @@ public class RobotContainer {
          * Get the joystick's X value in meters per second.
          * 
          * Note that the joystick's Y is the robot's X.
+         * @return the joystick's X value in meters per second.
          */
         public double getX() {
-            return -modifyAxis(m_flightStick.getY())
-                    * DriveConstants.MAX_VELOCITY_METERS_PER_SECOND;
+            return -modifyAxis(m_flightStick.getY()) * DriveConstants.MAX_VELOCITY_METERS_PER_SECOND;
         }
 
         /*
          * Get the joystick's Y value in meters per second.
          * 
          * Note that the joystick's X is the robot's Y.
+         * @return the joystick's Y value in meters per second.
          */
         public double getY() {
-            return -modifyAxis(m_flightStick.getX())
-                    * DriveConstants.MAX_VELOCITY_METERS_PER_SECOND;
+            return -modifyAxis(m_flightStick.getX()) * DriveConstants.MAX_VELOCITY_METERS_PER_SECOND;
         }
 
         /*
          * Get the joystick's rotational value in radians per second.
+         *
+         * @return the joystick's rotational value in radians per second.
          */
         public double getT() {
-            return -modifyAxis(m_flightStick.getTwist())
-                    * DriveConstants.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND;
+            return -modifyAxis(m_flightStick.getTwist()) * DriveConstants.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND;
         }
 
-        public JoystickButton getGyroResetButton() {
-            return new JoystickButton(m_flightStick, 1);
+        public JoystickButton setCommand(int button) {
+            return new JoystickButton(m_flightStick, button);
         }
 
-        public JoystickButton getAutoBalanceButton() {
-            return new JoystickButton(m_flightStick, 2);
-        }
-
-        public JoystickButton getPickupButton() {
-            return new JoystickButton(m_flightStick, 3);
-        }
-
-        public JoystickButton getRestButton() {
-            return new JoystickButton(m_flightStick, 5);
-        }
-
-        public JoystickButton getPlacingAButton() {
-            return new JoystickButton(m_flightStick, 7);
-        }
-
-        public JoystickButton getPlacingBButton() {
-            return new JoystickButton(m_flightStick, 8);
-        }
-
-        public JoystickButton getPlacingCButton() {
-            return new JoystickButton(m_flightStick, 9);
-        }
-
-        public JoystickButton getPlacingDButton() {
-            return new JoystickButton(m_flightStick, 10);
-        }
-
-        public JoystickButton getPlacingEButton() {
-            return new JoystickButton(m_flightStick, 11);
-        }
 
         private double deadband(double value, double deadband) {
             if (Math.abs(value) > deadband) {
