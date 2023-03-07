@@ -25,6 +25,10 @@ public class IntakeSubsystem extends SubsystemBase implements Loggable {
         m_intake_state = state;
     }
 
+    public boolean hasGamePiece() {
+        return false;
+    }
+
     @Override
     public void periodic() {
         // This method will be called once per scheduler run

@@ -1,14 +1,14 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 
 public class IntakeSetCommand extends CommandBase {
+    IntakeSubsystem m_intakeSubsystem;
 
     public IntakeSetCommand(IntakeSubsystem intakeSubsystem) {
-        // Use addRequirements() here to declare subsystem dependencies.
-        addRequirements(intakeSubsystem);
+        this.m_intakeSubsystem = intakeSubsystem;
+        addRequirements(m_intakeSubsystem);
     }
 
     // Called when the command is initially scheduled.
@@ -30,6 +30,6 @@ public class IntakeSetCommand extends CommandBase {
     // Returns true when the command should end.
     @Override
     public boolean isFinished() {
-        return false;
+        return this.m_intakeSubsystem.hasGamePiece();
     }
 }
