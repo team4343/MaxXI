@@ -338,7 +338,6 @@ public class DrivetrainSubsystem extends SubsystemBase implements Loggable {
                 var currentTime = Timer.getFPGATimestamp();
                 var camTime = camPose.timestampSeconds;
 
-                // TODO shorten this?
                 if (currentTime - camTime < 1.5)
                     m_poseEstimator.addVisionMeasurement(camPose.estimatedPose.toPose2d(), camPose.timestampSeconds);
                 else

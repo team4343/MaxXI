@@ -8,7 +8,6 @@ import edu.wpi.first.apriltag.AprilTag;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
@@ -16,7 +15,7 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.commands.AlignCommand;
 import frc.robot.commands.ArmPositionCommand;
-import frc.robot.commands.AutoBalanceCommand;
+import frc.robot.commands.IntakeSetCommand;
 import frc.robot.commands.SuppliedDriveCommand;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.ArmSubsystem.State;
@@ -73,8 +72,16 @@ public class RobotContainer {
     private void configureButtonBindings() {
         // Driver
         driver.setCommand(1).onTrue(new InstantCommand(m_drivetrainSubsystem.gyroscope::reset, m_drivetrainSubsystem));
-        driver.setCommand(2).whileTrue(new AutoBalanceCommand(m_drivetrainSubsystem));
-        driver.setCommand(3).onTrue(new InstantCommand(() -> m_armSubsystem.setState(State.Pickup)));
+//        driver.setCommand(2).whileTrue(new AutoBalanceCommand(m_drivetrainSubsystem));
+        driver.setCommand(3).onTrue(new ArmPositionCommand(m_armSubsystem, State.Pickup));
+        driver.setCommand(5).onTrue(new ArmPositionCommand(m_armSubsystem, State.Rest));
+        driver.setCommand(4).onTrue(new ArmPositionCommand(m_armSubsystem, State.PlacingA));
+        driver.setCommand(6).onTrue(new ArmPositionCommand(m_armSubsystem, State.PlacingB));
+        driver.setCommand(11).whileTrue(new IntakeSetCommand(m_intakeSubsystem, IntakeState.CUBE_IN))
+                .onFalse(new IntakeSetCommand(m_intakeSubsystem, IntakeState.STOPPED));
+        driver.setCommand(12).onTrue(new IntakeSetCommand(m_intakeSubsystem, IntakeState.CUBE_OUT))
+                .onFalse(new IntakeSetCommand(m_intakeSubsystem, IntakeState.STOPPED));
+
 
         // Operator
         operator.setCommand(5).onTrue(new InstantCommand(() -> m_armSubsystem.setState(State.Rest)));
@@ -115,10 +122,10 @@ public class RobotContainer {
 
         public HID(int port) {
             m_flightStick = new Joystick(port);
-            var tab = Shuffleboard.getTab("HID");
-            tab.addNumber("X", this::getX);
-            tab.addNumber("Y", this::getY);
-            tab.addNumber("T", this::getT);
+//            var tab = Shuffleboard.getTab("HID");
+//            tab.addNumber("X", this::getX);
+//            tab.addNumber("Y", this::getY);
+//            tab.addNumber("T", this::getT);
         }
 
         /*

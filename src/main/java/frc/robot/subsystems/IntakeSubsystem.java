@@ -12,7 +12,7 @@ public class IntakeSubsystem extends SubsystemBase implements Loggable {
     }
 
     private final CANSparkMax m_intake = new CANSparkMax(Constants.ArmConstants.INTAKE_ID, CANSparkMaxLowLevel.MotorType.kBrushless);
-    private final double m_intakeSpeed = 0.5;
+    private final double m_intakeSpeed = 1;
     private IntakeState m_intake_state = IntakeState.STOPPED;
 
     public IntakeSubsystem() {
@@ -26,7 +26,7 @@ public class IntakeSubsystem extends SubsystemBase implements Loggable {
     }
 
     public boolean hasGamePiece() {
-        return false;
+        return false; // TODO
     }
 
     @Override

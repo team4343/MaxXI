@@ -38,8 +38,8 @@ public class ArmSubsystem extends SubsystemBase implements Loggable {
 
     // Class to hold position Data for each system state
     private static class POS {
-        public int elbow, shoulder = 0;
-        public POS(int shoulder, int elbow) {
+        public double elbow, shoulder = 0;
+        public POS(double shoulder, double elbow) {
             this.elbow = elbow;
             this.shoulder = shoulder;
         }
@@ -59,21 +59,30 @@ public class ArmSubsystem extends SubsystemBase implements Loggable {
     // Position Constants
     // Horizontal = 40, Down = 0, Up = 80
     private final POS REST      = new POS(0, 0);
-    private final POS PICKUP    = new POS(-5, 25);
-    private final POS PLACING_A = new POS(20, 20);
-    private final POS PLACING_B = new POS(45, 65);
-    private final POS PLACING_C = new POS(45, 65);
-    private final POS PLACING_D = new POS(45, 65);
-    private final POS PLACING_E = new POS(45, 65);
+    private final POS PICKUP    = new POS(0, 5);
+//    private final POS PLACING_A = new POS(9.5, 10); For the top row this works
+    private final POS PLACING_A = new POS(9, 7.2);
+    private final POS PLACING_B = new POS(5, 6);
+    private final POS PLACING_C = new POS(0, 0);
+    private final POS PLACING_D = new POS(0, 0);
+    private final POS PLACING_E = new POS(0, 0);
 
     // PID SLOT IDS
     // P. Proportional output to the error of the system
     // I. Sum of error over time. This increases output to counteract steady state error
     // D. Rate of change of error. This decreases output to counteract oscillation
-    private final PID SHOULDER_DEFAULT  = new PID(0.025, 0, 0, 0);
-    private final PID SHOULDER_STEADY   = new PID(0.1, 0, 0, 1);
-    private final PID ELBOW_DEFAULT     = new PID(0.02, 0, 0, 0);
-    private final PID ELBOW_STEADY      = new PID(0.05, 0, 0, 1);
+    private final PID SHOULDER_DEFAULT  = new PID(0.11, 0, 0, 0);
+    private final PID SHOULDER_STEADY   = new PID(0.15, 0, 0, 1);
+    private final PID ELBOW_DEFAULT     = new PID(0.075, 0, 0, 0);
+    private final PID ELBOW_STEADY      = new PID(0.10, 0, 0, 1);
+
+    private final Double SHOULDER_RAMP_RATE = 0.5;
+    private final Double ELBOW_RAMP_RATE = 0.5;
+
+    private final float SHOULDER_MAX_POS = 9.5f;
+    private final float SHOULDER_MIN_POS = 0;
+    private final float ELBOW_MAX_POS = 20;
+    private final float ELBOW_MIN_POS = 0;
 
 
     public ArmSubsystem() {
@@ -86,6 +95,7 @@ public class ArmSubsystem extends SubsystemBase implements Loggable {
         tab.addString("Desired State", () -> m_state_desired.name());
         tab.addString("Actual State", () -> m_state_actual.name());
 
+
         // ****** INITIALIZATION
         // Set the idle mode to brake
         m_shoulder.setIdleMode(CANSparkMax.IdleMode.kBrake);
@@ -97,8 +107,8 @@ public class ArmSubsystem extends SubsystemBase implements Loggable {
         m_elbow.setSmartCurrentLimit(60);
 
         // Set the ramp rate of 0.25 seconds to full power
-        m_shoulder.setOpenLoopRampRate(2);
-        m_elbow.setOpenLoopRampRate(2);
+        m_shoulder.setClosedLoopRampRate(SHOULDER_RAMP_RATE);
+        m_elbow.setClosedLoopRampRate(ELBOW_RAMP_RATE);
 
         // Set default PID values for shoulder on all slots
         for (var config : new PID[]{SHOULDER_DEFAULT, SHOULDER_STEADY}) {
@@ -119,10 +129,14 @@ public class ArmSubsystem extends SubsystemBase implements Loggable {
         }
 
         // Set the soft limits
-        m_shoulder.setSoftLimit(CANSparkMax.SoftLimitDirection.kForward, 60);
-        m_shoulder.setSoftLimit(CANSparkMax.SoftLimitDirection.kReverse, -15);
-        m_elbow.setSoftLimit(CANSparkMax.SoftLimitDirection.kForward, 60);
-        m_elbow.setSoftLimit(CANSparkMax.SoftLimitDirection.kReverse, -15);
+        m_shoulder.enableSoftLimit(CANSparkMax.SoftLimitDirection.kForward, true);
+        m_shoulder.enableSoftLimit(CANSparkMax.SoftLimitDirection.kReverse, true);
+        m_elbow.enableSoftLimit(CANSparkMax.SoftLimitDirection.kForward, true);
+        m_elbow.enableSoftLimit(CANSparkMax.SoftLimitDirection.kReverse, true);
+        m_shoulder.setSoftLimit(CANSparkMax.SoftLimitDirection.kForward, SHOULDER_MAX_POS);
+        m_shoulder.setSoftLimit(CANSparkMax.SoftLimitDirection.kReverse, SHOULDER_MIN_POS);
+        m_elbow.setSoftLimit(CANSparkMax.SoftLimitDirection.kForward, ELBOW_MAX_POS);
+        m_elbow.setSoftLimit(CANSparkMax.SoftLimitDirection.kReverse, ELBOW_MIN_POS);
 
     }
 
@@ -133,20 +147,17 @@ public class ArmSubsystem extends SubsystemBase implements Loggable {
 
         switch (m_state_actual) {
             case Pickup:
+            case Transit:
                 if (state == State.Rest)
                     m_state_desired = state;
                 break;
             case Rest:
-                m_state_desired = state;
-                break;
             case PlacingA:
             case PlacingB:
             case PlacingC:
             case PlacingD:
             case PlacingE:
                 m_state_desired = state;
-                break;
-            case Transit:
                 break;
         }
     }
