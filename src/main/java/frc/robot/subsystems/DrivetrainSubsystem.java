@@ -28,7 +28,6 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.SPI;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -50,30 +49,10 @@ import static frc.robot.AprilTags.*;
 import static frc.robot.Constants.DriveConstants.*;
 
 public class DrivetrainSubsystem extends SubsystemBase implements Loggable {
-    private final ShuffleboardTab tab = Shuffleboard.getTab("Drivetrain");
+    private static final ShuffleboardTab tab = Shuffleboard.getTab("Drivetrain");
 
     // These are our modules. We initialize them in the constructZ5+or.
-    private final SwerveModule m_frontLeftModule;
-    private final SwerveModule m_frontRightModule;
-    private final SwerveModule m_backLeftModule;
-    private final SwerveModule m_backRightModule;
-
-    private ChassisSpeeds m_chassisSpeeds = new ChassisSpeeds(0.0, 0.0, 0.0);
-
-    public final PhotonCameraWrapper pcw;
-    public final Gyroscope gyroscope;
-    public final Odometry odometry;
-
-    // This is our kinematics object. We initialize it in the constructor.
-    private final PIDController xPIDController = new PIDController(0.2, 0.0, 0.0);
-    private final PIDController yPIDController = new PIDController(0.2, 0.0, 0.0);
-    private final PIDController rPIDController = new PIDController(0.2, 0.0, 0.0);
-    private final PIDController xAutoPIDController = new PIDController(0.6, 0.0, 0.0);
-    private final PIDController yAutoPIDController = new PIDController(0.6, 0.0, 0.0);
-    private final PIDController rAutoPIDController = new PIDController(0.6, 0.0, 0.0);
-
-    public DrivetrainSubsystem() {
-        m_frontLeftModule = new MkSwerveModuleBuilder()
+    private static final SwerveModule m_frontLeftModule = new MkSwerveModuleBuilder()
                 .withLayout(tab.getLayout("Front Left Module", BuiltInLayouts.kList).withSize(2, 4).withPosition(0, 0))
                 .withGearRatio(SdsModuleConfigurations.MK4I_L1)
                 .withDriveMotor(MotorType.FALCON, FRONT_LEFT_MODULE_DRIVE_MOTOR)
@@ -81,15 +60,15 @@ public class DrivetrainSubsystem extends SubsystemBase implements Loggable {
                 .withSteerEncoderPort(FRONT_LEFT_MODULE_STEER_ENCODER)
                 .withSteerOffset(FRONT_LEFT_MODULE_STEER_OFFSET).build();
 
-        m_frontRightModule = new MkSwerveModuleBuilder()
+    private static final SwerveModule m_frontRightModule = new MkSwerveModuleBuilder()
                 .withLayout(tab.getLayout("Front Right Module", BuiltInLayouts.kList).withSize(2, 4).withPosition(2, 0))
-                .withGearRatio(SdsModuleConfigurations.MK4I_L1)
+            .withGearRatio(SdsModuleConfigurations.MK4I_L1)
                 .withDriveMotor(MotorType.FALCON, FRONT_RIGHT_MODULE_DRIVE_MOTOR)
                 .withSteerMotor(MotorType.NEO, FRONT_RIGHT_MODULE_STEER_MOTOR)
                 .withSteerEncoderPort(FRONT_RIGHT_MODULE_STEER_ENCODER)
                 .withSteerOffset(FRONT_RIGHT_MODULE_STEER_OFFSET).build();
 
-        m_backLeftModule = new MkSwerveModuleBuilder()
+    private static final SwerveModule m_backLeftModule = new MkSwerveModuleBuilder()
                 .withLayout(tab.getLayout("Back Left Module", BuiltInLayouts.kList).withSize(2, 4).withPosition(4, 0))
                 .withGearRatio(SdsModuleConfigurations.MK4I_L1)
                 .withDriveMotor(MotorType.FALCON, BACK_LEFT_MODULE_DRIVE_MOTOR_OG)
@@ -97,7 +76,7 @@ public class DrivetrainSubsystem extends SubsystemBase implements Loggable {
                 .withSteerEncoderPort(BACK_LEFT_MODULE_STEER_ENCODER)
                 .withSteerOffset(BACK_LEFT_MODULE_STEER_OFFSET).build();
 
-        m_backRightModule = new MkSwerveModuleBuilder()
+    private static final SwerveModule m_backRightModule = new MkSwerveModuleBuilder()
                 .withLayout(tab.getLayout("Back Right Module", BuiltInLayouts.kList).withSize(2, 4).withPosition(6, 0))
                 .withGearRatio(SdsModuleConfigurations.MK4I_L1)
                 .withDriveMotor(MotorType.FALCON, BACK_RIGHT_MODULE_DRIVE_MOTOR)
@@ -105,11 +84,24 @@ public class DrivetrainSubsystem extends SubsystemBase implements Loggable {
                 .withSteerEncoderPort(BACK_RIGHT_MODULE_STEER_ENCODER)
                 .withSteerOffset(BACK_RIGHT_MODULE_STEER_OFFSET).build();
 
-        pcw = new PhotonCameraWrapper();
-        gyroscope = new Gyroscope();
-        odometry = new Odometry();
+    private static ChassisSpeeds m_chassisSpeeds = new ChassisSpeeds(0.0, 0.0, 0.0);
 
-    }
+//    public static final PhotonCameraWrapper pcw = new PhotonCameraWrapper();
+    public static final Gyroscope gyroscope = new Gyroscope();
+    public final Odometry odometry =
+            new Odometry();
+
+
+    // This is our kinematics object. We initialize it in the constructor.
+    private static final PIDController xPIDController = new PIDController(0.2, 0.0, 0.0);
+    private static final PIDController yPIDController = new PIDController(0.2, 0.0, 0.0);
+    private static final PIDController rPIDController = new PIDController(0.2, 0.0, 0.0);
+    private static final PIDController xAutoPIDController = new PIDController(0.6, 0.0, 0.0);
+    private static final PIDController yAutoPIDController = new PIDController(0.6, 0.0, 0.0);
+    private static final PIDController rAutoPIDController = new PIDController(0.6, 0.0, 0.0);
+
+    private static final double pi_over_two= 1.570795;
+
 
     public void drive(ChassisSpeeds chassisSpeeds) {
         m_chassisSpeeds = chassisSpeeds;
@@ -126,16 +118,16 @@ public class DrivetrainSubsystem extends SubsystemBase implements Loggable {
 
         m_frontLeftModule.set(
                 states[0].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE,
-                states[0].angle.getRadians());
+                states[0].angle.getRadians() + pi_over_two);
         m_frontRightModule.set(
                 states[1].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE,
-                states[1].angle.getRadians());
+                states[1].angle.getRadians() + pi_over_two);
         m_backLeftModule.set(
                 states[2].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE,
-                states[2].angle.getRadians());
+                states[2].angle.getRadians() + pi_over_two);
         m_backRightModule.set(
                 states[3].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE,
-                states[3].angle.getRadians());
+                states[3].angle.getRadians() + pi_over_two);
 
         odometry.updateOdometry();
 
@@ -266,33 +258,20 @@ public class DrivetrainSubsystem extends SubsystemBase implements Loggable {
         public Odometry() {
             m_poseEstimator =
                     new SwerveDrivePoseEstimator(KINEMATICS, gyroscope.getRotation2d(),
-                            new SwerveModulePosition[] {new SwerveModulePosition(
-                                    m_frontLeftModule.getDriveDistance() * rotationsToMetersRatio,
-                                    Rotation2d.fromRadians(m_frontLeftModule.getSteerAngle())),
-                                    new SwerveModulePosition(
-                                            m_frontRightModule.getDriveDistance()
-                                                    * rotationsToMetersRatio,
-                                            Rotation2d.fromRadians(
-                                                    m_frontRightModule.getSteerAngle())),
-                                    new SwerveModulePosition(
-                                            m_backLeftModule.getDriveDistance()
-                                                    * rotationsToMetersRatio,
-                                            Rotation2d
-                                                    .fromRadians(m_backLeftModule.getSteerAngle())),
-                                    new SwerveModulePosition(
-                                            m_backRightModule.getDriveDistance()
-                                                    * rotationsToMetersRatio,
-                                            Rotation2d.fromRadians(
-                                                    m_backRightModule.getSteerAngle()))},
-                            new Pose2d(0., 0., new Rotation2d(0.)));
+                            new SwerveModulePosition[] {
+                                    new SwerveModulePosition(m_frontLeftModule.getDriveDistance() * rotationsToMetersRatio, Rotation2d.fromRadians(m_frontLeftModule.getSteerAngle())),
+                                    new SwerveModulePosition(m_frontRightModule.getDriveDistance() * rotationsToMetersRatio, Rotation2d.fromRadians(m_frontRightModule.getSteerAngle())),
+                                    new SwerveModulePosition(m_backLeftModule.getDriveDistance() * rotationsToMetersRatio, Rotation2d.fromRadians(m_backLeftModule.getSteerAngle())),
+                                    new SwerveModulePosition(m_backRightModule.getDriveDistance() * rotationsToMetersRatio, Rotation2d.fromRadians(m_backRightModule.getSteerAngle()))
+                            },
+                            new Pose2d(0., 0., new Rotation2d(0.))
+                    );
 
             var tab = Shuffleboard.getTab("Odometry");
 
             tab.addNumber("X", () -> m_poseEstimator.getEstimatedPosition().getX());
             tab.addNumber("Y", () -> m_poseEstimator.getEstimatedPosition().getY());
-            tab.addNumber("theta",
-                    () -> m_poseEstimator.getEstimatedPosition().getRotation().getDegrees());
-
+            tab.addNumber("theta", () -> m_poseEstimator.getEstimatedPosition().getRotation().getDegrees());
             tab.addNumber("FL distance", m_frontLeftModule::getDriveDistance);
         }
 
@@ -309,40 +288,28 @@ public class DrivetrainSubsystem extends SubsystemBase implements Loggable {
 
             m_poseEstimator
                     .update(gyroscope.getRotation2d(),
-                            new SwerveModulePosition[] {new SwerveModulePosition(
-                                    m_frontLeftModule.getDriveDistance() * rotationsToMetersRatio,
-                                    Rotation2d.fromRadians(m_frontLeftModule.getSteerAngle())),
-                                    new SwerveModulePosition(
-                                            m_frontRightModule.getDriveDistance()
-                                                    * rotationsToMetersRatio,
-                                            Rotation2d.fromRadians(
-                                                    m_frontRightModule.getSteerAngle())),
-                                    new SwerveModulePosition(
-                                            m_backLeftModule.getDriveDistance()
-                                                    * rotationsToMetersRatio,
-                                            Rotation2d
-                                                    .fromRadians(m_backLeftModule.getSteerAngle())),
-                                    new SwerveModulePosition(
-                                            m_backRightModule.getDriveDistance()
-                                                    * rotationsToMetersRatio,
-                                            Rotation2d.fromRadians(
-                                                    m_backRightModule.getSteerAngle()))});
+                            new SwerveModulePosition[] {
+                                    new SwerveModulePosition(m_frontLeftModule.getDriveDistance() * rotationsToMetersRatio, Rotation2d.fromRadians(m_frontLeftModule.getSteerAngle())),
+                                    new SwerveModulePosition(m_frontRightModule.getDriveDistance() * rotationsToMetersRatio, Rotation2d.fromRadians(m_frontRightModule.getSteerAngle())),
+                                    new SwerveModulePosition(m_backLeftModule.getDriveDistance() * rotationsToMetersRatio, Rotation2d.fromRadians(m_backLeftModule.getSteerAngle())),
+                                    new SwerveModulePosition(m_backRightModule.getDriveDistance() * rotationsToMetersRatio, Rotation2d.fromRadians(m_backRightModule.getSteerAngle()))
+                            });
 
             // Also apply vision measurements. We use 0.3 seconds in the past as an example
             // on a real robot, this must be calculated based either on latency or timestamps.
-            Optional<EstimatedRobotPose> result = pcw.getEstimatedGlobalPose(getPose());
-            if (result.isPresent()) {
-                EstimatedRobotPose camPose = result.get();
-
-                // Workaround for SwerveDrivePoseEstimator ConccurentModificationException
-                var currentTime = Timer.getFPGATimestamp();
-                var camTime = camPose.timestampSeconds;
-
-                if (currentTime - camTime < 1.5)
-                    m_poseEstimator.addVisionMeasurement(camPose.estimatedPose.toPose2d(), camPose.timestampSeconds);
-                else
-                    System.out.println("Received outdated vision measurement, current time " + currentTime + ", pose info time " + camTime);
-            }
+//            Optional<EstimatedRobotPose> result = pcw.getEstimatedGlobalPose(getPose());
+//            if (result.isPresent()) {
+//                EstimatedRobotPose camPose = result.get();
+//
+//                // Workaround for SwerveDrivePoseEstimator ConccurentModificationException
+//                var currentTime = Timer.getFPGATimestamp();
+//                var camTime = camPose.timestampSeconds;
+//
+//                if (currentTime - camTime < 1.5)
+//                    m_poseEstimator.addVisionMeasurement(camPose.estimatedPose.toPose2d(), camPose.timestampSeconds);
+//                else
+//                    System.out.println("Received outdated vision measurement, current time " + currentTime + ", pose info time " + camTime);
+//            }
         }
     }
 

@@ -14,20 +14,21 @@ public class ArmSubsystem extends SubsystemBase implements Loggable {
         Pickup, Rest, PlacingA, PlacingB, PlacingC, PlacingD, PlacingE, Transit // Possible System States
     }
 
-    private final double elbowPosToDegrees = 599.9;
-    private final double shoulderPosToDegrees = 342.8;
-    private final double stateTolerance = 2;
+    private static final double elbowPosToDegrees = 599.9;
+    private static final double shoulderPosToDegrees = 342.8;
+    private static final double stateTolerance = 2;
+    private static int loops = 0;
 
     // System motor controllers
-    private final CANSparkMax m_shoulder = new CANSparkMax(ArmConstants.SHOULDER_ID, MotorType.kBrushless);
-    private final CANSparkMax m_shoulderFollower = new CANSparkMax(ArmConstants.SHOULDER_FOLLOWER_ID, MotorType.kBrushless);
-    private final CANSparkMax m_elbow = new CANSparkMax(ArmConstants.ELBOW_ID, MotorType.kBrushless);
+    private static final CANSparkMax m_shoulder = new CANSparkMax(ArmConstants.SHOULDER_ID, MotorType.kBrushless);
+    private static final CANSparkMax m_shoulderFollower = new CANSparkMax(ArmConstants.SHOULDER_FOLLOWER_ID, MotorType.kBrushless);
+    private static final CANSparkMax m_elbow = new CANSparkMax(ArmConstants.ELBOW_ID, MotorType.kBrushless);
 
     // System State - init in rest state
-    private State m_state_desired = State.Rest;
-    private State m_state_actual = State.Rest;
+    private static State m_state_desired = State.Rest;
+    private static State m_state_actual = State.Rest;
 
-    private final NetworkTableInstance handle = NetworkTableInstance.getDefault();
+    private static final NetworkTableInstance handle = NetworkTableInstance.getDefault();
 
     public void printState() {
         System.out.print("Desired: ");
@@ -59,9 +60,9 @@ public class ArmSubsystem extends SubsystemBase implements Loggable {
     // Position Constants
     // Horizontal = 40, Down = 0, Up = 80
     private final POS REST      = new POS(0, 0);
-    private final POS PICKUP    = new POS(0, 5);
+    private final POS PICKUP    = new POS(0, 14);
 //    private final POS PLACING_A = new POS(9.5, 10); For the top row this works
-    private final POS PLACING_A = new POS(9, 7.2);
+    private final POS PLACING_A = new POS(7, 14);
     private final POS PLACING_B = new POS(5, 6);
     private final POS PLACING_C = new POS(0, 0);
     private final POS PLACING_D = new POS(0, 0);
@@ -71,10 +72,10 @@ public class ArmSubsystem extends SubsystemBase implements Loggable {
     // P. Proportional output to the error of the system
     // I. Sum of error over time. This increases output to counteract steady state error
     // D. Rate of change of error. This decreases output to counteract oscillation
-    private final PID SHOULDER_DEFAULT  = new PID(0.11, 0, 0, 0);
-    private final PID SHOULDER_STEADY   = new PID(0.15, 0, 0, 1);
-    private final PID ELBOW_DEFAULT     = new PID(0.075, 0, 0, 0);
-    private final PID ELBOW_STEADY      = new PID(0.10, 0, 0, 1);
+    private static final PID SHOULDER_DEFAULT  = new PID(0.11, 0, 0, 0);
+    private static final PID SHOULDER_STEADY   = new PID(0.15, 0, 0, 1);
+    private static final PID ELBOW_DEFAULT     = new PID(0.075, 0, 0, 0);
+    private static final PID ELBOW_STEADY      = new PID(0.10, 0, 0, 1);
 
     private final Double SHOULDER_RAMP_RATE = 0.5;
     private final Double ELBOW_RAMP_RATE = 0.5;
@@ -201,6 +202,12 @@ public class ArmSubsystem extends SubsystemBase implements Loggable {
             case PlacingD: position=PLACING_D; break;
             case PlacingE: position=PLACING_E; break;
             default: position=REST;
+        }
+
+        loops += 1;
+        if (loops == 10) {
+            loops = 0;
+            return;
         }
 
         m_elbow.getPIDController().setReference(position.elbow,

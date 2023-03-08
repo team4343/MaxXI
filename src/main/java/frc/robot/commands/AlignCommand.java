@@ -20,7 +20,12 @@ public class AlignCommand extends CommandBase {
     @Override
     public void execute() {
 //        this.m_drivetrainSubsystem.followTrajectoryCommand();
-
+//        PhotonTrackedTarget best_tag = this.m_drivetrainSubsystem.pcw.photonCamera.getLatestResult().getBestTarget();
+//        if (best_tag != null) {
+//                System.out.println("Found tag " + best_tag.getFiducialId());
+//
+//        }
+//        this.m_drivetrainSubsystem.pcw.photonCamera.setLED(VisionLEDMode.kOn);
         this.m_drivetrainSubsystem.odometry.getPose();
 
     }

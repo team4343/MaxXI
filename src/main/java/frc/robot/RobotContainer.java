@@ -4,16 +4,13 @@
 
 package frc.robot;
 
-import edu.wpi.first.apriltag.AprilTag;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants.DriveConstants;
-import frc.robot.commands.AlignCommand;
 import frc.robot.commands.ArmPositionCommand;
 import frc.robot.commands.IntakeSetCommand;
 import frc.robot.commands.SuppliedDriveCommand;
@@ -84,24 +81,24 @@ public class RobotContainer {
 
 
         // Operator
-        operator.setCommand(5).onTrue(new InstantCommand(() -> m_armSubsystem.setState(State.Rest)));
-        operator.setCommand(7).onTrue(new InstantCommand(() -> m_armSubsystem.setState(State.PlacingA)));
-        operator.setCommand(8).onTrue(new InstantCommand(() -> m_armSubsystem.setState(State.PlacingB)));
-        operator.setCommand(9).onTrue(new InstantCommand(() -> m_armSubsystem.setState(State.PlacingC)));
-        operator.setCommand(10).onTrue(new InstantCommand(() -> m_armSubsystem.setState(State.PlacingD)));
-        operator.setCommand(11).onTrue(new InstantCommand(() -> m_armSubsystem.setState(State.PlacingE)));
+//        operator.setCommand(5).onTrue(new InstantCommand(() -> m_armSubsystem.setState(State.Rest)));
+//        operator.setCommand(7).onTrue(new InstantCommand(() -> m_armSubsystem.setState(State.PlacingA)));
+//        operator.setCommand(8).onTrue(new InstantCommand(() -> m_armSubsystem.setState(State.PlacingB)));
+//        operator.setCommand(9).onTrue(new InstantCommand(() -> m_armSubsystem.setState(State.PlacingC)));
+//        operator.setCommand(10).onTrue(new InstantCommand(() -> m_armSubsystem.setState(State.PlacingD)));
+//        operator.setCommand(11).onTrue(new InstantCommand(() -> m_armSubsystem.setState(State.PlacingE)));
 
         // Station Pickup
-        operator.setCommand(1).onTrue(
-                new ParallelCommandGroup(
-                        new AlignCommand(m_drivetrainSubsystem, new AprilTag[]{AprilTags.tag03}),
-                        new InstantCommand(() -> m_armSubsystem.setState(State.PlacingC)),
-                        new InstantCommand(() -> m_intakeSubsystem.setState(IntakeState.CUBE_IN))
-                ).andThen(
-                        new InstantCommand(() -> m_armSubsystem.setState(State.Rest)),
-                        new InstantCommand(() -> m_intakeSubsystem.setState(IntakeState.STOPPED))
-                )
-        );
+//        operator.setCommand(1).onTrue(
+//                new ParallelCommandGroup(
+//                        new AlignCommand(m_drivetrainSubsystem, new AprilTag[]{AprilTags.tag03}),
+//                        new InstantCommand(() -> m_armSubsystem.setState(State.PlacingC)),
+//                        new InstantCommand(() -> m_intakeSubsystem.setState(IntakeState.CUBE_IN))
+//                ).andThen(
+//                        new InstantCommand(() -> m_armSubsystem.setState(State.Rest)),
+//                        new InstantCommand(() -> m_intakeSubsystem.setState(IntakeState.STOPPED))
+//                )
+//        );
     }
 
     /**
@@ -154,7 +151,7 @@ public class RobotContainer {
          * @return the joystick's rotational value in radians per second.
          */
         public double getT() {
-            return -modifyAxis(m_flightStick.getTwist()) * DriveConstants.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND;
+            return modifyAxis(m_flightStick.getTwist()) * DriveConstants.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND;
         }
 
         public JoystickButton setCommand(int button) {
