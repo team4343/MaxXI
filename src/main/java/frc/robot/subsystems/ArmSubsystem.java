@@ -2,6 +2,7 @@ package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import com.revrobotics.CANSparkMaxLowLevel.PeriodicFrame;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -111,6 +112,15 @@ public class ArmSubsystem extends SubsystemBase implements Loggable {
         m_shoulder.setClosedLoopRampRate(SHOULDER_RAMP_RATE);
         m_elbow.setClosedLoopRampRate(ELBOW_RAMP_RATE);
 
+        m_shoulder.setControlFramePeriodMs(40);
+        m_elbow.setControlFramePeriodMs(40);
+
+        m_shoulder.setPeriodicFramePeriod(PeriodicFrame.kStatus1, 500);
+        m_shoulder.setPeriodicFramePeriod(PeriodicFrame.kStatus2, 500);
+        m_shoulderFollower.setPeriodicFramePeriod(PeriodicFrame.kStatus0, 100);
+        m_shoulderFollower.setPeriodicFramePeriod(PeriodicFrame.kStatus1, 500);
+        m_shoulderFollower.setPeriodicFramePeriod(PeriodicFrame.kStatus2, 500);
+
         // Set default PID values for shoulder on all slots
         for (var config : new PID[]{SHOULDER_DEFAULT, SHOULDER_STEADY}) {
             m_shoulder.getPIDController().setP(config.P, config.slot);
@@ -138,7 +148,6 @@ public class ArmSubsystem extends SubsystemBase implements Loggable {
         m_shoulder.setSoftLimit(CANSparkMax.SoftLimitDirection.kReverse, SHOULDER_MIN_POS);
         m_elbow.setSoftLimit(CANSparkMax.SoftLimitDirection.kForward, ELBOW_MAX_POS);
         m_elbow.setSoftLimit(CANSparkMax.SoftLimitDirection.kReverse, ELBOW_MIN_POS);
-
     }
 
     public void setState(State state) {
@@ -180,6 +189,14 @@ public class ArmSubsystem extends SubsystemBase implements Loggable {
     }
 
     public void periodic() {
+        if (loops <= 100) {
+            loops += 1;
+            return;
+        } else {
+            loops = 0;
+            // but don't return and continue.
+        }
+
         matchActualState();
         POS position;
         PID shoulder_pid;
@@ -202,12 +219,6 @@ public class ArmSubsystem extends SubsystemBase implements Loggable {
             case PlacingD: position=PLACING_D; break;
             case PlacingE: position=PLACING_E; break;
             default: position=REST;
-        }
-
-        loops += 1;
-        if (loops == 10) {
-            loops = 0;
-            return;
         }
 
         m_elbow.getPIDController().setReference(position.elbow,

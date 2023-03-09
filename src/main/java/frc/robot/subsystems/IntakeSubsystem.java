@@ -13,6 +13,7 @@ public class IntakeSubsystem extends SubsystemBase implements Loggable {
 
     private final CANSparkMax m_intake = new CANSparkMax(Constants.ArmConstants.INTAKE_ID, CANSparkMaxLowLevel.MotorType.kBrushless);
     private final double m_intakeSpeed = 1;
+    private IntakeState m_prev_intake_state = IntakeState.STOPPED;
     private IntakeState m_intake_state = IntakeState.STOPPED;
 
     public IntakeSubsystem() {
@@ -31,6 +32,12 @@ public class IntakeSubsystem extends SubsystemBase implements Loggable {
 
     @Override
     public void periodic() {
+        if (m_prev_intake_state.equals(m_intake_state)) {
+            return;
+        }        
+
+        m_prev_intake_state = m_intake_state;
+
         // This method will be called once per scheduler run
         switch (m_intake_state) {
             case CONE_IN:
@@ -43,6 +50,7 @@ public class IntakeSubsystem extends SubsystemBase implements Loggable {
                 m_intake.set(0); break;
         }
     }
+
     private static class Intake_Speed {
         public int intake = 0;
         public Intake_Speed(int intake){

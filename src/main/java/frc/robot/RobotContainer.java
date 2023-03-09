@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.CAN;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
@@ -78,6 +79,8 @@ public class RobotContainer {
                 .onFalse(new IntakeSetCommand(m_intakeSubsystem, IntakeState.STOPPED));
         driver.setCommand(12).onTrue(new IntakeSetCommand(m_intakeSubsystem, IntakeState.CUBE_OUT))
                 .onFalse(new IntakeSetCommand(m_intakeSubsystem, IntakeState.STOPPED));
+
+        driver.setCommand(7).debounce(.1).onTrue(m_drivetrainSubsystem.moveOneMeterRight());
 
 
         // Operator
