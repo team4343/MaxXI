@@ -40,8 +40,7 @@ public class SuppliedDriveCommand extends CommandBase {
         var y = yLimiter.calculate(m_translationYSupplier.getAsDouble());
         var t = tLimiter.calculate(m_rotationSupplier.getAsDouble());
 
-        m_drivetrainSubsystem.drive(ChassisSpeeds.fromFieldRelativeSpeeds(
-                new ChassisSpeeds(x, y, t), m_drivetrainSubsystem.gyroscope.getRotation2d()));
+        m_drivetrainSubsystem.drive(ChassisSpeeds.fromFieldRelativeSpeeds(new ChassisSpeeds(x, y, t), m_drivetrainSubsystem.gyroscope.getRotation2d()));
     }
 
     @Override

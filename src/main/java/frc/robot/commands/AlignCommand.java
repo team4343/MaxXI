@@ -19,15 +19,7 @@ public class AlignCommand extends CommandBase {
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
-//        this.m_drivetrainSubsystem.followTrajectoryCommand();
-//        PhotonTrackedTarget best_tag = this.m_drivetrainSubsystem.pcw.photonCamera.getLatestResult().getBestTarget();
-//        if (best_tag != null) {
-//                System.out.println("Found tag " + best_tag.getFiducialId());
-//
-//        }
-//        this.m_drivetrainSubsystem.pcw.photonCamera.setLED(VisionLEDMode.kOn);
         this.m_drivetrainSubsystem.odometry.getPose();
-
     }
 
     // Called once the command ends or is interrupted.
