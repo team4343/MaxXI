@@ -1,5 +1,6 @@
 package frc.robot.commands;
 
+import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.DrivetrainSubsystem;
@@ -24,17 +25,23 @@ public class SuppliedDriveCommand extends CommandBase {
         addRequirements(drivetrainSubsystem);
     }
 
+    private final SlewRateLimiter xLimiter = new SlewRateLimiter(.5);
+    private final SlewRateLimiter yLimiter = new SlewRateLimiter(.5);
+    private final SlewRateLimiter tLimiter = new SlewRateLimiter(.5);
+
     @Override
     public void execute() {
         // You can use `new ChassisSpeeds(...)` for robot-oriented movement instead of //
         // field-oriented movement m_drivetrainSubsystem.drive(new ChassisSpeeds( //
         // m_drivetrainSubsystem.drive(new ChassisSpeeds(m_translationXSupplier.getAsDouble(),
-        //         m_translationYSupplier.getAsDouble(), m_rotationSupplier.getAsDouble()));
+        // m_translationYSupplier.getAsDouble(), m_rotationSupplier.getAsDouble()));
+
+        var x = xLimiter.calculate(m_translationXSupplier.getAsDouble());
+        var y = yLimiter.calculate(m_translationYSupplier.getAsDouble());
+        var t = tLimiter.calculate(m_rotationSupplier.getAsDouble());
 
         m_drivetrainSubsystem.drive(ChassisSpeeds.fromFieldRelativeSpeeds(
-                new ChassisSpeeds(m_translationXSupplier.getAsDouble(),
-                        m_translationYSupplier.getAsDouble(), m_rotationSupplier.getAsDouble()),
-                m_drivetrainSubsystem.gyroscope.getRotation2d()));
+                new ChassisSpeeds(x, y, t), m_drivetrainSubsystem.gyroscope.getRotation2d()));
     }
 
     @Override
