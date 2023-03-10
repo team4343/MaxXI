@@ -48,7 +48,7 @@ import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 
 import java.util.ArrayList;
 import java.util.Optional;
-
+import java.util.function.Supplier;
 import static frc.robot.AprilTags.*;
 import static frc.robot.Constants.DriveConstants.*;
 
@@ -149,6 +149,23 @@ public class DrivetrainSubsystem extends SubsystemBase implements Loggable {
             odometry.setFieldTrajectory(traj);
             System.out.println("Running followTrajectoryCommand.");
         }), new PPSwerveControllerCommand(traj, odometry::getPose, // Pose supplier
+                KINEMATICS, // SwerveDriveKinematics
+                xPIDController, yPIDController, rPIDController, this::driveWithStates, // Module
+                                                                                       // states
+                                                                                       // consumer
+                true, // Should the path be automatically mirrored depending on
+                // alliance
+                // color. Optional, defaults to true
+                this // Requires this drive subsystem
+        ));
+    }
+
+
+    public Command followTrajectorySuppliedCommand(Supplier<PathPlannerTrajectory> trajectorySupplier) {
+        return new SequentialCommandGroup(new InstantCommand(() -> {
+            odometry.setFieldTrajectory(trajectorySupplier.get());
+            System.out.println("Running followTrajectoryCommand.");
+        }), new PPSwerveControllerCommand(trajectorySupplier.get(), odometry::getPose, // Pose supplier
                 KINEMATICS, // SwerveDriveKinematics
                 xPIDController, yPIDController, rPIDController, this::driveWithStates, // Module
                                                                                        // states

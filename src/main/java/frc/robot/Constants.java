@@ -27,6 +27,7 @@ public final class Constants {
         public static final int SHOULDER_FOLLOWER_ID = 30;
         public static final int ELBOW_ID = 34;
         public static final int INTAKE_ID = 32;
+        public static final int WRIST_ID = 35;
     }
 
     public static class DriveConstants {
@@ -131,6 +132,6 @@ public final class Constants {
                                                                                        // half a
                                                                                        // meter up
         // from center.
-        public static final String cameraName = "OV5647";
+        public static final String cameraName = "Microsoft_LifeCam_HD-3000";
     }
 }

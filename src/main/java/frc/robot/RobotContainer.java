@@ -32,8 +32,7 @@ import frc.robot.subsystems.IntakeSubsystem.IntakeState;
  * subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
-    private final HID driver = new HID(0);
-    private final HID operator = new HID(1);
+    private final HID hid = new HID(0, 1);
 
     private final DrivetrainSubsystem m_drivetrainSubsystem = new DrivetrainSubsystem();
     public final ArmSubsystem m_armSubsystem = new ArmSubsystem();
@@ -56,7 +55,7 @@ public class RobotContainer {
          * DriveConstants.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND));
          */
 
-        m_drivetrainSubsystem.setDefaultCommand(new SuppliedDriveCommand(m_drivetrainSubsystem, driver::getX, driver::getY, driver::getT));
+        m_drivetrainSubsystem.setDefaultCommand(new SuppliedDriveCommand(m_drivetrainSubsystem, hid::getDriverX, hid::getDriverY, hid::getDriverT));
 
         // ChassisSpeeds.fromFieldRelativeSpeeds(new ChassisSpeeds(),
         // m_drivetrainSubsystem.getGyroscopeRotation());
@@ -73,21 +72,22 @@ public class RobotContainer {
      */
     private void configureButtonBindings() {
         // Driver
-        driver.setCommand(1).onTrue(new InstantCommand(m_drivetrainSubsystem.gyroscope::reset, m_drivetrainSubsystem));
+        hid.setDriverCommand(1).onTrue(new InstantCommand(m_drivetrainSubsystem.gyroscope::reset, m_drivetrainSubsystem));
 //        driver.setCommand(2).whileTrue(new AutoBalanceCommand(m_drivetrainSubsystem));
-        driver.setCommand(3).onTrue(new ArmPositionCommand(m_armSubsystem, State.Pickup));
-        driver.setCommand(5).onTrue(new ArmPositionCommand(m_armSubsystem, State.Rest));
-        driver.setCommand(4).onTrue(new ArmPositionCommand(m_armSubsystem, State.PlacingA));
-        driver.setCommand(6).onTrue(new ArmPositionCommand(m_armSubsystem, State.PlacingB));
-        driver.setCommand(11).whileTrue(new IntakeSetCommand(m_intakeSubsystem, IntakeState.CUBE_IN))
+        hid.setDriverCommand(3).onTrue(new ArmPositionCommand(m_armSubsystem, State.Pickup));
+        hid.setDriverCommand(5).onTrue(new ArmPositionCommand(m_armSubsystem, State.Rest));
+        hid.setDriverCommand(4).onTrue(new ArmPositionCommand(m_armSubsystem, State.PlacingA));
+        hid.setDriverCommand(6).onTrue(new ArmPositionCommand(m_armSubsystem, State.PlacingB));
+        hid.setDriverCommand(11).whileTrue(new IntakeSetCommand(m_intakeSubsystem, IntakeState.CUBE_IN))
                 .onFalse(new IntakeSetCommand(m_intakeSubsystem, IntakeState.STOPPED));
-        driver.setCommand(12).onTrue(new IntakeSetCommand(m_intakeSubsystem, IntakeState.CUBE_OUT))
+        hid.setDriverCommand(12).onTrue(new IntakeSetCommand(m_intakeSubsystem, IntakeState.CUBE_OUT))
                 .onFalse(new IntakeSetCommand(m_intakeSubsystem, IntakeState.STOPPED));
 
-        driver.setCommand(7).debounce(.1).onTrue(m_drivetrainSubsystem.moveOneMeterRight());
+        hid.setDriverCommand(7).debounce(.1).onTrue(m_drivetrainSubsystem.moveOneMeterRight());
 
-        driver.setCommand(9).debounce(.1).onTrue(new GoToCommand(new PathPoint(new Translation2d(5.5, 1), Rotation2d.fromDegrees(-90)), m_drivetrainSubsystem));
-        driver.setCommand(10).debounce(.1).onTrue(new GoToCommand(new PathPoint(new Translation2d(), new Rotation2d()), m_drivetrainSubsystem));
+        // hid.setAssistantCommand(7).debounce(.1).onTrue(new GoToCommand(new PathPoint(new Translation2d(1, 1), Rotation2d.fromDegrees(-90)), m_drivetrainSubsystem));
+        // hid.setAssistantCommand(8).debounce(.1).onTrue(new GoToCommand(new PathPoint(new Translation2d(1, 2), Rotation2d.fromDegrees(-90)), m_drivetrainSubsystem));
+        // hid.setAssistantCommand(9).debounce(.1).onTrue(new GoToCommand(new PathPoint(new Translation2d(1, 3), Rotation2d.fromDegrees(-90)), m_drivetrainSubsystem));
 
 
         // Operator
@@ -125,10 +125,12 @@ public class RobotContainer {
     }
 
     public static class HID {
-        private final Joystick m_flightStick;
+        private final Joystick m_driverStick;
+        private final Joystick m_assistantStick;
 
-        public HID(int port) {
-            m_flightStick = new Joystick(port);
+        public HID(int driverPort, int assistantPort) {
+            m_driverStick = new Joystick(driverPort);
+            m_assistantStick = new Joystick(assistantPort);
 //            var tab = Shuffleboard.getTab("HID");
 //            tab.addNumber("X", this::getX);
 //            tab.addNumber("Y", this::getY);
@@ -141,8 +143,8 @@ public class RobotContainer {
          * Note that the joystick's Y is the robot's X.
          * @return the joystick's X value in meters per second.
          */
-        public double getX() {
-            return -modifyAxis(m_flightStick.getY()) * DriveConstants.MAX_VELOCITY_METERS_PER_SECOND;
+        public double getDriverX() {
+            return -modifyAxis(m_driverStick.getY()) * DriveConstants.MAX_VELOCITY_METERS_PER_SECOND;
         }
 
         /*
@@ -151,8 +153,8 @@ public class RobotContainer {
          * Note that the joystick's X is the robot's Y.
          * @return the joystick's Y value in meters per second.
          */
-        public double getY() {
-            return -modifyAxis(m_flightStick.getX()) * DriveConstants.MAX_VELOCITY_METERS_PER_SECOND;
+        public double getDriverY() {
+            return -modifyAxis(m_driverStick.getX()) * DriveConstants.MAX_VELOCITY_METERS_PER_SECOND;
         }
 
         /*
@@ -160,14 +162,17 @@ public class RobotContainer {
          *
          * @return the joystick's rotational value in radians per second.
          */
-        public double getT() {
-            return modifyAxis(m_flightStick.getTwist()) * DriveConstants.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND;
+        public double getDriverT() {
+            return modifyAxis(m_driverStick.getTwist()) * DriveConstants.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND;
         }
 
-        public JoystickButton setCommand(int button) {
-            return new JoystickButton(m_flightStick, button);
+        public JoystickButton setDriverCommand(int button) {
+            return new JoystickButton(m_driverStick, button);
         }
 
+        public JoystickButton setAssistantCommand(int button) {
+            return new JoystickButton(m_assistantStick, button);
+        }
 
         private double deadband(double value, double deadband) {
             if (Math.abs(value) > deadband) {

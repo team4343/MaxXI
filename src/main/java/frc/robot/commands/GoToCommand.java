@@ -24,6 +24,6 @@ public class GoToCommand extends SequentialCommandGroup {
             points.add(targetPathPoint);
 
             this.trajectory = PathPlanner.generatePath(new PathConstraints(1, .1), points);
-        }), drivetrainSubsystem.followTrajectoryCommand(this.trajectory));
+        }), drivetrainSubsystem.followTrajectorySuppliedCommand(() -> this.trajectory));
     }
 }
