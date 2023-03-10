@@ -189,14 +189,6 @@ public class ArmSubsystem extends SubsystemBase implements Loggable {
     }
 
     public void periodic() {
-        if (loops <= 100) {
-            loops += 1;
-            return;
-        } else {
-            loops = 0;
-            // but don't return and continue.
-        }
-
         matchActualState();
         POS position;
         PID shoulder_pid;

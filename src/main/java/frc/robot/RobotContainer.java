@@ -4,6 +4,9 @@
 
 package frc.robot;
 
+import com.pathplanner.lib.PathPoint;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.CAN;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
@@ -13,6 +16,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.commands.ArmPositionCommand;
+import frc.robot.commands.GoToCommand;
 import frc.robot.commands.IntakeSetCommand;
 import frc.robot.commands.SuppliedDriveCommand;
 import frc.robot.subsystems.ArmSubsystem;
@@ -81,6 +85,9 @@ public class RobotContainer {
                 .onFalse(new IntakeSetCommand(m_intakeSubsystem, IntakeState.STOPPED));
 
         driver.setCommand(7).debounce(.1).onTrue(m_drivetrainSubsystem.moveOneMeterRight());
+
+        driver.setCommand(9).debounce(.1).onTrue(new GoToCommand(new PathPoint(new Translation2d(5.5, 1), Rotation2d.fromDegrees(-90)), m_drivetrainSubsystem));
+        driver.setCommand(10).debounce(.1).onTrue(new GoToCommand(new PathPoint(new Translation2d(), new Rotation2d()), m_drivetrainSubsystem));
 
 
         // Operator
@@ -176,7 +183,7 @@ public class RobotContainer {
 
         private double modifyAxis(double value) {
             // Deadband
-            value = deadband(value, 0.05);
+            value = deadband(value, 0.1);
 
             // Square the axis
             value = Math.copySign(value * value, value);
