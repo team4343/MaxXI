@@ -2,12 +2,11 @@ package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
-import com.revrobotics.CANSparkMaxLowLevel.PeriodicFrame;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants.ArmConstants;
+import frc.robot.constants.MotorConstants.ArmConstants;
 import io.github.oblarg.oblog.Loggable;
 
 public class ArmSubsystem extends SubsystemBase implements Loggable {
@@ -15,15 +14,14 @@ public class ArmSubsystem extends SubsystemBase implements Loggable {
         Pickup, Rest, PlacingA, PlacingB, PlacingC, PlacingD, PlacingE, Transit // Possible System States
     }
 
-    private static final double elbowPosToDegrees = 599.9;
-    private static final double shoulderPosToDegrees = 342.8;
+    // Tolerance of deciding if the arm is in a state (encoder count +/- tolerance)
     private static final double stateTolerance = 2;
-    private static int loops = 0;
 
     // System motor controllers
     private static final CANSparkMax m_shoulder = new CANSparkMax(ArmConstants.SHOULDER_ID, MotorType.kBrushless);
     private static final CANSparkMax m_shoulderFollower = new CANSparkMax(ArmConstants.SHOULDER_FOLLOWER_ID, MotorType.kBrushless);
     private static final CANSparkMax m_elbow = new CANSparkMax(ArmConstants.ELBOW_ID, MotorType.kBrushless);
+    private static final CANSparkMax m_wrist = new CANSparkMax(ArmConstants.WRIST_ID, MotorType.kBrushless);
 
     // System State - init in rest state
     private static State m_state_desired = State.Rest;
@@ -33,22 +31,23 @@ public class ArmSubsystem extends SubsystemBase implements Loggable {
 
     public void printState() {
         System.out.print("Desired: ");
-        System.out.print(this.m_state_desired);
+        System.out.print(m_state_desired);
         System.out.print("\t\t Actual: ");
-        System.out.print(this.m_state_actual);
+        System.out.print(m_state_actual);
     }
 
     // Class to hold position Data for each system state
     private static class POS {
-        public double elbow, shoulder = 0;
-        public POS(double shoulder, double elbow) {
+        public double elbow, shoulder, wrist = 0;
+        public POS(double shoulder, double elbow, double wrist) {
             this.elbow = elbow;
             this.shoulder = shoulder;
+            this.wrist = wrist;
         }
     }
 
     private static class PID {
-        public int slot = 0;
+        public int slot;
         public double P, I, D, FF, DF = 0;
         public PID(double P, double I, double D, int slot) {
             this.P = P;
@@ -56,18 +55,24 @@ public class ArmSubsystem extends SubsystemBase implements Loggable {
             this.D = D;
             this.slot = slot;
         }
+        public PID(double P, double I, double D, double FF, int slot) {
+            this.P = P;
+            this.I = I;
+            this.D = D;
+            this.FF = FF;
+            this.slot = slot;
+        }
     }
 
     // Position Constants
-    // Horizontal = 40, Down = 0, Up = 80
-    private final POS REST      = new POS(0, 0);
-    private final POS PICKUP    = new POS(0, 14);
-//    private final POS PLACING_A = new POS(9.5, 10); For the top row this works
-    private final POS PLACING_A = new POS(7, 14);
-    private final POS PLACING_B = new POS(5, 6);
-    private final POS PLACING_C = new POS(0, 0);
-    private final POS PLACING_D = new POS(0, 0);
-    private final POS PLACING_E = new POS(0, 0);
+    //    private final POS PLACING_A = new POS(9.5, 10); For the top row this works
+    private final POS REST      = new POS(0, 0, 0);
+    private final POS PICKUP    = new POS(0, 14, 35);
+    private final POS PLACING_A = new POS(9, 16, 50);
+    private final POS PLACING_B = new POS(6, 12, 35);
+    private final POS PLACING_C = new POS(0, 0, 0);
+    private final POS PLACING_D = new POS(0, 0, 0);
+    private final POS PLACING_E = new POS(0, 0, 0);
 
     // PID SLOT IDS
     // P. Proportional output to the error of the system
@@ -75,16 +80,21 @@ public class ArmSubsystem extends SubsystemBase implements Loggable {
     // D. Rate of change of error. This decreases output to counteract oscillation
     private static final PID SHOULDER_DEFAULT  = new PID(0.11, 0, 0, 0);
     private static final PID SHOULDER_STEADY   = new PID(0.15, 0, 0, 1);
-    private static final PID ELBOW_DEFAULT     = new PID(0.075, 0, 0, 0);
+    private static final PID ELBOW_DEFAULT     = new PID(0.06, 0, 0, 0);
     private static final PID ELBOW_STEADY      = new PID(0.10, 0, 0, 1);
+    private static final PID ELBOW_PICKUP      = new PID(0.04, 0, 0, 2);
+    private static final PID WRIST_DEFAULT     = new PID(0.02, 0, 0, 0);
 
     private final Double SHOULDER_RAMP_RATE = 0.5;
     private final Double ELBOW_RAMP_RATE = 0.5;
+    private final Double WRIST_RAMP_RATE = 0.5;
 
     private final float SHOULDER_MAX_POS = 9.5f;
     private final float SHOULDER_MIN_POS = 0;
     private final float ELBOW_MAX_POS = 20;
     private final float ELBOW_MIN_POS = 0;
+    private final float WRIST_MAX_POS = 50;
+    private final float WRIST_MIN_POS = -10;
 
 
     public ArmSubsystem() {
@@ -97,29 +107,26 @@ public class ArmSubsystem extends SubsystemBase implements Loggable {
         tab.addString("Desired State", () -> m_state_desired.name());
         tab.addString("Actual State", () -> m_state_actual.name());
 
-
-        // ****** INITIALIZATION
         // Set the idle mode to brake
         m_shoulder.setIdleMode(CANSparkMax.IdleMode.kBrake);
         m_shoulderFollower.setIdleMode(CANSparkMax.IdleMode.kBrake);
         m_elbow.setIdleMode(CANSparkMax.IdleMode.kBrake);
+        m_wrist.setIdleMode(CANSparkMax.IdleMode.kBrake);
 
         // Set the peak and nominal output
         m_shoulder.setSmartCurrentLimit(60);
         m_elbow.setSmartCurrentLimit(60);
+        m_wrist.setSmartCurrentLimit(60);
 
         // Set the ramp rate of 0.25 seconds to full power
         m_shoulder.setClosedLoopRampRate(SHOULDER_RAMP_RATE);
         m_elbow.setClosedLoopRampRate(ELBOW_RAMP_RATE);
+        m_wrist.setClosedLoopRampRate(WRIST_RAMP_RATE);
 
         m_shoulder.setControlFramePeriodMs(40);
         m_elbow.setControlFramePeriodMs(40);
+        m_wrist.setControlFramePeriodMs(40);
 
-        m_shoulder.setPeriodicFramePeriod(PeriodicFrame.kStatus1, 500);
-        m_shoulder.setPeriodicFramePeriod(PeriodicFrame.kStatus2, 500);
-        m_shoulderFollower.setPeriodicFramePeriod(PeriodicFrame.kStatus0, 100);
-        m_shoulderFollower.setPeriodicFramePeriod(PeriodicFrame.kStatus1, 500);
-        m_shoulderFollower.setPeriodicFramePeriod(PeriodicFrame.kStatus2, 500);
 
         // Set default PID values for shoulder on all slots
         for (var config : new PID[]{SHOULDER_DEFAULT, SHOULDER_STEADY}) {
@@ -131,7 +138,7 @@ public class ArmSubsystem extends SubsystemBase implements Loggable {
         }
 
         // Set default PID values elbow
-        for (var config : new PID[]{ELBOW_DEFAULT, ELBOW_STEADY}) {
+        for (var config : new PID[]{ELBOW_DEFAULT, ELBOW_STEADY, ELBOW_PICKUP}) {
             m_elbow.getPIDController().setP(config.P, config.slot);
             m_elbow.getPIDController().setI(config.I, config.slot);
             m_elbow.getPIDController().setD(config.D, config.slot);
@@ -139,15 +146,28 @@ public class ArmSubsystem extends SubsystemBase implements Loggable {
             m_elbow.getPIDController().setDFilter(config.DF, config.slot);
         }
 
+        // Set default PID values wrist
+        for (var config : new PID[]{WRIST_DEFAULT}) {
+            m_wrist.getPIDController().setP(config.P, config.slot);
+            m_wrist.getPIDController().setI(config.I, config.slot);
+            m_wrist.getPIDController().setD(config.D, config.slot);
+            m_wrist.getPIDController().setFF(config.FF, config.slot);
+            m_wrist.getPIDController().setDFilter(config.DF, config.slot);
+        }
+
         // Set the soft limits
         m_shoulder.enableSoftLimit(CANSparkMax.SoftLimitDirection.kForward, true);
         m_shoulder.enableSoftLimit(CANSparkMax.SoftLimitDirection.kReverse, true);
         m_elbow.enableSoftLimit(CANSparkMax.SoftLimitDirection.kForward, true);
         m_elbow.enableSoftLimit(CANSparkMax.SoftLimitDirection.kReverse, true);
+        m_wrist.enableSoftLimit(CANSparkMax.SoftLimitDirection.kForward, true);
+        m_wrist.enableSoftLimit(CANSparkMax.SoftLimitDirection.kReverse, true);
         m_shoulder.setSoftLimit(CANSparkMax.SoftLimitDirection.kForward, SHOULDER_MAX_POS);
         m_shoulder.setSoftLimit(CANSparkMax.SoftLimitDirection.kReverse, SHOULDER_MIN_POS);
         m_elbow.setSoftLimit(CANSparkMax.SoftLimitDirection.kForward, ELBOW_MAX_POS);
         m_elbow.setSoftLimit(CANSparkMax.SoftLimitDirection.kReverse, ELBOW_MIN_POS);
+        m_wrist.setSoftLimit(CANSparkMax.SoftLimitDirection.kForward, WRIST_MAX_POS);
+        m_wrist.setSoftLimit(CANSparkMax.SoftLimitDirection.kReverse, WRIST_MIN_POS);
     }
 
     public void setState(State state) {
@@ -191,17 +211,23 @@ public class ArmSubsystem extends SubsystemBase implements Loggable {
     public void periodic() {
         matchActualState();
         POS position;
-        PID shoulder_pid;
-        PID elbow_pid;
+        int shoulder_pid_slot;
+        int elbow_pid_slot;
+        int wrist_pid_slot;
 
         // If the state is not the same as the desired state, then run the periodic for that state.
         if (m_state_actual != m_state_desired) {
-            shoulder_pid = SHOULDER_DEFAULT;
-            elbow_pid = ELBOW_DEFAULT;
+            shoulder_pid_slot = SHOULDER_DEFAULT.slot;
+            elbow_pid_slot = ELBOW_DEFAULT.slot;
+            wrist_pid_slot = WRIST_DEFAULT.slot;
+            if (m_state_desired == State.Pickup)
+                elbow_pid_slot = ELBOW_PICKUP.slot;
         } else {
-            shoulder_pid = SHOULDER_STEADY;
-            elbow_pid = ELBOW_STEADY;
+            shoulder_pid_slot = SHOULDER_STEADY.slot;
+            elbow_pid_slot = ELBOW_STEADY.slot;
+            wrist_pid_slot = WRIST_DEFAULT.slot;
         }
+
 
         switch (m_state_desired) {
             case Pickup: position=PICKUP; break;
@@ -213,13 +239,9 @@ public class ArmSubsystem extends SubsystemBase implements Loggable {
             default: position=REST;
         }
 
-        m_elbow.getPIDController().setReference(position.elbow,
-                CANSparkMax.ControlType.kPosition,
-                elbow_pid.slot);
-
-        m_shoulder.getPIDController().setReference(position.shoulder,
-                CANSparkMax.ControlType.kPosition,
-                shoulder_pid.slot);
+        m_elbow.getPIDController().setReference(position.elbow, CANSparkMax.ControlType.kPosition, elbow_pid_slot);
+        m_shoulder.getPIDController().setReference(position.shoulder, CANSparkMax.ControlType.kPosition, shoulder_pid_slot);
+        m_wrist.getPIDController().setReference(position.wrist, CANSparkMax.ControlType.kPosition, wrist_pid_slot);
 
         // Update the dashboard
         SmartDashboard.putNumber("Shoulder Position", m_shoulder.getEncoder().getPosition());
@@ -255,10 +277,6 @@ public class ArmSubsystem extends SubsystemBase implements Loggable {
 
         if (m_state_actual != m_state_desired)
             m_state_actual = State.Transit;
-    }
-
-    private double  convert(double desired) {
-        return desired * shoulderPosToDegrees;
     }
 
 }

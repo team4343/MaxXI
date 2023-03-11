@@ -1,13 +1,10 @@
 package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkMaxLowLevel;
-import com.revrobotics.CANSparkMax.ControlType;
-import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
+import frc.robot.constants.MotorConstants;
 import io.github.oblarg.oblog.Loggable;
 
 public class IntakeSubsystem extends SubsystemBase implements Loggable {
@@ -15,9 +12,7 @@ public class IntakeSubsystem extends SubsystemBase implements Loggable {
         CONE_IN, CONE_OUT, CUBE_IN, CUBE_OUT, STOPPED
     }
 
-    private final CANSparkMax m_intake = new CANSparkMax(Constants.ArmConstants.INTAKE_ID, MotorType.kBrushless);
-    private final CANSparkMax m_wrist = new CANSparkMax(Constants.ArmConstants.WRIST_ID, MotorType.kBrushless);
-
+    private final CANSparkMax m_intake = new CANSparkMax(MotorConstants.ArmConstants.INTAKE_ID, MotorType.kBrushless);
     private final double m_intakeSpeed = 1;
     private IntakeState m_prev_intake_state = IntakeState.STOPPED;
     private IntakeState m_intake_state = IntakeState.STOPPED;
@@ -28,15 +23,6 @@ public class IntakeSubsystem extends SubsystemBase implements Loggable {
         m_intake.setIdleMode(CANSparkMax.IdleMode.kBrake);
         m_intake.setOpenLoopRampRate(0);
         m_intake.setSmartCurrentLimit(40);
-
-        m_wrist.restoreFactoryDefaults();
-        m_wrist.setClosedLoopRampRate(1);
-        m_wrist.setIdleMode(IdleMode.kBrake);
-
-        m_wrist.getPIDController().setP(.1);
-        m_wrist.getPIDController().setReference(18.5, ControlType.kPosition);
-
-        tab.addNumber("Wrist position", () -> m_wrist.getEncoder().getPosition());
     }
 
     public void setState(IntakeState state) {

@@ -2,7 +2,7 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot;
+package frc.robot.constants;
 
 import com.swervedrivespecialties.swervelib.SdsModuleConfigurations;
 import edu.wpi.first.math.geometry.Rotation3d;
@@ -21,7 +21,7 @@ import edu.wpi.first.math.util.Units;
  * It is advised to statically import this class (or one of its inner classes) wherever the
  * constants are needed, to reduce verbosity.
  */
-public final class Constants {
+public final class MotorConstants {
     public static class ArmConstants {
         public static final int SHOULDER_ID = 31;
         public static final int SHOULDER_FOLLOWER_ID = 30;
@@ -100,17 +100,13 @@ public final class Constants {
 
         public static final SwerveDriveKinematics KINEMATICS = new SwerveDriveKinematics(
                 // Front left
-                new Translation2d(DRIVETRAIN_TRACKWIDTH_METERS / 2.0,
-                        DRIVETRAIN_WHEELBASE_METERS / 2.0),
+                new Translation2d(DRIVETRAIN_TRACKWIDTH_METERS / 2.0, DRIVETRAIN_WHEELBASE_METERS / 2.0),
                 // Front right
-                new Translation2d(DRIVETRAIN_TRACKWIDTH_METERS / 2.0,
-                        -DRIVETRAIN_WHEELBASE_METERS / 2.0),
+                new Translation2d(DRIVETRAIN_TRACKWIDTH_METERS / 2.0, -DRIVETRAIN_WHEELBASE_METERS / 2.0),
                 // Back left
-                new Translation2d(-DRIVETRAIN_TRACKWIDTH_METERS / 2.0,
-                        DRIVETRAIN_WHEELBASE_METERS / 2.0),
+                new Translation2d(-DRIVETRAIN_TRACKWIDTH_METERS / 2.0, DRIVETRAIN_WHEELBASE_METERS / 2.0),
                 // Back right
-                new Translation2d(-DRIVETRAIN_TRACKWIDTH_METERS / 2.0,
-                        -DRIVETRAIN_WHEELBASE_METERS / 2.0));
+                new Translation2d(-DRIVETRAIN_TRACKWIDTH_METERS / 2.0, -DRIVETRAIN_WHEELBASE_METERS / 2.0));
 
     }
 
@@ -120,18 +116,8 @@ public final class Constants {
     }
 
     public static class VisionConstants {
-        public static final Transform3d robotToCam = new Transform3d(
-                new Translation3d(-.13, .30, .23), new Rotation3d(0, 0, Math.PI * 1.5)); // Cam
-                                                                                       // mounted
-                                                                                       // facing
-                                                                                       // forward,
-                                                                                       // half a
-                                                                                       // meter
-                                                                                       // forward of
-                                                                                       // center,
-                                                                                       // half a
-                                                                                       // meter up
-        // from center.
+        // center robot to camera
+        public static final Transform3d robotToCam = new Transform3d(new Translation3d(.1524, .0889, .762), new Rotation3d(0, 0, 0));
         public static final String cameraName = "Microsoft_LifeCam_HD-3000";
     }
 }
