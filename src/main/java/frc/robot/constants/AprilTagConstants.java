@@ -5,7 +5,7 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 
 // https://firstfrc.blob.core.windows.net/frc2023/FieldAssets/2023LayoutMarkingDiagram.pdf
-public class AprilTags {
+public final class AprilTagConstants {
     public static final AprilTag tag01 = new AprilTag(1, new Pose3d(15.513558, 1.071626, 0.462788, new Rotation3d(0,0, Math.PI)));
     public static final AprilTag tag02 = new AprilTag(2, new Pose3d(15.513558, 2.748026, 0.462788, new Rotation3d(0,0, Math.PI)));
     public static final AprilTag tag03 = new AprilTag(3, new Pose3d(15.513558, 4.424426, 0.462788, new Rotation3d(0,0, Math.PI)));

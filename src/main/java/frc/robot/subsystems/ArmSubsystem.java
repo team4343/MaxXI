@@ -3,8 +3,6 @@ package frc.robot.subsystems;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.MotorConstants.ArmConstants;
 import io.github.oblarg.oblog.Loggable;
@@ -27,7 +25,7 @@ public class ArmSubsystem extends SubsystemBase implements Loggable {
     private static State m_state_desired = State.Rest;
     private static State m_state_actual = State.Rest;
 
-    private static final NetworkTableInstance handle = NetworkTableInstance.getDefault();
+    private static final NetworkTableInstance nt_handle = NetworkTableInstance.getDefault();
 
     public void printState() {
         System.out.print("Desired: ");
@@ -103,9 +101,6 @@ public class ArmSubsystem extends SubsystemBase implements Loggable {
         // Follow the main shoulder encoder, inverted.
         m_shoulderFollower.follow(m_shoulder, true);
 
-        var tab = Shuffleboard.getTab("ArmSubsystem");
-        tab.addString("Desired State", () -> m_state_desired.name());
-        tab.addString("Actual State", () -> m_state_actual.name());
 
         // Set the idle mode to brake
         m_shoulder.setIdleMode(CANSparkMax.IdleMode.kBrake);
@@ -243,12 +238,11 @@ public class ArmSubsystem extends SubsystemBase implements Loggable {
         m_shoulder.getPIDController().setReference(position.shoulder, CANSparkMax.ControlType.kPosition, shoulder_pid_slot);
         m_wrist.getPIDController().setReference(position.wrist, CANSparkMax.ControlType.kPosition, wrist_pid_slot);
 
-        // Update the dashboard
-        SmartDashboard.putNumber("Shoulder Position", m_shoulder.getEncoder().getPosition());
-        SmartDashboard.putNumber("Elbow Position", m_elbow.getEncoder().getPosition());
-
-        handle.getEntry("/ArmSubsystem/DesiredState").setString(String.valueOf(m_state_desired));
-        handle.getEntry("/ArmSubsystem/ActualState").setString(String.valueOf(m_state_actual));
+        nt_handle.getEntry("/ArmSubsystem/DesiredState").setString(String.valueOf(m_state_desired));
+        nt_handle.getEntry("/ArmSubsystem/ActualState").setString(String.valueOf(m_state_actual));
+        nt_handle.getEntry("/ArmSubsystem/ShoulderPosition").setDouble(m_shoulder.getEncoder().getPosition());
+        nt_handle.getEntry("/ArmSubsystem/ElbowPosition").setDouble(m_elbow.getEncoder().getPosition());
+        nt_handle.getEntry("/ArmSubsystem/WristPosition").setDouble(m_wrist.getEncoder().getPosition());
     }
 
     private static boolean inRange(double value, double target, double tolerance) {

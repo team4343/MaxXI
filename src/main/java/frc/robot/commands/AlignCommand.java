@@ -6,26 +6,26 @@ import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.PathPoint;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.constants.RobotPositionConstant;
+import frc.robot.constants.RobotPositionConstants;
 import frc.robot.subsystems.DrivetrainSubsystem;
 
 import java.util.List;
 
 public class AlignCommand extends CommandBase {
     DrivetrainSubsystem m_drivetrainSubsystem;
-    RobotPositionConstant[] positions;
+    RobotPositionConstants[] positions;
     Double max_speed = 1.0;
     Double max_accel = 0.1;
     PathPlannerTrajectory trajectory;
 
-    public AlignCommand(DrivetrainSubsystem drivetrainSubsystem, RobotPositionConstant[] positions) {
+    public AlignCommand(DrivetrainSubsystem drivetrainSubsystem, RobotPositionConstants[] positions) {
         this.m_drivetrainSubsystem = drivetrainSubsystem;
         this.positions = positions;
 
         addRequirements(drivetrainSubsystem);
     }
 
-    public AlignCommand(DrivetrainSubsystem drivetrainSubsystem, RobotPositionConstant[] positions, Double max_speed, Double max_accel) {
+    public AlignCommand(DrivetrainSubsystem drivetrainSubsystem, RobotPositionConstants[] positions, Double max_speed, Double max_accel) {
         this.m_drivetrainSubsystem = drivetrainSubsystem;
         this.positions = positions;
         this.max_speed = max_speed;
@@ -38,7 +38,7 @@ public class AlignCommand extends CommandBase {
     public void initialize() {
         int best_tag_id = DrivetrainSubsystem.pcw.photonCamera.getLatestResult().getBestTarget().getFiducialId();
         Pose2d path_end = null;
-        for (RobotPositionConstant position : this.positions)
+        for (RobotPositionConstants position : this.positions)
             if (position.tag.ID == best_tag_id) {
                 path_end = position.pose;
                 break;
@@ -60,7 +60,7 @@ public class AlignCommand extends CommandBase {
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
-        this.m_drivetrainSubsystem.followTrajectorySuppliedCommand(() -> this.trajectory);
+        this.m_drivetrainSubsystem.followTrajectorySuppliedCommand(() -> this.trajectory).execute();
     }
 
     // Called once the command ends or is interrupted.

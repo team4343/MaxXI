@@ -2,7 +2,6 @@ package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.MotorConstants;
 import io.github.oblarg.oblog.Loggable;
@@ -18,8 +17,6 @@ public class IntakeSubsystem extends SubsystemBase implements Loggable {
     private IntakeState m_intake_state = IntakeState.STOPPED;
 
     public IntakeSubsystem() {
-        var tab = Shuffleboard.getTab("Intake");
-
         m_intake.setIdleMode(CANSparkMax.IdleMode.kBrake);
         m_intake.setOpenLoopRampRate(0);
         m_intake.setSmartCurrentLimit(40);
@@ -35,13 +32,10 @@ public class IntakeSubsystem extends SubsystemBase implements Loggable {
 
     @Override
     public void periodic() {
-        if (m_prev_intake_state.equals(m_intake_state)) {
+        if (m_prev_intake_state.equals(m_intake_state))
             return;
-        }        
 
         m_prev_intake_state = m_intake_state;
-
-        // This method will be called once per scheduler run
         switch (m_intake_state) {
             case CONE_IN:
             case CUBE_OUT:
@@ -53,18 +47,4 @@ public class IntakeSubsystem extends SubsystemBase implements Loggable {
                 m_intake.set(0); break;
         }
     }
-
-    private static class Intake_Speed {
-        public int intake = 0;
-        public Intake_Speed(int intake){
-            this.intake = intake;
-        }
-    }
-
-    private final Intake_Speed Cone_In = new Intake_Speed(0);
-    private final Intake_Speed Cone_Out = new Intake_Speed(0);
-    private final Intake_Speed Cube_In = new Intake_Speed(0);
-    private final Intake_Speed Cube_Out = new Intake_Speed(0);
-    private final Intake_Speed Stopped = new Intake_Speed(0);
-
 }

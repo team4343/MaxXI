@@ -5,21 +5,19 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.GenericHID;
-import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
-import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import frc.robot.constants.LocationConstants;
-import frc.robot.constants.MotorConstants.DriveConstants;
 import frc.robot.commands.*;
-import frc.robot.constants.RobotPositionConstant;
+import frc.robot.constants.LocationConstants;
+import frc.robot.constants.RobotPositionConstants;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.ArmSubsystem.State;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.IntakeSubsystem.IntakeState;
+import frc.robot.util.HID;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -38,25 +36,11 @@ public class RobotContainer {
      * The container for the robot. Contains subsystems, OI devices, and commands.
      */
     public RobotContainer() {
-        // Set up the default command for the drivetrain.
-        // The controls are for field-oriented driving:
-        // Left stick Y axis -> forward and backwards movement
-        // Left stick X axis -> left and right movement
-        // Right stick X axis -> rotation
-        /*
-         * m_drivetrainSubsystem.setDefaultCommand(new SuppliedDriveCommand(m_drivetrainSubsystem,
-         * () -> -modifyAxis(m_controller.getLeftY()) DriveConstants.MAX_VELOCITY_METERS_PER_SECOND,
-         * () -> -modifyAxis(m_controller.getLeftX()) DriveConstants.MAX_VELOCITY_METERS_PER_SECOND,
-         * () -> -modifyAxis(m_controller.getRightX())
-         * DriveConstants.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND));
-         */
-
-        m_drivetrainSubsystem.setDefaultCommand(new SuppliedDriveCommand(m_drivetrainSubsystem, hid::getDriverX, hid::getDriverY, hid::getDriverT));
-
-        // ChassisSpeeds.fromFieldRelativeSpeeds(new ChassisSpeeds(),
-        // m_drivetrainSubsystem.getGyroscopeRotation());
-
-        // Configure the button bindings
+        m_drivetrainSubsystem.setDefaultCommand(
+                new SuppliedDriveCommand(m_drivetrainSubsystem,
+                        hid::getDriverX,
+                        hid::getDriverY,
+                        hid::getDriverT));
         configureButtonBindings();
     }
 
@@ -79,7 +63,7 @@ public class RobotContainer {
 
         hid.setDriverCommand(7).onTrue(
                 new ParallelCommandGroup(
-                        new AlignCommand(m_drivetrainSubsystem, new RobotPositionConstant[]{LocationConstants.kRedLoadingStation, LocationConstants.kBlueLoadingStation}),
+                        new AlignCommand(m_drivetrainSubsystem, new RobotPositionConstants[]{LocationConstants.kRedLoadingStation, LocationConstants.kBlueLoadingStation}),
                         new InstantCommand(() -> m_armSubsystem.setState(State.PlacingC)),
                         new InstantCommand(() -> m_intakeSubsystem.setState(IntakeState.CUBE_IN))
                 ).andThen(
@@ -87,9 +71,9 @@ public class RobotContainer {
                         new InstantCommand(() -> m_intakeSubsystem.setState(IntakeState.STOPPED))
                 )
         );
-        // hid.setAssistantCommand(7).debounce(.1).onTrue(new GoToCommand(new PathPoint(new Translation2d(1, 1), Rotation2d.fromDegrees(-90)), m_drivetrainSubsystem));
-        // hid.setAssistantCommand(8).debounce(.1).onTrue(new GoToCommand(new PathPoint(new Translation2d(1, 2), Rotation2d.fromDegrees(-90)), m_drivetrainSubsystem));
-        // hid.setAssistantCommand(9).debounce(.1).onTrue(new GoToCommand(new PathPoint(new Translation2d(1, 3), Rotation2d.fromDegrees(-90)), m_drivetrainSubsystem));
+        // hid.setOperatorCommand(7).debounce(.1).onTrue(new GoToCommand(new PathPoint(new Translation2d(1, 1), Rotation2d.fromDegrees(-90)), m_drivetrainSubsystem));
+        // hid.setOperatorCommand(8).debounce(.1).onTrue(new GoToCommand(new PathPoint(new Translation2d(1, 2), Rotation2d.fromDegrees(-90)), m_drivetrainSubsystem));
+        // hid.setOperatorCommand(9).debounce(.1).onTrue(new GoToCommand(new PathPoint(new Translation2d(1, 3), Rotation2d.fromDegrees(-90)), m_drivetrainSubsystem));
     }
 
     /**
@@ -105,52 +89,4 @@ public class RobotContainer {
         return new ArmPositionCommand(m_armSubsystem, state);
     }
 
-    public static class HID {
-        private final Joystick m_driverStick;
-        private final Joystick m_assistantStick;
-
-        public HID(int driverPort, int assistantPort) {
-            m_driverStick = new Joystick(driverPort);
-            m_assistantStick = new Joystick(assistantPort);
-        }
-
-        public double getDriverX() {
-            return -modifyAxis(m_driverStick.getY()) * DriveConstants.MAX_VELOCITY_METERS_PER_SECOND;
-        }
-        public double getDriverY() {
-            return -modifyAxis(m_driverStick.getX()) * DriveConstants.MAX_VELOCITY_METERS_PER_SECOND;
-        }
-        public double getDriverT() {
-            return modifyAxis(m_driverStick.getTwist()) * DriveConstants.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND;
-        }
-
-        public JoystickButton setDriverCommand(int button) {
-            return new JoystickButton(m_driverStick, button);
-        }
-        public JoystickButton setAssistantCommand(int button) {
-            return new JoystickButton(m_assistantStick, button);
-        }
-
-        private double deadband(double value, double deadband) {
-            if (Math.abs(value) > deadband) {
-                if (value > 0.0) {
-                    return (value - deadband) / (1.0 - deadband);
-                } else {
-                    return (value + deadband) / (1.0 - deadband);
-                }
-            } else {
-                return 0.0;
-            }
-        }
-
-        private double modifyAxis(double value) {
-            // Deadband
-            value = deadband(value, 0.1);
-
-            // Square the axis
-            value = Math.copySign(value * value, value);
-
-            return value;
-        }
-    }
 }

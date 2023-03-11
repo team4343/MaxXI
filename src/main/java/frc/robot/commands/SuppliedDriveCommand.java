@@ -27,7 +27,7 @@ public class SuppliedDriveCommand extends CommandBase {
 
     private final SlewRateLimiter xLimiter = new SlewRateLimiter(3);
     private final SlewRateLimiter yLimiter = new SlewRateLimiter(3);
-    private final SlewRateLimiter tLimiter = new SlewRateLimiter(3);
+    private final SlewRateLimiter tLimiter = new SlewRateLimiter(5);
 
     @Override
     public void execute() {
