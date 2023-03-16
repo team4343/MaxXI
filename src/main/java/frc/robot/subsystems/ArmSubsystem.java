@@ -12,7 +12,7 @@ public class ArmSubsystem extends SubsystemBase {
     }
 
     // Tolerance of deciding if the arm is in a state (encoder count +/- tolerance)
-    private static final double stateTolerance = 2;
+    private static final double stateTolerance = 1;
 
     // System motor controllers
     private static final CANSparkMax m_shoulder = new CANSparkMax(ArmConstants.SHOULDER_ID, MotorType.kBrushless);
@@ -55,10 +55,10 @@ public class ArmSubsystem extends SubsystemBase {
     }
 
     // Position Constants
-    private final POS REST      = new POS(0, 0, -5);
-    private final POS PICKUP    = new POS(0, 15, 50);
-    private final POS PLACING_A = new POS(9.5, 16, 50);
-    private final POS PLACING_B = new POS(6, 12, 50);
+    private final POS REST      = new POS(0, 0, 10);
+    private final POS PICKUP    = new POS(0, 13, 60);
+    private final POS PLACING_A = new POS(2, 5, 50);
+    private final POS PLACING_B = new POS(7.5, 14.5, 60);
     private final POS PLACING_C = new POS(0, 0, 0);
     private final POS PLACING_D = new POS(0, 0, 0);
     private final POS PLACING_E = new POS(0, 0, 0);
@@ -68,22 +68,23 @@ public class ArmSubsystem extends SubsystemBase {
     // I. Sum of error over time. This increases output to counteract steady state error
     // D. Rate of change of error. This decreases output to counteract oscillation
     // Slot. So we can rapidly switch between PID configurations.
-    private static final PID SHOULDER_DEFAULT  = new PID(0.11, 0, 0, 0);
-    private static final PID SHOULDER_STEADY   = new PID(0.15, 0, 0, 1);
-    private static final PID ELBOW_DEFAULT     = new PID(0.06, 0, 0, 0);
-    private static final PID ELBOW_STEADY      = new PID(0.10, 0, 0, 1);
+    private static final PID SHOULDER_DEFAULT  = new PID(0.1, 0.00012, 0, 0);
+    private static final PID SHOULDER_STEADY   = new PID(0.12, 0.00017, 0, 1);
+    private static final PID ELBOW_DEFAULT     = new PID(0.025, 0.000014, 0, 0);
+    private static final PID ELBOW_STEADY      = new PID(0.03, 0.00002
+    , 0, 1);
     private static final PID ELBOW_PICKUP      = new PID(0.04, 0, 0, 2);
-    private static final PID WRIST_DEFAULT     = new PID(0.01, 0.00007, 0, 0);
+    private static final PID WRIST_DEFAULT     = new PID(0.02, 0.00000, 0, 0);
 
     private final Double SHOULDER_RAMP_RATE = 0.5;
-    private final Double ELBOW_RAMP_RATE = 0.5;
+    private final Double ELBOW_RAMP_RATE = 0.5; 
     private final Double WRIST_RAMP_RATE = 0.5;
 
     private final float SHOULDER_MAX_POS = 9.5f;
     private final float SHOULDER_MIN_POS = 0;
     private final float ELBOW_MAX_POS = 20;
     private final float ELBOW_MIN_POS = 0;
-    private final float WRIST_MAX_POS = 50;
+    private final float WRIST_MAX_POS = 60;
     private final float WRIST_MIN_POS = -10;
 
 
@@ -101,7 +102,7 @@ public class ArmSubsystem extends SubsystemBase {
         m_wrist.setIdleMode(CANSparkMax.IdleMode.kBrake);
 
         // Set the peak and nominal output
-        m_shoulder.setSmartCurrentLimit(60);
+        m_shoulder.setSmartCurrentLimit(80);
         m_elbow.setSmartCurrentLimit(60);
         m_wrist.setSmartCurrentLimit(60);
 
@@ -110,7 +111,7 @@ public class ArmSubsystem extends SubsystemBase {
         m_elbow.setClosedLoopRampRate(ELBOW_RAMP_RATE);
         m_wrist.setClosedLoopRampRate(WRIST_RAMP_RATE);
 
-        m_shoulder.setControlFramePeriodMs(40);
+        m_shoulder.setControlFramePeriodMs(20);
         m_elbow.setControlFramePeriodMs(40);
         m_wrist.setControlFramePeriodMs(40);
 
