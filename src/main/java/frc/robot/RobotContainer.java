@@ -10,8 +10,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import frc.robot.commands.*;
-import frc.robot.constants.LocationConstants;
-import frc.robot.constants.RobotPositionConstants;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.ArmSubsystem.State;
 import frc.robot.subsystems.DrivetrainSubsystem;
@@ -52,25 +50,28 @@ public class RobotContainer {
      */
     private void configureButtonBindings() {
         // Driver
-        hid.setDriverCommand(1).onTrue(new InstantCommand(DrivetrainSubsystem.gyroscope::reset, m_drivetrainSubsystem));
-        hid.setDriverCommand(2).whileTrue(new AutoBalanceCommand(m_drivetrainSubsystem));
         hid.setDriverCommand(3).onTrue(new ArmPositionCommand(m_armSubsystem, State.Pickup));
         hid.setDriverCommand(5).onTrue(new ArmPositionCommand(m_armSubsystem, State.Rest));
         hid.setDriverCommand(4).onTrue(new ArmPositionCommand(m_armSubsystem, State.PlacingA));
         hid.setDriverCommand(6).onTrue(new ArmPositionCommand(m_armSubsystem, State.PlacingB));
+        hid.setDriverCommand(9).onTrue(new InstantCommand(DrivetrainSubsystem.gyroscope::reset, m_drivetrainSubsystem));
+        hid.setDriverCommand(7).whileTrue( new ParallelCommandGroup(
+                new AlignCommand(m_drivetrainSubsystem)
+//                new InstantCommand(() -> m_intakeSubsystem.setState(IntakeState.CONE_IN))
+        ).andThen(new InstantCommand(()-> m_intakeSubsystem.setState(IntakeState.STOPPED))));
+
         hid.setDriverCommand(11).whileTrue(new IntakeSetCommand(m_intakeSubsystem, IntakeState.CUBE_IN)).onFalse(new IntakeSetCommand(m_intakeSubsystem, IntakeState.STOPPED));
         hid.setDriverCommand(12).onTrue(new IntakeSetCommand(m_intakeSubsystem, IntakeState.CUBE_OUT)).onFalse(new IntakeSetCommand(m_intakeSubsystem, IntakeState.STOPPED));
 
-        hid.setDriverCommand(7).onTrue(
-                new ParallelCommandGroup(
-                        new AlignCommand(m_drivetrainSubsystem, new RobotPositionConstants[]{LocationConstants.kRedLoadingStation, LocationConstants.kBlueLoadingStation}),
-                        new InstantCommand(() -> m_armSubsystem.setState(State.PlacingC)),
-                        new InstantCommand(() -> m_intakeSubsystem.setState(IntakeState.CUBE_IN))
-                ).andThen(
-                        new InstantCommand(() -> m_armSubsystem.setState(State.Rest)),
-                        new InstantCommand(() -> m_intakeSubsystem.setState(IntakeState.STOPPED))
-                )
-        );
+//                new ParallelCommandGroup(
+//
+//                        new InstantCommand(() -> m_armSubsystem.setState(State.PlacingC)),
+//                        new InstantCommand(() -> m_intakeSubsystem.setState(IntakeState.CUBE_IN))
+//                ).andThen(
+//                        new InstantCommand(() -> m_armSubsystem.setState(State.Rest)),
+//                        new InstantCommand(() -> m_intakeSubsystem.setState(IntakeState.STOPPED))
+//                )
+//        );
         // hid.setOperatorCommand(7).debounce(.1).onTrue(new GoToCommand(new PathPoint(new Translation2d(1, 1), Rotation2d.fromDegrees(-90)), m_drivetrainSubsystem));
         // hid.setOperatorCommand(8).debounce(.1).onTrue(new GoToCommand(new PathPoint(new Translation2d(1, 2), Rotation2d.fromDegrees(-90)), m_drivetrainSubsystem));
         // hid.setOperatorCommand(9).debounce(.1).onTrue(new GoToCommand(new PathPoint(new Translation2d(1, 3), Rotation2d.fromDegrees(-90)), m_drivetrainSubsystem));
@@ -87,6 +88,10 @@ public class RobotContainer {
 
     public Command getArmCommand(State state) {
         return new ArmPositionCommand(m_armSubsystem, state);
+    }
+
+    public void update() {
+        m_drivetrainSubsystem.odometry.updateOdometry();
     }
 
 }

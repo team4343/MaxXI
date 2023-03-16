@@ -5,63 +5,37 @@ import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.PathPoint;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.constants.RobotPositionConstants;
 import frc.robot.subsystems.DrivetrainSubsystem;
 
-import java.util.List;
+import java.util.ArrayList;
 
 public class AlignCommand extends CommandBase {
     DrivetrainSubsystem m_drivetrainSubsystem;
-    RobotPositionConstants[] positions;
-    Double max_speed = 1.0;
-    Double max_accel = 0.1;
     PathPlannerTrajectory trajectory;
+    boolean finished = false;
 
-    public AlignCommand(DrivetrainSubsystem drivetrainSubsystem, RobotPositionConstants[] positions) {
+    public AlignCommand(DrivetrainSubsystem drivetrainSubsystem) {
         this.m_drivetrainSubsystem = drivetrainSubsystem;
-        this.positions = positions;
-
-        addRequirements(drivetrainSubsystem);
-    }
-
-    public AlignCommand(DrivetrainSubsystem drivetrainSubsystem, RobotPositionConstants[] positions, Double max_speed, Double max_accel) {
-        this.m_drivetrainSubsystem = drivetrainSubsystem;
-        this.positions = positions;
-        this.max_speed = max_speed;
-        this.max_accel = max_accel;
 
         addRequirements(drivetrainSubsystem);
     }
 
     @Override
     public void initialize() {
-        int best_tag_id = DrivetrainSubsystem.pcw.photonCamera.getLatestResult().getBestTarget().getFiducialId();
-        Pose2d path_end = null;
-        for (RobotPositionConstants position : this.positions)
-            if (position.tag.ID == best_tag_id) {
-                path_end = position.pose;
-                break;
-            }
-        if (path_end == null) {
-            this.end(false);
-            return;
-        }
-
-        Pose2d currentPose = this.m_drivetrainSubsystem.odometry.getPose();
-        PathPoint[] points = new PathPoint[]{
-            new PathPoint(currentPose.getTranslation(), currentPose.getRotation()),
-            new PathPoint(path_end.getTranslation(), path_end.getRotation()),
-        };
-
-        this.trajectory = PathPlanner.generatePath(new PathConstraints(this.max_speed, this.max_accel), List.of(points));
+        Pose2d pose = this.m_drivetrainSubsystem.odometry.getPose();
+        Pose2d next = new Pose2d(2.0, 7.0, Rotation2d.fromRadians(Math.PI));
+        ArrayList<PathPoint> points = new ArrayList<>();
+        points.add(new PathPoint(pose.getTranslation(), pose.getRotation()));
+        points.add(new PathPoint(next.getTranslation(), next.getRotation()));
+        System.out.println(pose);
+        System.out.println(next);
+        this.trajectory = PathPlanner.generatePath(new PathConstraints(1, .2), points);
+        this.m_drivetrainSubsystem.followTrajectoryCommand(this.trajectory).schedule();
     }
 
-    // Called every time the scheduler runs while the command is scheduled.
-    @Override
-    public void execute() {
-        this.m_drivetrainSubsystem.followTrajectorySuppliedCommand(() -> this.trajectory).execute();
-    }
+
 
     // Called once the command ends or is interrupted.
     @Override
@@ -74,4 +48,6 @@ public class AlignCommand extends CommandBase {
     public boolean isFinished() {
         return true;
     }
+
+
 }

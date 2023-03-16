@@ -11,7 +11,7 @@ public class Gyroscope {
     public Gyroscope() {
         // Send gyro information, too.
         var tab = Shuffleboard.getTab("Gyroscope");
-        tab.addNumber("Yaw", m_navx::getYaw);
+        tab.addNumber("Yaw", m_navx::getAngle);
         tab.addNumber("Pitch", m_navx::getPitch);
         tab.addNumber("Roll", m_navx::getRoll);
         tab.addNumber("Rotation", () -> getRotation2d().getDegrees());

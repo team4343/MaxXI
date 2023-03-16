@@ -5,6 +5,7 @@
 package frc.robot.constants;
 
 import com.swervedrivespecialties.swervelib.SdsModuleConfigurations;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 
@@ -41,22 +42,22 @@ public final class MotorConstants {
         public static final int FRONT_LEFT_MODULE_DRIVE_MOTOR = 1; // FIXME Set front left module drive motor ID
         public static final int FRONT_LEFT_MODULE_STEER_MOTOR = 11; // FIXME Set front left module steer motor ID
         public static final int FRONT_LEFT_MODULE_STEER_ENCODER = 21; // FIXME Set front left steer encoder ID
-        public static final double FRONT_LEFT_MODULE_STEER_OFFSET = -Math.toRadians(50.0 + 90.0 + 5.0); // FIXME Measure and set front left steer offset
+        public static final double FRONT_LEFT_MODULE_STEER_OFFSET = -Math.toRadians(50.0 + 90.0 + 5.0 + 180); // FIXME Measure and set front left steer offset
 
         public static final int FRONT_RIGHT_MODULE_DRIVE_MOTOR = 3; // FIXME Set front right drive motor ID
         public static final int FRONT_RIGHT_MODULE_STEER_MOTOR = 13; // FIXME Set front right steer motor ID
         public static final int FRONT_RIGHT_MODULE_STEER_ENCODER = 23; // FIXME Set front right steer encoder ID
-        public static final double FRONT_RIGHT_MODULE_STEER_OFFSET = -Math.toRadians(360.0-70.0-40.0); // FIXME Measure and set front right steer offset
+        public static final double FRONT_RIGHT_MODULE_STEER_OFFSET = -Math.toRadians(360.0-70.0-40.0 - 180); // FIXME Measure and set front right steer offset
 
         public static final int BACK_LEFT_MODULE_DRIVE_MOTOR_OG = 4; // FIXME Set back left drive motor ID
         public static final int BACK_LEFT_MODULE_STEER_MOTOR_OG = 14; // FIXME Set back left steer motor ID
         public static final int BACK_LEFT_MODULE_STEER_ENCODER = 24; // FIXME Set back left steer encoder ID
-        public static final double BACK_LEFT_MODULE_STEER_OFFSET = -Math.toRadians(360.0-30.0); // FIXME Measure and set back left steer offset
+        public static final double BACK_LEFT_MODULE_STEER_OFFSET = -Math.toRadians(360.0-30.0 - 180); // FIXME Measure and set back left steer offset
 
         public static final int BACK_RIGHT_MODULE_DRIVE_MOTOR = 2; // FIXME Set back right drive motor ID
         public static final int BACK_RIGHT_MODULE_STEER_MOTOR = 12; // FIXME Set back right steer motor ID
         public static final int BACK_RIGHT_MODULE_STEER_ENCODER = 22; // FIXME Set back right steer encoder ID
-        public static final double BACK_RIGHT_MODULE_STEER_OFFSET = -Math.toRadians(45.0+ 30.0); // FIXME Measure and set back right steer offset
+        public static final double BACK_RIGHT_MODULE_STEER_OFFSET = -Math.toRadians(45.0+ 30.0 + 180); // FIXME Measure and set back right steer offset
 
         /**
          * The maximum voltage that will be delivered to the drive motors.
@@ -104,6 +105,13 @@ public final class MotorConstants {
                 // Back right
                 new Translation2d(-DRIVETRAIN_TRACKWIDTH_METERS / 2.0, -DRIVETRAIN_WHEELBASE_METERS / 2.0));
 
+
+        public static final PIDController xPIDController = new PIDController(0.2, 0.0, 0.0);
+        public static final PIDController yPIDController = new PIDController(0.2, 0.0, 0.0);
+        public static final PIDController rPIDController = new PIDController(0.2, 0.0, 0.0);
+        public static final PIDController xAutoPIDController = new PIDController(0.6, 0.0, 0.0);
+        public static final PIDController yAutoPIDController = new PIDController(0.6, 0.0, 0.0);
+        public static final PIDController rAutoPIDController = new PIDController(0.6, 0.0, 0.0);
     }
 
 

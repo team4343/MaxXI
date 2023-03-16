@@ -32,7 +32,6 @@ import frc.robot.util.PhotonCameraWrapper;
 import io.github.oblarg.oblog.Loggable;
 
 import java.util.ArrayList;
-import java.util.function.Supplier;
 
 import static frc.robot.constants.MotorConstants.DriveConstants.*;
 
@@ -76,9 +75,9 @@ public class DrivetrainSubsystem extends SubsystemBase implements Loggable {
             .withSteerOffset(FRONT_LEFT_MODULE_STEER_OFFSET).build();
 
     // This is our kinematics object. We initialize it in the constructor.
-    private static final PIDController xPIDController = new PIDController(0.2, 0.0, 0.0);
-    private static final PIDController yPIDController = new PIDController(0.2, 0.0, 0.0);
-    private static final PIDController rPIDController = new PIDController(0.2, 0.0, 0.0);
+    private static final PIDController xPIDController = new PIDController(0.6, 0.01, 0.0);
+    private static final PIDController yPIDController = new PIDController(0.6, 0.01, 0.0);
+    private static final PIDController rPIDController = new PIDController(0.05, 0.005, 0.0);
     private static final PIDController xAutoPIDController = new PIDController(0.6, 0.0, 0.0);
     private static final PIDController yAutoPIDController = new PIDController(0.6, 0.0, 0.0);
     private static final PIDController rAutoPIDController = new PIDController(0.6, 0.0, 0.0);
@@ -92,6 +91,7 @@ public class DrivetrainSubsystem extends SubsystemBase implements Loggable {
 
     public void driveWithStates(SwerveModuleState[] states) {
         m_chassisSpeeds = KINEMATICS.toChassisSpeeds(states);
+        m_chassisSpeeds.omegaRadiansPerSecond *= -1;
     }
 
     @Override
@@ -101,63 +101,50 @@ public class DrivetrainSubsystem extends SubsystemBase implements Loggable {
 
         m_frontLeftModule.set(
                 states[0].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE,
-                states[0].angle.getRadians() + pi_over_two);
+                states[0].angle.getRadians() - pi_over_two);
         m_frontRightModule.set(
                 states[1].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE,
-                states[1].angle.getRadians() + pi_over_two);
+                states[1].angle.getRadians() - pi_over_two);
         m_backLeftModule.set(
                 states[2].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE,
-                states[2].angle.getRadians() + pi_over_two);
+                states[2].angle.getRadians() - pi_over_two);
         m_backRightModule.set(
                 states[3].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE,
-                states[3].angle.getRadians() + pi_over_two);
+                states[3].angle.getRadians() - pi_over_two);
 
         odometry.updateOdometry();
     }
 
     public static SwerveModulePosition[] getModulePositions() {
         return new SwerveModulePosition[] {
-            new SwerveModulePosition(m_frontLeftModule.getDriveDistance(), Rotation2d.fromRadians(m_frontLeftModule.getSteerAngle())),
-            new SwerveModulePosition(m_frontRightModule.getDriveDistance() , Rotation2d.fromRadians(m_frontRightModule.getSteerAngle())),
-            new SwerveModulePosition(m_backLeftModule.getDriveDistance() , Rotation2d.fromRadians(m_backLeftModule.getSteerAngle())),
-            new SwerveModulePosition(m_backRightModule.getDriveDistance() , Rotation2d.fromRadians(m_backRightModule.getSteerAngle()))
+            new SwerveModulePosition(m_frontLeftModule.getDriveDistance(), Rotation2d.fromRadians(m_frontLeftModule.getSteerAngle()+ pi_over_two)),
+            new SwerveModulePosition(m_frontRightModule.getDriveDistance() , Rotation2d.fromRadians(m_frontRightModule.getSteerAngle()+ pi_over_two)),
+            new SwerveModulePosition(m_backLeftModule.getDriveDistance() , Rotation2d.fromRadians(m_backLeftModule.getSteerAngle() + pi_over_two)),
+            new SwerveModulePosition(m_backRightModule.getDriveDistance() , Rotation2d.fromRadians(m_backRightModule.getSteerAngle()+ pi_over_two ))
         };
     }
 
     public Command followTrajectoryCommand(PathPlannerTrajectory traj) {
-        return new SequentialCommandGroup(new InstantCommand(() -> {
-            odometry.setFieldTrajectory(traj);
-            System.out.println("Running followTrajectoryCommand.");
-        }), new PPSwerveControllerCommand(traj, odometry::getPose, // Pose supplier
-                KINEMATICS, xPIDController, yPIDController, rPIDController,
-                this::driveWithStates, // Module states consumer
-                true, // Should the path be automatically mirrored depending on alliance color. Optional, defaults to true
-                this // Requires this drive subsystem
-        ));
+        return new PPSwerveControllerCommand(
+                        traj,
+                        odometry::getPose, // Pose supplier
+                        KINEMATICS,
+                        xPIDController,
+                        yPIDController,
+                        rPIDController,
+                        this::driveWithStates, // Module states consumer
+                        true, // Should the path be automatically mirrored depending on alliance color. Optional, defaults to true
+                        this // Requires this drive subsystem
+        );
     }
 
-    public Command followTrajectorySuppliedCommand(Supplier<PathPlannerTrajectory> trajectorySupplier) {
-        return new SequentialCommandGroup(new InstantCommand(() -> {
-            odometry.setFieldTrajectory(trajectorySupplier.get());
-            System.out.println("Running followTrajectoryCommand.");
-        }), new PPSwerveControllerCommand(trajectorySupplier.get(), odometry::getPose, // Pose supplier
-                KINEMATICS, xPIDController, yPIDController, rPIDController,
-                this::driveWithStates, // Module states consumer
-                true, // Should the path be automatically mirrored depending on alliance color. Optional, defaults to true
-                this // Requires this drive subsystem
-        ));
-    }
-
-    public Command moveOneMeterRight() {
-        var prevPose = odometry.getPose();
+    public Command move() {
+        Pose2d pose = this.odometry.getPose();
+        Pose2d next = new Pose2d(pose.getX(), pose.getY() + 0.5, pose.getRotation().plus(new Rotation2d(Math.PI)));
 
         ArrayList<PathPoint> points = new ArrayList<>();
-        points.add(new PathPoint(prevPose.getTranslation(), prevPose.getRotation()));
-
-        var newTranslationX = prevPose.getTranslation().getX() + 1;
-        var newTranslation = new Translation2d(newTranslationX, prevPose.getTranslation().getY());
-
-        points.add(new PathPoint(newTranslation, prevPose.getRotation()));
+        points.add(new PathPoint(pose.getTranslation(), pose.getRotation()));
+        points.add(new PathPoint(pose.getTranslation(), next.getRotation()));
 
         PathPlannerTrajectory trajectory = PathPlanner.generatePath(new PathConstraints(1, .1), points);
         return this.followTrajectoryCommand(trajectory);

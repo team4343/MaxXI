@@ -5,9 +5,8 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.MotorConstants.ArmConstants;
-import io.github.oblarg.oblog.Loggable;
 
-public class ArmSubsystem extends SubsystemBase implements Loggable {
+public class ArmSubsystem extends SubsystemBase {
     public enum State {
         Pickup, Rest, PlacingA, PlacingB, PlacingC, PlacingD, PlacingE, Transit // Possible System States
     }
@@ -26,13 +25,6 @@ public class ArmSubsystem extends SubsystemBase implements Loggable {
     private static State m_state_actual = State.Rest;
 
     private static final NetworkTableInstance nt_handle = NetworkTableInstance.getDefault();
-
-    public void printState() {
-        System.out.print("Desired: ");
-        System.out.print(m_state_desired);
-        System.out.print("\t\t Actual: ");
-        System.out.print(m_state_actual);
-    }
 
     // Class to hold position Data for each system state
     private static class POS {
@@ -63,25 +55,25 @@ public class ArmSubsystem extends SubsystemBase implements Loggable {
     }
 
     // Position Constants
-    //    private final POS PLACING_A = new POS(9.5, 10); For the top row this works
-    private final POS REST      = new POS(0, 0, 0);
-    private final POS PICKUP    = new POS(0, 14, 35);
-    private final POS PLACING_A = new POS(9, 16, 50);
-    private final POS PLACING_B = new POS(6, 12, 35);
+    private final POS REST      = new POS(0, 0, -5);
+    private final POS PICKUP    = new POS(0, 15, 50);
+    private final POS PLACING_A = new POS(9.5, 16, 50);
+    private final POS PLACING_B = new POS(6, 12, 50);
     private final POS PLACING_C = new POS(0, 0, 0);
     private final POS PLACING_D = new POS(0, 0, 0);
     private final POS PLACING_E = new POS(0, 0, 0);
 
-    // PID SLOT IDS
+    // PID Control
     // P. Proportional output to the error of the system
     // I. Sum of error over time. This increases output to counteract steady state error
     // D. Rate of change of error. This decreases output to counteract oscillation
+    // Slot. So we can rapidly switch between PID configurations.
     private static final PID SHOULDER_DEFAULT  = new PID(0.11, 0, 0, 0);
     private static final PID SHOULDER_STEADY   = new PID(0.15, 0, 0, 1);
     private static final PID ELBOW_DEFAULT     = new PID(0.06, 0, 0, 0);
     private static final PID ELBOW_STEADY      = new PID(0.10, 0, 0, 1);
     private static final PID ELBOW_PICKUP      = new PID(0.04, 0, 0, 2);
-    private static final PID WRIST_DEFAULT     = new PID(0.02, 0, 0, 0);
+    private static final PID WRIST_DEFAULT     = new PID(0.01, 0.00007, 0, 0);
 
     private final Double SHOULDER_RAMP_RATE = 0.5;
     private final Double ELBOW_RAMP_RATE = 0.5;

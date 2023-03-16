@@ -4,9 +4,11 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.util.HID;
 import io.github.oblarg.oblog.Logger;
 
 /**
@@ -54,10 +56,13 @@ public class Robot extends TimedRobot {
 
     /** This function is called once each time the robot enters Disabled mode. */
     @Override
-    public void disabledInit() {}
+    public void disabledInit() {CommandScheduler.getInstance().cancelAll();}
 
     @Override
-    public void disabledPeriodic() {}
+    public void disabledPeriodic() {
+        HID.alliance_modifier = DriverStation.getAlliance() == DriverStation.Alliance.Blue ? 1 : -1;
+        m_robotContainer.update();
+    }
 
     /**
      * This autonomous runs the autonomous command selected by your {@link RobotContainer} class.

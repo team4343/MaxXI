@@ -56,7 +56,7 @@ public class Odometry implements Loggable {
             double currentTime = Timer.getFPGATimestamp();
             double camTime = camPose.timestampSeconds;
 
-            if (currentTime - camTime < 0.1)
+            if (currentTime - camTime < 0.2)
                 m_poseEstimator.addVisionMeasurement(camPose.estimatedPose.toPose2d(), camPose.timestampSeconds);
             else
                 System.out.println("Received outdated vision measurement, current time " + currentTime + ", pose info time " + camTime);
