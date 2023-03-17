@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -50,6 +51,7 @@ public class RobotContainer {
      */
     private void configureButtonBindings() {
         // Driver
+        hid.setDriverCommand(1).debounce(0.1, Debouncer.DebounceType.kFalling).onTrue(new InstantCommand(m_drivetrainSubsystem.odometry::resetToCamera));
         hid.setDriverCommand(3).onTrue(new ArmPositionCommand(m_armSubsystem, State.Pickup));
         hid.setDriverCommand(5).onTrue(new ArmPositionCommand(m_armSubsystem, State.Rest));
         hid.setDriverCommand(4).onTrue(new ArmPositionCommand(m_armSubsystem, State.PlacingA));

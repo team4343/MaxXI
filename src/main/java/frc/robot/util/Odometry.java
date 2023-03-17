@@ -17,7 +17,7 @@ import static frc.robot.constants.MotorConstants.DriveConstants.KINEMATICS;
 import static frc.robot.subsystems.DrivetrainSubsystem.*;
 
 public class Odometry implements Loggable {
-    private final SwerveDrivePoseEstimator m_poseEstimator;
+    private SwerveDrivePoseEstimator m_poseEstimator;
 
     @Log.Field2d(name = "Estimated position", tabName = "Odometry")
     private final Field2d m_field = new Field2d();
@@ -63,6 +63,25 @@ public class Odometry implements Loggable {
         }
 
         m_poseEstimator.update(gyroscope.getRotation2d(), getModulePositions());
+    }
+
+    public void resetToCamera() {
+        Optional<EstimatedRobotPose> result = pcw.getEstimatedGlobalPose(getPose());
+        if (result.isPresent()) {
+            EstimatedRobotPose camPose = result.get();
+            double currentTime = Timer.getFPGATimestamp();
+            double camTime = camPose.timestampSeconds;
+
+            if (currentTime - camTime < 0.2) {
+                m_poseEstimator = new SwerveDrivePoseEstimator(
+                        KINEMATICS,
+                        gyroscope.getRotation2d(),
+                        getModulePositions(),
+                        camPose.estimatedPose.toPose2d()
+                );
+                gyroscope.reset();
+            }
+        }
 
     }
 }
