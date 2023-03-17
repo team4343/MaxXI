@@ -56,9 +56,9 @@ public class ArmSubsystem extends SubsystemBase {
 
     // Position Constants
     private final POS REST      = new POS(1, 0, 10);
-    private final POS PICKUP    = new POS(0, 13, 60);
-    private final POS PLACING_A = new POS(2, 5, 50);
-    private final POS PLACING_B = new POS(7.5, 12, 40);
+    private final POS PICKUP    = new POS(0, 13.5, 60);
+    private final POS PLACING_A = new POS(3, 5, 50);
+    private final POS PLACING_B = new POS(7.25, 14, 50);
     private final POS PLACING_C = new POS(0, 0, 0);
     private final POS PLACING_D = new POS(0, 0, 0);
     private final POS PLACING_E = new POS(0, 0, 0);
@@ -68,10 +68,10 @@ public class ArmSubsystem extends SubsystemBase {
     // I. Sum of error over time. This increases output to counteract steady state error
     // D. Rate of change of error. This decreases output to counteract oscillation
     // Slot. So we can rapidly switch between PID configurations.
-    private static final PID SHOULDER_DEFAULT  = new PID(0.15, 0.00005, 0, 0);
-    private static final PID SHOULDER_STEADY   = new PID(0.1, 0.00017, 0, 1);
-    private static final PID ELBOW_DEFAULT     = new PID(0.025, 0.000005, 0, 0);
-    private static final PID ELBOW_STEADY      = new PID(0.03, 0.00002
+    private static final PID SHOULDER_DEFAULT  = new PID(0.1, 0.00009, 0, 0);
+    private static final PID SHOULDER_STEADY   = new PID(0.12, 0.00012, 0, 1);
+    private static final PID ELBOW_DEFAULT     = new PID(0.03, 0.00001, 0, 0);
+    private static final PID ELBOW_STEADY      = new PID(0.03, 0.00004
     , 0, 1);
     private static final PID ELBOW_PICKUP      = new PID(0.04, 0, 0, 2);
     private static final PID WRIST_DEFAULT     = new PID(0.02, 0.00000, 0, 0);

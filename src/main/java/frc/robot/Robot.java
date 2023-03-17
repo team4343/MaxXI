@@ -6,8 +6,18 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
+import frc.robot.commands.AlignCommand;
+import frc.robot.commands.ArmPositionCommand;
+import frc.robot.commands.IntakeSetCommand;
+import frc.robot.commands.ResetOdometry;
+import frc.robot.subsystems.ArmSubsystem.State;
+import frc.robot.subsystems.IntakeSubsystem.IntakeState;
 import frc.robot.util.HID;
 import io.github.oblarg.oblog.Logger;
 
@@ -69,12 +79,22 @@ public class Robot extends TimedRobot {
      */
     @Override
     public void autonomousInit() {
-        m_autonomousCommand = m_robotContainer.getAutonomousCommand();
+        double modifier = DriverStation.getAlliance() == Alliance.Red ? -1 : 1;
+        m_autonomousCommand = new SequentialCommandGroup(
+            new ResetOdometry(m_robotContainer.m_drivetrainSubsystem),
+            new ArmPositionCommand(m_robotContainer.m_armSubsystem, State.PlacingB),
+            new WaitCommand(3),
+            new IntakeSetCommand(m_robotContainer.m_intakeSubsystem, IntakeState.CONE_IN),
+            new WaitCommand(1),
+            new IntakeSetCommand(m_robotContainer.m_intakeSubsystem, IntakeState.STOPPED),
+            new AlignCommand(m_robotContainer.m_drivetrainSubsystem,
+            m_robotContainer.m_drivetrainSubsystem.odometry.getPose().getX() + modifier,
+            m_robotContainer.m_drivetrainSubsystem.odometry.getPose().getY(),
+            m_robotContainer.m_drivetrainSubsystem.odometry.getPose().getRotation().getRadians()),
+            new ArmPositionCommand(m_robotContainer.m_armSubsystem, State.Rest)
 
-        // schedule the autonomous command (example)
-        if (m_autonomousCommand != null) {
-            m_autonomousCommand.schedule();
-        }
+        );
+        m_autonomousCommand.schedule();
     }
 
     /** This function is called periodically during autonomous. */

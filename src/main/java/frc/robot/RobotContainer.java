@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import com.pathplanner.lib.PathPlannerTrajectory;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
@@ -27,9 +28,9 @@ import frc.robot.util.HID;
 public class RobotContainer {
     private final HID hid = new HID(0, 1);
 
-    private final DrivetrainSubsystem m_drivetrainSubsystem = new DrivetrainSubsystem();
+    public final DrivetrainSubsystem m_drivetrainSubsystem = new DrivetrainSubsystem();
     public final ArmSubsystem m_armSubsystem = new ArmSubsystem();
-    private final IntakeSubsystem m_intakeSubsystem = new IntakeSubsystem();
+    public final IntakeSubsystem m_intakeSubsystem = new IntakeSubsystem();
 
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -58,7 +59,11 @@ public class RobotContainer {
         hid.setDriverCommand(6).onTrue(new ArmPositionCommand(m_armSubsystem, State.PlacingB));
         hid.setDriverCommand(9).onTrue(new InstantCommand(DrivetrainSubsystem.gyroscope::reset, m_drivetrainSubsystem));
         hid.setDriverCommand(7).whileTrue( new ParallelCommandGroup(
-                new AlignCommand(m_drivetrainSubsystem)
+                new AlignCommand(m_drivetrainSubsystem,
+                    m_drivetrainSubsystem.odometry.getPose().getX(),
+                    m_drivetrainSubsystem.odometry.getPose().getY(),
+                    m_drivetrainSubsystem.odometry.getPose().getRotation().getRadians()
+                )
 //                new InstantCommand(() -> m_intakeSubsystem.setState(IntakeState.CONE_IN))
         ).andThen(new InstantCommand(()-> m_intakeSubsystem.setState(IntakeState.STOPPED))));
 
@@ -84,9 +89,6 @@ public class RobotContainer {
      *
      * @return the command to run in autonomous
      */
-    public Command getAutonomousCommand() {
-        return m_drivetrainSubsystem.constructLiveTrajectoryCommand(m_armSubsystem);
-    }
 
     public Command getArmCommand(State state) {
         return new ArmPositionCommand(m_armSubsystem, state);

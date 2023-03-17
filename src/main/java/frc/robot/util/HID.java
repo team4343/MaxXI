@@ -7,7 +7,7 @@ import frc.robot.constants.MotorConstants;
 public class HID {
     private final Joystick m_driverStick;
 //    private final Joystick m_OperatorStick;
-    public static int alliance_modifier = -1;
+    public static int alliance_modifier = 1;
     private final double deadband = 0.1;
 
     public HID(int driverPort, int OperatorPort) {
