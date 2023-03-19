@@ -58,7 +58,7 @@ public class ArmSubsystem extends SubsystemBase {
     private final POS REST      = new POS(1, 0, 10);
     private final POS PICKUP    = new POS(0, 14, 50);
     private final POS PLACING_A = new POS(3, 5, 50);
-    private final POS PLACING_B = new POS(7.4, 14, 55);
+    private final POS PLACING_B = new POS(7.5, 14, 45);
     private final POS PLACING_C = new POS(7, 14, 50);
     private final POS PLACING_D = new POS(0, 0, 0);
     private final POS PLACING_E = new POS(0, 0, 0);
@@ -70,7 +70,7 @@ public class ArmSubsystem extends SubsystemBase {
     // Slot. So we can rapidly switch between PID configurations.
     private static final PID SHOULDER_DEFAULT  = new PID(0.1, 0.00009, 0, 0);
     private static final PID SHOULDER_STEADY   = new PID(0.12, 0.00012, 0, 1);
-    private static final PID ELBOW_DEFAULT     = new PID(0.045, 0.00001, 0, 0);
+    private static final PID ELBOW_DEFAULT     = new PID(0.042, 0.00001, 0, 0);
     private static final PID ELBOW_STEADY      = new PID(0.03, 0.00004
     , 0, 1);
     private static final PID ELBOW_PICKUP      = new PID(0.04, 0, 0, 2);

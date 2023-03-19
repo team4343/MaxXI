@@ -31,7 +31,7 @@ public class DriveForCommand extends CommandBase {
         } else {
 
         m_drivetrainSubsystem.drive(ChassisSpeeds.fromFieldRelativeSpeeds(
-            new ChassisSpeeds(0.4, 0.0, 0.0), DrivetrainSubsystem.gyroscope.getRotation2d()));
+            new ChassisSpeeds(0.7, 0.0, 0.0), DrivetrainSubsystem.gyroscope.getRotation2d()));
         }
     }
 
