@@ -79,19 +79,25 @@ public class Robot extends TimedRobot {
      */
     @Override
     public void autonomousInit() {
-        double modifier = DriverStation.getAlliance() == Alliance.Red ? -1 : 1;
+        m_robotContainer.m_drivetrainSubsystem.odometry.resetRotation();
+
+        double modifier = DriverStation.getAlliance() == Alliance.Red ? 1 : -1;
         m_autonomousCommand = new SequentialCommandGroup(
-            new ResetOdometry(m_robotContainer.m_drivetrainSubsystem),
+            // new ResetOdometry(m_robotContainer.m_drivetrainSubsystem),
+            // new AlignCommand(m_robotContainer.m_drivetrainSubsystem,
+            // m_robotContainer.m_drivetrainSubsystem.odometry.getPose().getX() - modifier,
+            // m_robotContainer.m_drivetrainSubsystem.odometry.getPose().getY(),
+            // m_robotContainer.m_drivetrainSubsystem.odometry.getPose().getRotation().getRadians()),
             new ArmPositionCommand(m_robotContainer.m_armSubsystem, State.PlacingB),
             new WaitCommand(3),
-            new IntakeSetCommand(m_robotContainer.m_intakeSubsystem, IntakeState.CONE_IN),
+            new IntakeSetCommand(m_robotContainer.m_intakeSubsystem, IntakeState.CONE_OUT),
             new WaitCommand(1),
-            new IntakeSetCommand(m_robotContainer.m_intakeSubsystem, IntakeState.STOPPED),
-            new AlignCommand(m_robotContainer.m_drivetrainSubsystem,
-            m_robotContainer.m_drivetrainSubsystem.odometry.getPose().getX() + modifier,
-            m_robotContainer.m_drivetrainSubsystem.odometry.getPose().getY(),
-            m_robotContainer.m_drivetrainSubsystem.odometry.getPose().getRotation().getRadians()),
-            new ArmPositionCommand(m_robotContainer.m_armSubsystem, State.Rest)
+            new IntakeSetCommand(m_robotContainer.m_intakeSubsystem, IntakeState.STOPPED)
+            // new AlignCommand(m_robotContainer.m_drivetrainSubsystem,
+            // m_robotContainer.m_drivetrainSubsystem.odometry.getPose().getX() + modifier * 2,
+            // m_robotContainer.m_drivetrainSubsystem.odometry.getPose().getY(),
+            // m_robotContainer.m_drivetrainSubsystem.odometry.getPose().getRotation().getRadians()),
+            // new ArmPositionCommand(m_robotContainer.m_armSubsystem, State.Rest)
 
         );
         m_autonomousCommand.schedule();
@@ -107,7 +113,11 @@ public class Robot extends TimedRobot {
         // teleop starts running. If you want the autonomous to
         // continue until interrupted by another command, remove
         // this line or comment it out.
+        m_robotContainer.m_drivetrainSubsystem.gyroscope.reset();
         CommandScheduler.getInstance().cancelAll();
+        HID.alliance_modifier = DriverStation.getAlliance() == Alliance.Red ? -1 : 1;
+        m_robotContainer.m_drivetrainSubsystem.odometry.resetRotation();
+
     }
 
     /** This function is called periodically during operator control. */

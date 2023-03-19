@@ -52,7 +52,8 @@ public class RobotContainer {
      */
     private void configureButtonBindings() {
         // Driver
-        hid.setDriverCommand(1).debounce(0.1, Debouncer.DebounceType.kFalling).onTrue(new InstantCommand(m_drivetrainSubsystem.odometry::resetToCamera));
+        // hid.setDriverCommand(1).onTrue(new ResetOdometry(m_drivetrainSubsystem));
+        hid.setDriverCommand(2).onTrue(new ArmPositionCommand(m_armSubsystem, State.PlacingC));
         hid.setDriverCommand(3).onTrue(new ArmPositionCommand(m_armSubsystem, State.Pickup));
         hid.setDriverCommand(5).onTrue(new ArmPositionCommand(m_armSubsystem, State.Rest));
         hid.setDriverCommand(4).onTrue(new ArmPositionCommand(m_armSubsystem, State.PlacingA));

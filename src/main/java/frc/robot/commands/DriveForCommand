@@ -6,35 +6,35 @@ import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.PathPoint;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.DrivetrainSubsystem;
 
 import java.util.ArrayList;
 
-public class ResetOdometry extends CommandBase {
+public class AlignCommand extends CommandBase {
     DrivetrainSubsystem m_drivetrainSubsystem;
-    PathPlannerTrajectory trajectory;
     boolean finished = false;
-    double time_start = 0;
+    long startTime = 0;
 
-    public ResetOdometry(DrivetrainSubsystem drivetrainSubsystem) {
+    public AlignCommand(DrivetrainSubsystem drivetrainSubsystem) {
         this.m_drivetrainSubsystem = drivetrainSubsystem;
-        addRequirements(drivetrainSubsystem);
     }
 
     @Override
     public void initialize() {
-        DrivetrainSubsystem.gyroscope.reset();
-
+        startTime = DriverStation.getFPGATimestamp();
     }
 
     @Override
     public void execute() {
-        if (DriverStation.getMatchTime() - 3 < this.time_start)
-             this.finished = true;
-        this.m_drivetrainSubsystem.gyroscope.reset();
-        this.finished = true;
+        if (DriverStation.getFPGATimestamp() + 2 < startTime ) {
+            m_drivetrainSubsystem.drive(ChassisSpeeds.fromFieldRelativeSpeeds(
+                new ChassisSpeeds(0.0, 0.0, 0.0), DrivetrainSubsystem.gyroscope.getRotation2d()));
+        } else {
+
+        m_drivetrainSubsystem.drive(ChassisSpeeds.fromFieldRelativeSpeeds(
+            new ChassisSpeeds(0.1, 0.0, 0.0), DrivetrainSubsystem.gyroscope.getRotation2d()));
+        }
     }
 
 

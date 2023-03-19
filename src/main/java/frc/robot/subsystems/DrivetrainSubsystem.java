@@ -94,16 +94,16 @@ public class DrivetrainSubsystem extends SubsystemBase implements Loggable {
 
         m_frontLeftModule.set(
                 states[0].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE,
-                states[0].angle.getRadians() - pi_over_two + Math.PI);
+                states[0].angle.getRadians() - pi_over_two);
         m_frontRightModule.set(
                 states[1].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE,
-                states[1].angle.getRadians() - pi_over_two + Math.PI);
+                states[1].angle.getRadians() - pi_over_two);
         m_backLeftModule.set(
                 states[2].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE,
-                states[2].angle.getRadians() - pi_over_two + Math.PI);
+                states[2].angle.getRadians() - pi_over_two);
         m_backRightModule.set(
                 states[3].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE,
-                states[3].angle.getRadians() - pi_over_two + Math.PI);
+                states[3].angle.getRadians() - pi_over_two);
 
         odometry.updateOdometry();
     }
