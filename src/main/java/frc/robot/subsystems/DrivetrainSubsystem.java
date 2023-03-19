@@ -23,17 +23,17 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
-import edu.wpi.first.wpilibj2.command.*;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.util.Gyroscope;
 import frc.robot.util.Odometry;
-import frc.robot.util.PhotonCameraWrapper;
 import io.github.oblarg.oblog.Loggable;
 
 import java.util.ArrayList;
+
 import static frc.robot.constants.MotorConstants.DriveConstants.*;
 
 public class DrivetrainSubsystem extends SubsystemBase implements Loggable {
-    public static final PhotonCameraWrapper pcw = new PhotonCameraWrapper();
     public static final Gyroscope gyroscope = new Gyroscope();
     public final Odometry odometry = new Odometry();
 

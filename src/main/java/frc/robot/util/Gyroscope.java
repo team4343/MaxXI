@@ -30,7 +30,7 @@ public class Gyroscope {
     // Equivalent to the "Yaw".
     // As the robot turns left (CCW), the angle should increase.
     public Rotation2d getRotation2d() {
-        return Rotation2d.fromDegrees(m_navx.getYaw());
+        return (m_navx.getRotation2d());
         // if (m_navx.isMagnetometerCalibrated())
         //     // We will only get valid fused headings if the magnetometer is calibrated
         //     return Rotation2d.fromDegrees(360 - m_navx.getFusedHeading());

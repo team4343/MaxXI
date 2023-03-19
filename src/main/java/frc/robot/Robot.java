@@ -5,19 +5,17 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
-import frc.robot.commands.AlignCommand;
 import frc.robot.commands.ArmPositionCommand;
+import frc.robot.commands.DriveForCommand;
 import frc.robot.commands.IntakeSetCommand;
-import frc.robot.commands.ResetOdometry;
-import frc.robot.subsystems.ArmSubsystem.State;
-import frc.robot.subsystems.IntakeSubsystem.IntakeState;
+import frc.robot.subsystems.ArmSubsystem;
+import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.util.HID;
 import io.github.oblarg.oblog.Logger;
 
@@ -83,22 +81,13 @@ public class Robot extends TimedRobot {
 
         double modifier = DriverStation.getAlliance() == Alliance.Red ? 1 : -1;
         m_autonomousCommand = new SequentialCommandGroup(
-            // new ResetOdometry(m_robotContainer.m_drivetrainSubsystem),
-            // new AlignCommand(m_robotContainer.m_drivetrainSubsystem,
-            // m_robotContainer.m_drivetrainSubsystem.odometry.getPose().getX() - modifier,
-            // m_robotContainer.m_drivetrainSubsystem.odometry.getPose().getY(),
-            // m_robotContainer.m_drivetrainSubsystem.odometry.getPose().getRotation().getRadians()),
-            new ArmPositionCommand(m_robotContainer.m_armSubsystem, State.PlacingB),
+            new ArmPositionCommand(m_robotContainer.m_armSubsystem, ArmSubsystem.State.PlacingB),
             new WaitCommand(3),
-            new IntakeSetCommand(m_robotContainer.m_intakeSubsystem, IntakeState.CONE_OUT),
+            new IntakeSetCommand(m_robotContainer.m_intakeSubsystem, IntakeSubsystem.IntakeState.CONE_OUT),
             new WaitCommand(1),
-            new IntakeSetCommand(m_robotContainer.m_intakeSubsystem, IntakeState.STOPPED)
-            // new AlignCommand(m_robotContainer.m_drivetrainSubsystem,
-            // m_robotContainer.m_drivetrainSubsystem.odometry.getPose().getX() + modifier * 2,
-            // m_robotContainer.m_drivetrainSubsystem.odometry.getPose().getY(),
-            // m_robotContainer.m_drivetrainSubsystem.odometry.getPose().getRotation().getRadians()),
-            // new ArmPositionCommand(m_robotContainer.m_armSubsystem, State.Rest)
-
+            new IntakeSetCommand(m_robotContainer.m_intakeSubsystem, IntakeSubsystem.IntakeState.STOPPED),
+            new DriveForCommand(m_robotContainer.m_drivetrainSubsystem).withTimeout(4),
+            new ArmPositionCommand(m_robotContainer.m_armSubsystem, ArmSubsystem.State.Rest)
         );
         m_autonomousCommand.schedule();
     }
@@ -113,7 +102,6 @@ public class Robot extends TimedRobot {
         // teleop starts running. If you want the autonomous to
         // continue until interrupted by another command, remove
         // this line or comment it out.
-        m_robotContainer.m_drivetrainSubsystem.gyroscope.reset();
         CommandScheduler.getInstance().cancelAll();
         HID.alliance_modifier = DriverStation.getAlliance() == Alliance.Red ? -1 : 1;
         m_robotContainer.m_drivetrainSubsystem.odometry.resetRotation();
