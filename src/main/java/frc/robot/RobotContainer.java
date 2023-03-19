@@ -58,7 +58,6 @@ public class RobotContainer {
         hid.setDriverCommand(5).onTrue(new ArmPositionCommand(m_armSubsystem, State.Rest));
         hid.setDriverCommand(4).onTrue(new ArmPositionCommand(m_armSubsystem, State.PlacingA));
         hid.setDriverCommand(6).onTrue(new ArmPositionCommand(m_armSubsystem, State.PlacingB));
-        hid.setDriverCommand(9).onTrue(new InstantCommand(DrivetrainSubsystem.gyroscope::reset, m_drivetrainSubsystem));
         hid.setDriverCommand(7).whileTrue( new ParallelCommandGroup(
                 new AlignCommand(m_drivetrainSubsystem,
                     m_drivetrainSubsystem.odometry.getPose().getX(),
