@@ -9,9 +9,11 @@ public class DriveForCommand extends CommandBase {
     DrivetrainSubsystem m_drivetrainSubsystem;
     boolean finished = false;
     double startTime = 0;
+    double runtime = 0;
 
-    public DriveForCommand(DrivetrainSubsystem drivetrainSubsystem) {
+    public DriveForCommand(DrivetrainSubsystem drivetrainSubsystem, double runtime) {
         this.m_drivetrainSubsystem = drivetrainSubsystem;
+        this.runtime = runtime;
         addRequirements(drivetrainSubsystem);
     }
 
@@ -22,14 +24,14 @@ public class DriveForCommand extends CommandBase {
 
     @Override
     public void execute() {
-        if (DriverStation.getMatchTime() - 2 > startTime ) {
+        if (DriverStation.getMatchTime() - runtime > startTime ) {
             this.finished = true;
             m_drivetrainSubsystem.drive(ChassisSpeeds.fromFieldRelativeSpeeds(
                 new ChassisSpeeds(0.0, 0.0, 0.0), DrivetrainSubsystem.gyroscope.getRotation2d()));
         } else {
 
         m_drivetrainSubsystem.drive(ChassisSpeeds.fromFieldRelativeSpeeds(
-            new ChassisSpeeds(0.2, 0.0, 0.0), DrivetrainSubsystem.gyroscope.getRotation2d()));
+            new ChassisSpeeds(0.4, 0.0, 0.0), DrivetrainSubsystem.gyroscope.getRotation2d()));
         }
     }
 

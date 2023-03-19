@@ -86,7 +86,8 @@ public class Robot extends TimedRobot {
             new IntakeSetCommand(m_robotContainer.m_intakeSubsystem, IntakeSubsystem.IntakeState.CONE_OUT),
             new WaitCommand(1),
             new IntakeSetCommand(m_robotContainer.m_intakeSubsystem, IntakeSubsystem.IntakeState.STOPPED),
-            new DriveForCommand(m_robotContainer.m_drivetrainSubsystem).withTimeout(4),
+            new DriveForCommand(m_robotContainer.m_drivetrainSubsystem, 3).withTimeout(3),
+//            new DriveForCommand(m_robotContainer.m_drivetrainSubsystem, 0.5).withTimeout(3),
             new ArmPositionCommand(m_robotContainer.m_armSubsystem, ArmSubsystem.State.Rest)
         );
         m_autonomousCommand.schedule();
