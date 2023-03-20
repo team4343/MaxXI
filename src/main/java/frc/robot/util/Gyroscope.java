@@ -24,17 +24,19 @@ public class Gyroscope {
      */
     public void reset() {
         m_navx.zeroYaw();
+
     }
 
     // Equivalent to the "Yaw".
     // As the robot turns left (CCW), the angle should increase.
     public Rotation2d getRotation2d() {
-        if (m_navx.isMagnetometerCalibrated())
-            // We will only get valid fused headings if the magnetometer is calibrated
-            return Rotation2d.fromDegrees(360 - m_navx.getFusedHeading());
+        return (m_navx.getRotation2d());
+        // if (m_navx.isMagnetometerCalibrated())
+        //     // We will only get valid fused headings if the magnetometer is calibrated
+        //     return Rotation2d.fromDegrees(360 - m_navx.getFusedHeading());
 
-        // We have to invert the angle of the NavX so that rotating the robot counter-clockwise makes the angle increase.
-        return Rotation2d.fromDegrees(m_navx.getYaw() + 180); // TODO: verify this.
+        // // We have to invert the angle of the NavX so that rotating the robot counter-clockwise makes the angle increase.
+        // return Rotation2d.fromDegrees(m_navx.getYaw() + 180); // TODO: verify this.
     }
 
     public float getGyroscopePitch() {

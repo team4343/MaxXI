@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import com.pathplanner.lib.PathPlannerTrajectory;
+import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -26,9 +28,9 @@ import frc.robot.util.HID;
 public class RobotContainer {
     private final HID hid = new HID(0, 1);
 
-    private final DrivetrainSubsystem m_drivetrainSubsystem = new DrivetrainSubsystem();
+    public final DrivetrainSubsystem m_drivetrainSubsystem = new DrivetrainSubsystem();
     public final ArmSubsystem m_armSubsystem = new ArmSubsystem();
-    private final IntakeSubsystem m_intakeSubsystem = new IntakeSubsystem();
+    public final IntakeSubsystem m_intakeSubsystem = new IntakeSubsystem();
 
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -50,13 +52,18 @@ public class RobotContainer {
      */
     private void configureButtonBindings() {
         // Driver
+        // hid.setDriverCommand(1).onTrue(new ResetOdometry(m_drivetrainSubsystem));
+        hid.setDriverCommand(2).onTrue(new ArmPositionCommand(m_armSubsystem, State.PlacingC));
         hid.setDriverCommand(3).onTrue(new ArmPositionCommand(m_armSubsystem, State.Pickup));
         hid.setDriverCommand(5).onTrue(new ArmPositionCommand(m_armSubsystem, State.Rest));
         hid.setDriverCommand(4).onTrue(new ArmPositionCommand(m_armSubsystem, State.PlacingA));
         hid.setDriverCommand(6).onTrue(new ArmPositionCommand(m_armSubsystem, State.PlacingB));
-        hid.setDriverCommand(9).onTrue(new InstantCommand(DrivetrainSubsystem.gyroscope::reset, m_drivetrainSubsystem));
         hid.setDriverCommand(7).whileTrue( new ParallelCommandGroup(
-                new AlignCommand(m_drivetrainSubsystem)
+                new AlignCommand(m_drivetrainSubsystem,
+                    m_drivetrainSubsystem.odometry.getPose().getX(),
+                    m_drivetrainSubsystem.odometry.getPose().getY(),
+                    m_drivetrainSubsystem.odometry.getPose().getRotation().getRadians()
+                )
 //                new InstantCommand(() -> m_intakeSubsystem.setState(IntakeState.CONE_IN))
         ).andThen(new InstantCommand(()-> m_intakeSubsystem.setState(IntakeState.STOPPED))));
 
@@ -82,9 +89,6 @@ public class RobotContainer {
      *
      * @return the command to run in autonomous
      */
-    public Command getAutonomousCommand() {
-        return m_drivetrainSubsystem.constructLiveTrajectoryCommand(m_armSubsystem);
-    }
 
     public Command getArmCommand(State state) {
         return new ArmPositionCommand(m_armSubsystem, state);

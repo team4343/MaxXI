@@ -16,13 +16,15 @@ public class HID {
     }
 
     public double getDriverX() {
-        return modifyAxis(m_driverStick.getX()) * MotorConstants.DriveConstants.MAX_VELOCITY_METERS_PER_SECOND * alliance_modifier;
+         return modifyAxis(m_driverStick.getY()) * MotorConstants.DriveConstants.MAX_VELOCITY_METERS_PER_SECOND * 0.75 * -1;
     }
     public double getDriverY() {
-        return modifyAxis(-m_driverStick.getY()) * MotorConstants.DriveConstants.MAX_VELOCITY_METERS_PER_SECOND * alliance_modifier;
+
+         return modifyAxis(m_driverStick.getX()) * MotorConstants.DriveConstants.MAX_VELOCITY_METERS_PER_SECOND * 0.75 * -1;
     }
+
     public double getDriverT() {
-        return modifyAxis(-m_driverStick.getTwist()) * MotorConstants.DriveConstants.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND * alliance_modifier;
+        return modifyAxis(m_driverStick.getTwist()) * MotorConstants.DriveConstants.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND;
     }
 
     public JoystickButton setDriverCommand(int button) {

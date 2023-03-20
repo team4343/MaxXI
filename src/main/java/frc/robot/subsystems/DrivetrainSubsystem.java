@@ -16,19 +16,17 @@ import com.swervedrivespecialties.swervelib.SwerveModule;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
-import edu.wpi.first.wpilibj2.command.*;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.util.Gyroscope;
 import frc.robot.util.Odometry;
-import frc.robot.util.PhotonCameraWrapper;
 import io.github.oblarg.oblog.Loggable;
 
 import java.util.ArrayList;
@@ -36,7 +34,6 @@ import java.util.ArrayList;
 import static frc.robot.constants.MotorConstants.DriveConstants.*;
 
 public class DrivetrainSubsystem extends SubsystemBase implements Loggable {
-    public static final PhotonCameraWrapper pcw = new PhotonCameraWrapper();
     public static final Gyroscope gyroscope = new Gyroscope();
     public final Odometry odometry = new Odometry();
 
@@ -78,10 +75,6 @@ public class DrivetrainSubsystem extends SubsystemBase implements Loggable {
     private static final PIDController xPIDController = new PIDController(0.6, 0.01, 0.0);
     private static final PIDController yPIDController = new PIDController(0.6, 0.01, 0.0);
     private static final PIDController rPIDController = new PIDController(0.05, 0.005, 0.0);
-    private static final PIDController xAutoPIDController = new PIDController(0.6, 0.0, 0.0);
-    private static final PIDController yAutoPIDController = new PIDController(0.6, 0.0, 0.0);
-    private static final PIDController rAutoPIDController = new PIDController(0.6, 0.0, 0.0);
-
     private static final double pi_over_two = Math.PI/2.0;  // The conversion ratio between drive rotations and meters. Goes from motor rots -> wheel rots -> meters.
     private static ChassisSpeeds m_chassisSpeeds = new ChassisSpeeds(0.0, 0.0, 0.0);
 
@@ -151,54 +144,7 @@ public class DrivetrainSubsystem extends SubsystemBase implements Loggable {
     }
 
     // This generates a sequential command group.
-    public Command constructLiveTrajectoryCommand(ArmSubsystem armSubsystem) {
-        var commands = new SequentialCommandGroup();
 
-        var handle = NetworkTableInstance.getDefault();
-        var stepAmountHandle = handle.getEntry("/AutoSelector/steps/amount");
-        var steps = stepAmountHandle.getInteger(0);
-
-        var prevPose = odometry.getPose();
-
-        for (var i = 0; i <= steps; i++) {
-            String step = "/AutoSelector/steps/" + i;
-            var x = handle.getEntry(step + "/x").getDouble(0);
-            var y = handle.getEntry(step + "/y").getDouble(0);
-            var t = handle.getEntry(step + "/t").getDouble(0);
-            var maxAccel = handle.getEntry(step + "/maxVel").getDouble(0.5);
-            var maxVel = handle.getEntry(step + "/maxAccel").getDouble(0.5);
-            var stateName = handle.getEntry(step + "/state").getString("Rest");
-
-            var state = armSubsystem.deserializeStateFromString(stateName);
-            var point = new PathPoint(new Translation2d(x, y), Rotation2d.fromDegrees(t));
-
-            // Create a new path from the last pose.
-            ArrayList<PathPoint> points = new ArrayList<>();
-            points.add(new PathPoint(prevPose.getTranslation(), prevPose.getRotation()));
-            points.add(point);
-
-            // Set last pose.
-            prevPose = new Pose2d(new Translation2d(x, y), new Rotation2d(t));
-
-            // Generate Trajectory
-            PathPlannerTrajectory trajectory = PathPlanner.generatePath(new PathConstraints(maxVel, maxAccel), points);
-
-            // Add commands to sequence
-            commands.addCommands(new ParallelCommandGroup(new InstantCommand(() -> {
-                armSubsystem.setState(state);
-                System.out.println("Set state to " + state.toString());
-            }), new PPSwerveControllerCommand(trajectory, odometry::getPose, // Pose supplier
-                    KINEMATICS, // SwerveDriveKinematics
-                    xAutoPIDController, // PID
-                    yAutoPIDController, // PID
-                    rAutoPIDController, // PID
-                    this::driveWithStates, // Module states consumer
-                    true, // Mirror depending on alliance color. Optional, defaults to true
-                    this // Requires this drive subsystem
-            )));
-        }
-        return commands;
-    }
 
 }
 

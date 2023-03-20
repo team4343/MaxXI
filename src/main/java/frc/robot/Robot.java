@@ -5,9 +5,17 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
+import frc.robot.commands.ArmPositionCommand;
+import frc.robot.commands.DriveForCommand;
+import frc.robot.commands.IntakeSetCommand;
+import frc.robot.subsystems.ArmSubsystem;
+import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.util.HID;
 import io.github.oblarg.oblog.Logger;
 
@@ -69,12 +77,20 @@ public class Robot extends TimedRobot {
      */
     @Override
     public void autonomousInit() {
-        m_autonomousCommand = m_robotContainer.getAutonomousCommand();
+        m_robotContainer.m_drivetrainSubsystem.odometry.resetRotation();
 
-        // schedule the autonomous command (example)
-        if (m_autonomousCommand != null) {
-            m_autonomousCommand.schedule();
-        }
+        double modifier = DriverStation.getAlliance() == Alliance.Red ? 1 : -1;
+        m_autonomousCommand = new SequentialCommandGroup(
+            new ArmPositionCommand(m_robotContainer.m_armSubsystem, ArmSubsystem.State.PlacingB),
+            new WaitCommand(3),
+            new IntakeSetCommand(m_robotContainer.m_intakeSubsystem, IntakeSubsystem.IntakeState.CONE_OUT),
+            new WaitCommand(1),
+            new IntakeSetCommand(m_robotContainer.m_intakeSubsystem, IntakeSubsystem.IntakeState.STOPPED),
+            new DriveForCommand(m_robotContainer.m_drivetrainSubsystem, 7.5).withTimeout(7.5),
+//            new DriveForCommand(m_robotContainer.m_drivetrainSubsystem, 0.5).withTimeout(3),
+            new ArmPositionCommand(m_robotContainer.m_armSubsystem, ArmSubsystem.State.Rest)
+        );
+        m_autonomousCommand.schedule();
     }
 
     /** This function is called periodically during autonomous. */
@@ -88,6 +104,9 @@ public class Robot extends TimedRobot {
         // continue until interrupted by another command, remove
         // this line or comment it out.
         CommandScheduler.getInstance().cancelAll();
+        HID.alliance_modifier = DriverStation.getAlliance() == Alliance.Red ? -1 : 1;
+        m_robotContainer.m_drivetrainSubsystem.odometry.resetRotation();
+
     }
 
     /** This function is called periodically during operator control. */
