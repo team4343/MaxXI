@@ -27,6 +27,7 @@ public final class MotorConstants {
         public static final int WRIST_ID = 35;
     }
 
+<<<<<<< Updated upstream
     public static class DriveConstants {
         /**
          * The left-to-right distance between the drivetrain wheels
@@ -114,6 +115,24 @@ public final class MotorConstants {
         public static final PIDController yAutoPIDController = new PIDController(0.6, 0.0, 0.0);
         public static final PIDController rAutoPIDController = new PIDController(0.6, 0.0, 0.0);
     }
+=======
+    public static final int FRONT_LEFT_DRIVE_MOTOR = 3;
+    public static final int FRONT_LEFT_STEER_MOTOR = 13;
+    public static final int FRONT_LEFT_STEER_ENCODER = 23;
+
+    public static final int FRONT_RIGHT_DRIVE_MOTOR = 1;
+    public static final int FRONT_RIGHT_STEER_MOTOR = 11;
+    public static final int FRONT_RIGHT_STEER_ENCODER = 21;
+
+    public static final int BACK_LEFT_DRIVE_MOTOR = 2;
+    public static final int BACK_LEFT_STEER_MOTOR = 12;
+    public static final int BACK_LEFT_STEER_ENCODER = 22;
+
+    public static final int BACK_RIGHT_DRIVE_MOTOR = 4;
+    public static final int BACK_RIGHT_STEER_MOTOR = 14;
+    public static final int BACK_RIGHT_STEER_ENCODER = 24;
+
+>>>>>>> Stashed changes
 
 
 }
