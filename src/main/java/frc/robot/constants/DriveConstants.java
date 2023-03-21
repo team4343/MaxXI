@@ -31,10 +31,10 @@ public final class DriveConstants {
     public static final double MAX_VELOCITY_METERS_PER_SECOND = 5676.0 / 60.0 * SdsModuleConfigurations.MK4I_L1.getDriveReduction() * SdsModuleConfigurations.MK4I_L1.getWheelDiameter() * PI; // SDS recommends 5676 RPM to M/S
     public static final double MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND = 6.0; // SDS recommends 6 rad/s
 
-    public static final double FRONT_LEFT_STEER_OFFSET = -Math.toRadians(50.0 + 90.0 + 5.0 + 180);
-    public static final double FRONT_RIGHT_STEER_OFFSET = -Math.toRadians(360.0-70.0-40.0 - 180);
-    public static final double BACK_LEFT_STEER_OFFSET = -Math.toRadians(360.0-30.0 - 180);
-    public static final double BACK_RIGHT_STEER_OFFSET = -Math.toRadians(45.0+ 30.0 + 180);
+    public static final double FRONT_LEFT_STEER_OFFSET = -Math.toRadians(50.0 + 90.0 + 5.0 + 90);
+    public static final double FRONT_RIGHT_STEER_OFFSET = -Math.toRadians(360.0-70.0-40.0 - 90);
+    public static final double BACK_LEFT_STEER_OFFSET = -Math.toRadians(360.0-30.0 - 90);
+    public static final double BACK_RIGHT_STEER_OFFSET = -Math.toRadians(45.0+ 30.0 + 90);
 
     public static final SwerveDriveKinematics KINEMATICS = new SwerveDriveKinematics(
         // Positive X values are towards center of the field.
