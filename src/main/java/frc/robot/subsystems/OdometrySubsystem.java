@@ -50,7 +50,8 @@ public class OdometrySubsystem extends SubsystemBase implements Loggable {
     @Override
     public void periodic() {
         VisionPoseResult result = vision.getPose();
-        poseEstimator.addVisionMeasurement(result.pose, result.timestamp);
+        if (result != null)
+            poseEstimator.addVisionMeasurement(result.pose, result.timestamp);
         poseEstimator.update(gyroscope.getRotation2d(), getModulePositions());
 
         dashboardField.setRobotPose(getPose());
@@ -69,11 +70,9 @@ public class OdometrySubsystem extends SubsystemBase implements Loggable {
     }
 
     public void resetToVision() {
-        if (!vision.hasTarget()) {
-            return;
-        }
         VisionPoseResult result = vision.getPose();
-        resetOdometry(result.pose);
+        if (result != null)
+            resetOdometry(result.pose);
     }
 
 }

@@ -4,10 +4,12 @@
 
 package frc.robot.subsystems;
 
+import com.pathplanner.lib.PathPlannerTrajectory;
 import com.swervedrivespecialties.swervelib.MkSwerveModuleBuilder;
 import com.swervedrivespecialties.swervelib.MotorType;
 import com.swervedrivespecialties.swervelib.SdsModuleConfigurations;
 import com.swervedrivespecialties.swervelib.SwerveModule;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
@@ -17,7 +19,10 @@ import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import io.github.oblarg.oblog.Loggable;
+
+import java.util.function.Supplier;
 
 import static frc.robot.constants.DriveConstants.*;
 import static frc.robot.constants.MotorConstants.*;
@@ -107,11 +112,29 @@ public class DrivetrainSubsystem extends SubsystemBase implements Loggable {
      *
      * @param states The module states.
      */
-    public void driveWithStates(SwerveModuleState[] states) {
+    public void setModuleStates(SwerveModuleState[] states) {
         frontLeftModule.set(states[0].speedMetersPerSecond, states[0].angle.getRadians());
         frontRightModule.set(states[1].speedMetersPerSecond, states[1].angle.getRadians());
         backLeftModule.set(states[2].speedMetersPerSecond, states[2].angle.getRadians());
         backRightModule.set(states[3].speedMetersPerSecond, states[3].angle.getRadians());
+    }
+
+    public SwerveControllerCommand createTrajectoryCommand(PathPlannerTrajectory trajectory, Supplier<Pose2d> pose2dSupplier) {
+        // This is a new command, so we need to reset the PID controllers
+        xPIDController.reset();
+        yPIDController.reset();
+        rTrapezoidPIDController.reset(pose2dSupplier.get().getRotation().getRadians());
+
+        return new SwerveControllerCommand(
+            trajectory,
+            pose2dSupplier,
+            KINEMATICS,
+            xPIDController,
+            yPIDController,
+            rTrapezoidPIDController,
+            this::setModuleStates,
+            this
+        );
     }
 
 }

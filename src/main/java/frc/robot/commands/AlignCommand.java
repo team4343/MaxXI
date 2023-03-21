@@ -39,13 +39,13 @@ public class AlignCommand extends CommandBase {
     public void initialize() {
         Pose2d pose = this.odometrySubsystem.getPose();
         Pose2d next = new Pose2d(this.x, this.y, Rotation2d.fromRadians(Math.PI));
+
         ArrayList<PathPoint> points = new ArrayList<>();
         points.add(new PathPoint(pose.getTranslation(), pose.getRotation()));
         points.add(new PathPoint(next.getTranslation(), next.getRotation()));
-        System.out.println(pose);
-        System.out.println(next);
+
         this.trajectory = PathPlanner.generatePath(new PathConstraints(1, .2), points);
-//        this.drivetrainSubsystem.followTrajectoryCommand(this.trajectory).schedule();
+        this.drivetrainSubsystem.createTrajectoryCommand(this.trajectory, this.odometrySubsystem::getPose).schedule();
     }
 
     // Called once the command ends or is interrupted.

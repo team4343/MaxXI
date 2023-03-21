@@ -40,7 +40,9 @@ public class Vision {
         this.latestTarget = result.getBestTarget();
 
         // If there are no targets, return null.
-        Transform3d camToTargetTrans = result.getBestTarget().getBestCameraToTarget();
+        PhotonTrackedTarget bestTarget = result.getBestTarget();
+        if (bestTarget == null) return null;
+        Transform3d camToTargetTrans = bestTarget.getBestCameraToTarget();
         Optional<Pose3d> tagPoseOptional = layout.getTagPose(latestTarget.getFiducialId());
 
         if (tagPoseOptional.isEmpty()) return null;
