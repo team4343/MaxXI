@@ -6,16 +6,16 @@ import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 
 public class Gyroscope {
-    private final AHRS m_navx = new AHRS(SPI.Port.kMXP); // NavX connected over MXP
+    private final AHRS navx;
 
     public Gyroscope() {
-        // Send gyro information, too.
+        this.navx = new AHRS(SPI.Port.kMXP);
+        navx.setAngleAdjustment(0);
+
         var tab = Shuffleboard.getTab("Gyroscope");
-        tab.addNumber("Yaw", m_navx::getAngle);
-        tab.addNumber("Pitch", m_navx::getPitch);
-        tab.addNumber("Roll", m_navx::getRoll);
+        tab.addNumber("Pitch", navx::getPitch);
+        tab.addNumber("Roll", navx::getRoll);
         tab.addNumber("Rotation", () -> getRotation2d().getDegrees());
-        tab.addBoolean("Mag calibrated", m_navx::isMagnetometerCalibrated);
     }
 
     /**
@@ -23,27 +23,21 @@ public class Gyroscope {
      * currently facing to the 'forwards' direction.
      */
     public void reset() {
-        m_navx.zeroYaw();
-
+        navx.zeroYaw();
     }
 
-    // Equivalent to the "Yaw".
-    // As the robot turns left (CCW), the angle should increase.
+    /** The rotation angle is the angle between the X axis and the plane formed by the X and Z axes. */
     public Rotation2d getRotation2d() {
-        return (m_navx.getRotation2d());
-        // if (m_navx.isMagnetometerCalibrated())
-        //     // We will only get valid fused headings if the magnetometer is calibrated
-        //     return Rotation2d.fromDegrees(360 - m_navx.getFusedHeading());
-
-        // // We have to invert the angle of the NavX so that rotating the robot counter-clockwise makes the angle increase.
-        // return Rotation2d.fromDegrees(m_navx.getYaw() + 180); // TODO: verify this.
+        return navx.getRotation2d();
     }
 
+    /** The pitch angle is the angle between the X axis and the plane formed by the X and Y axes. */
     public float getGyroscopePitch() {
-        return m_navx.getPitch();
+        return navx.getPitch();
     }
 
+    /** The yaw angle is the angle between the Y axis and the plane formed by the Y and X axes. */
     public float getGyroscopeRoll() {
-        return m_navx.getRoll();
+        return navx.getRoll();
     }
 }

@@ -4,23 +4,32 @@ import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.DrivetrainSubsystem;
+import frc.robot.subsystems.OdometrySubsystem;
 
 import java.util.function.DoubleSupplier;
 
 public class SuppliedDriveCommand extends CommandBase {
-    private final DrivetrainSubsystem m_drivetrainSubsystem;
+    /*
+     * This command is used to drive the robot using the supplied values.
+     *
+     * The values are supplied by the joystick, and are filtered to prevent sudden changes in speed.
+     */
 
-    private final DoubleSupplier m_translationXSupplier;
-    private final DoubleSupplier m_translationYSupplier;
-    private final DoubleSupplier m_rotationSupplier;
+    private final DrivetrainSubsystem drivetrainSubsystem;
+    private final OdometrySubsystem od;
 
-    public SuppliedDriveCommand(DrivetrainSubsystem drivetrainSubsystem,
-            DoubleSupplier translationXSupplier, DoubleSupplier translationYSupplier,
-            DoubleSupplier rotationSupplier) {
-        this.m_drivetrainSubsystem = drivetrainSubsystem;
-        this.m_translationXSupplier = translationXSupplier;
-        this.m_translationYSupplier = translationYSupplier;
-        this.m_rotationSupplier = rotationSupplier;
+    private final DoubleSupplier translationXSupplier;
+    private final DoubleSupplier translationYSupplier;
+    private final DoubleSupplier rotationSupplier;
+
+    public SuppliedDriveCommand(DrivetrainSubsystem drivetrainSubsystem, OdometrySubsystem od,
+                                DoubleSupplier translationXSupplier, DoubleSupplier translationYSupplier,
+                                DoubleSupplier rotationSupplier) {
+        this.drivetrainSubsystem = drivetrainSubsystem;
+        this.translationXSupplier = translationXSupplier;
+        this.translationYSupplier = translationYSupplier;
+        this.rotationSupplier = rotationSupplier;
+        this.od = od;
 
         addRequirements(drivetrainSubsystem);
     }
@@ -31,20 +40,13 @@ public class SuppliedDriveCommand extends CommandBase {
 
     @Override
     public void execute() {
-        // You can use `new ChassisSpeeds(...)` for robot-oriented movement instead of //
-        // field-oriented movement m_drivetrainSubsystem.drive(new ChassisSpeeds( //
-        // m_drivetrainSubsystem.drive(new ChassisSpeeds(m_translationXSupplier.getAsDouble(),
-        // m_translationYSupplier.getAsDouble(), m_rotationSupplier.getAsDouble()));
+        var x = xLimiter.calculate(translationXSupplier.getAsDouble());
+        var y = yLimiter.calculate(translationYSupplier.getAsDouble());
+        var t = tLimiter.calculate(rotationSupplier.getAsDouble());
 
-        var x = xLimiter.calculate(m_translationXSupplier.getAsDouble());
-        var y = yLimiter.calculate(m_translationYSupplier.getAsDouble());
-        var t = tLimiter.calculate(m_rotationSupplier.getAsDouble());
-
-        m_drivetrainSubsystem.drive(ChassisSpeeds.fromFieldRelativeSpeeds(new ChassisSpeeds(x, y, t), DrivetrainSubsystem.gyroscope.getRotation2d()));
+        drivetrainSubsystem.drive(ChassisSpeeds.fromFieldRelativeSpeeds(new ChassisSpeeds(x, y, t), od.getPose().getRotation()));
     }
 
     @Override
-    public void end(boolean interrupted) {
-//        m_drivetrainSubsystem.drive(new ChassisSpeeds(0.0, 0.0, 0.0));
-    }
+    public void end(boolean interrupted) {}
 }

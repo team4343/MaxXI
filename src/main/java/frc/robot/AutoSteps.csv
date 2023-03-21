@@ -1,4 +1,0 @@
-X, Y, R, maxVel, maxAccel, State
-1, 1, 0, 0.5, 0.5, Rest
-2, 2, 0, 0.5, 0.5, PlacingA
-1, 1, 0, 5, 5, Rest

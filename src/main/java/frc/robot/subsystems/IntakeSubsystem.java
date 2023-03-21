@@ -10,37 +10,37 @@ public class IntakeSubsystem extends SubsystemBase {
         CONE_IN, CONE_OUT, CUBE_IN, CUBE_OUT, STOPPED
     }
 
-    private final CANSparkMax m_intake = new CANSparkMax(MotorConstants.ArmConstants.INTAKE_ID, MotorType.kBrushless);
-    private final double m_intakeSpeed = 1;
-    private IntakeState m_prev_intake_state = IntakeState.STOPPED;
-    private IntakeState m_intake_state = IntakeState.STOPPED;
+    private final CANSparkMax intake = new CANSparkMax(MotorConstants.INTAKE_ID, MotorType.kBrushless);
+    private IntakeState prev_intake_state = IntakeState.STOPPED;
+    private IntakeState intake_state = IntakeState.STOPPED;
 
     public IntakeSubsystem() {
-        m_intake.setIdleMode(CANSparkMax.IdleMode.kBrake);
-        m_intake.setOpenLoopRampRate(0);
-        m_intake.setSmartCurrentLimit(40);
+        intake.setIdleMode(CANSparkMax.IdleMode.kBrake);
+        intake.setOpenLoopRampRate(0);
+        intake.setSmartCurrentLimit(40);
     }
 
     public void setState(IntakeState state) {
-        m_intake_state = state;
+        intake_state = state;
     }
 
 
     @Override
     public void periodic() {
-        if (m_prev_intake_state.equals(m_intake_state))
+        if (prev_intake_state.equals(intake_state))
             return;
 
-        m_prev_intake_state = m_intake_state;
-        switch (m_intake_state) {
+        prev_intake_state = intake_state;
+        double m_intakeSpeed = 1;
+        switch (intake_state) {
             case CONE_IN:
             case CUBE_OUT:
-                m_intake.set(m_intakeSpeed); break;
+                intake.set(m_intakeSpeed); break;
             case CONE_OUT:
             case CUBE_IN:
-                m_intake.set(-m_intakeSpeed); break;
+                intake.set(-m_intakeSpeed); break;
             case STOPPED:
-                m_intake.set(0); break;
+                intake.set(0); break;
         }
     }
 }

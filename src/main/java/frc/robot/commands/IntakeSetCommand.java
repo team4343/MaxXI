@@ -4,18 +4,18 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.IntakeSubsystem;
 
 public class IntakeSetCommand extends CommandBase {
-    private final IntakeSubsystem m_intakeSubsystem;
-    private final IntakeSubsystem.IntakeState m_state;
+    private final IntakeSubsystem intakeSubsystem;
+    private final IntakeSubsystem.IntakeState state;
 
     public IntakeSetCommand(IntakeSubsystem intakeSubsystem, IntakeSubsystem.IntakeState state) {
         addRequirements(intakeSubsystem);
-        this.m_intakeSubsystem = intakeSubsystem;
-        this.m_state = state;
+        this.intakeSubsystem = intakeSubsystem;
+        this.state = state;
     }
 
     @Override
     public void execute() {
-        m_intakeSubsystem.setState(m_state);
+        intakeSubsystem.setState(state);
     }
 
     @Override
@@ -25,6 +25,7 @@ public class IntakeSetCommand extends CommandBase {
 
     @Override
     public boolean isFinished() {
+        // Only needs to set the state once.
         return true;
     }
 }

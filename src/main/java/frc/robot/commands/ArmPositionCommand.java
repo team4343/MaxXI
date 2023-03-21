@@ -4,31 +4,28 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.ArmSubsystem;
 
 public class ArmPositionCommand extends CommandBase {
-    private final ArmSubsystem m_armSubsystem;
-    private final ArmSubsystem.State m_state;
+    private final ArmSubsystem armSubsystem;
+    private final ArmSubsystem.State state;
 
     public ArmPositionCommand(ArmSubsystem armSubsystem, ArmSubsystem.State state) {
-        // Use addRequirements() here to declare subsystem dependencies.
-        this.m_armSubsystem = armSubsystem;
-        this.m_state = state;
+        this.armSubsystem = armSubsystem;
+        this.state = state;
         addRequirements(armSubsystem);
     }
 
-    // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
-        m_armSubsystem.setState(m_state);
+        armSubsystem.setState(state);
     }
 
-    // Called once the command ends or is interrupted.
     @Override
     public void end(boolean interrupted) {
         this.m_requirements.clear();
     }
 
-    // Returns true when the command should end.
     @Override
     public boolean isFinished() {
+        // Only needs to set the state once.
         return true;
     }
 }
