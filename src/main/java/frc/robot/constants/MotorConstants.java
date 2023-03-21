@@ -20,21 +20,21 @@ public final class MotorConstants {
     public static final int INTAKE_ID = 32;
     public static final int WRIST_ID = 35;
 
-    public static final int FRONT_LEFT_DRIVE_MOTOR = 1;
-    public static final int FRONT_LEFT_STEER_MOTOR = 11;
-    public static final int FRONT_LEFT_STEER_ENCODER = 21;
+    public static final int FRONT_LEFT_DRIVE_MOTOR = 3;
+    public static final int FRONT_LEFT_STEER_MOTOR = 13;
+    public static final int FRONT_LEFT_STEER_ENCODER = 23;
 
-    public static final int FRONT_RIGHT_DRIVE_MOTOR = 3;
-    public static final int FRONT_RIGHT_STEER_MOTOR = 13;
-    public static final int FRONT_RIGHT_STEER_ENCODER = 23;
+    public static final int FRONT_RIGHT_DRIVE_MOTOR = 1;
+    public static final int FRONT_RIGHT_STEER_MOTOR = 11;
+    public static final int FRONT_RIGHT_STEER_ENCODER = 21;
 
-    public static final int BACK_LEFT_DRIVE_MOTOR = 4;
-    public static final int BACK_LEFT_STEER_MOTOR = 14;
-    public static final int BACK_LEFT_STEER_ENCODER = 24;
+    public static final int BACK_LEFT_DRIVE_MOTOR = 2;
+    public static final int BACK_LEFT_STEER_MOTOR = 12;
+    public static final int BACK_LEFT_STEER_ENCODER = 22;
 
-    public static final int BACK_RIGHT_DRIVE_MOTOR = 2;
-    public static final int BACK_RIGHT_STEER_MOTOR = 12;
-    public static final int BACK_RIGHT_STEER_ENCODER = 22;
+    public static final int BACK_RIGHT_DRIVE_MOTOR = 4;
+    public static final int BACK_RIGHT_STEER_MOTOR = 14;
+    public static final int BACK_RIGHT_STEER_ENCODER = 24;
 
 
 }
