@@ -29,16 +29,20 @@ public final class DriveConstants {
     public static final TrapezoidProfile.Constraints rTrapezoidConstraints = new TrapezoidProfile.Constraints(PI, 2 / PI);
     public static final ProfiledPIDController rTrapezoidPIDController = new ProfiledPIDController(6.0, 0.02, 0.0, rTrapezoidConstraints);
 
+    public static final double X_LIMITER_MANUAL = 1.5;
+    public static final double Y_LIMITER_MANUAL = 1.5;
+    public static final double R_LIMITER_MANUAL = 3.0;
+
     public static final double DRIVETRAIN_TRACK_WIDTH_METERS = 0.56;
     public static final double DRIVETRAIN_WHEELBASE_METERS = 0.56;
     public static final double MAX_VOLTAGE = 11.0;
     public static final double MAX_VELOCITY_METERS_PER_SECOND = 5676.0 / 60.0 * SdsModuleConfigurations.MK4I_L1.getDriveReduction() * SdsModuleConfigurations.MK4I_L1.getWheelDiameter() * PI; // SDS recommends 5676 RPM to M/S
     public static final double MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND = 6.0; // SDS recommends 6 rad/s
 
-    public static final double FRONT_LEFT_STEER_OFFSET = -Math.toRadians(50.0 + 90.0 + 5.0 + 90);
-    public static final double FRONT_RIGHT_STEER_OFFSET = -Math.toRadians(360.0-70.0-40.0 - 90);
-    public static final double BACK_LEFT_STEER_OFFSET = -Math.toRadians(360.0-30.0 - 90);
-    public static final double BACK_RIGHT_STEER_OFFSET = -Math.toRadians(45.0+ 30.0 + 90);
+    public static final double FRONT_LEFT_STEER_OFFSET = -Math.toRadians(50.0 + 90.0 + 5.0);
+    public static final double FRONT_RIGHT_STEER_OFFSET = -Math.toRadians(360.0-70.0-40.0);
+    public static final double BACK_LEFT_STEER_OFFSET = -Math.toRadians(360.0-30.0);
+    public static final double BACK_RIGHT_STEER_OFFSET = -Math.toRadians(45.0+ 30.0);
 
     public static final SwerveDriveKinematics KINEMATICS = new SwerveDriveKinematics(
         // Positive X values are towards center of the field.

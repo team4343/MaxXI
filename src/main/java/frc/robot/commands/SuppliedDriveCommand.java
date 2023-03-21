@@ -5,6 +5,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.OdometrySubsystem;
+import static frc.robot.constants.DriveConstants.*;
 
 import java.util.function.DoubleSupplier;
 
@@ -36,7 +37,8 @@ public class SuppliedDriveCommand extends CommandBase {
 
     private final SlewRateLimiter xLimiter = new SlewRateLimiter(3);
     private final SlewRateLimiter yLimiter = new SlewRateLimiter(3);
-    private final SlewRateLimiter tLimiter = new SlewRateLimiter(5);
+    private final SlewRateLimiter tLimiter = new SlewRateLimiter(5.0);
+
 
     @Override
     public void execute() {
