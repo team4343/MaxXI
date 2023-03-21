@@ -22,6 +22,10 @@ public final class DriveConstants {
     public static final PIDController yPIDController = new PIDController(0.6, 0.01, 0.0);
     public static final PIDController rPIDController = new PIDController(0.05, 0.005, 0.0);
 
+    public static final PIDController xBalanceController = new PIDController(0.6, 0.01, 0.0);
+    public static final PIDController yBalanceController = new PIDController(0.6, 0.01, 0.0);
+    public static final PIDController rBalanceController = new PIDController(0.05, 0.005, 0.0);
+
     public static final TrapezoidProfile.Constraints rTrapezoidConstraints = new TrapezoidProfile.Constraints(PI, 2 / PI);
     public static final ProfiledPIDController rTrapezoidPIDController = new ProfiledPIDController(6.0, 0.02, 0.0, rTrapezoidConstraints);
 

@@ -75,4 +75,18 @@ public class OdometrySubsystem extends SubsystemBase implements Loggable {
             resetOdometry(result.pose);
     }
 
+    /**
+     * This returns a vector pointing from the robot up the charge station.
+     * <p>
+     * The angle of the vector is the angle the robot has to move up the charge station.
+     * The magnitude of the vector is the angle of the charge station.
+     */
+    public void getBalanceVector() {
+        // TODO - Implement
+    }
+
+    public boolean isLevel() {
+        return Math.abs(gyroscope.getGyroscopePitch()) < 5 && Math.abs(gyroscope.getGyroscopeRoll()) < 5;
+    }
+
 }

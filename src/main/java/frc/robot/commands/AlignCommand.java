@@ -6,6 +6,7 @@ import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.PathPoint;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.OdometrySubsystem;
@@ -15,14 +16,12 @@ import java.util.ArrayList;
 public class AlignCommand extends CommandBase {
     /*
      * This command is used to align the robot to a specific location using the path planner.
-     *
-     * Execute override is not needed.
-     * TODO - Implement this.
      */
 
     OdometrySubsystem odometrySubsystem;
     DrivetrainSubsystem drivetrainSubsystem;
     PathPlannerTrajectory trajectory;
+    Command command;
     double x,y,r;
 
     public AlignCommand(DrivetrainSubsystem drivetrainSubsystem, OdometrySubsystem odometrySubsystem, double x, double y, double r) {
@@ -44,7 +43,7 @@ public class AlignCommand extends CommandBase {
         points.add(new PathPoint(pose.getTranslation(), pose.getRotation()));
         points.add(new PathPoint(next.getTranslation(), next.getRotation()));
 
-        this.trajectory = PathPlanner.generatePath(new PathConstraints(1, .2), points);
+        this.trajectory = PathPlanner.generatePath(new PathConstraints(0.7, .2), points);
         this.drivetrainSubsystem.createTrajectoryCommand(this.trajectory, this.odometrySubsystem::getPose).schedule();
     }
 
@@ -57,8 +56,7 @@ public class AlignCommand extends CommandBase {
     // Returns true when the command should end.
     @Override
     public boolean isFinished() {
-        // this.drivetrainSubsystem.trajctoryFollower.isFinished();
-        // TODO Implement this.
-        return false;
+//        return this.command.isFinished();
+        return true;
     }
 }

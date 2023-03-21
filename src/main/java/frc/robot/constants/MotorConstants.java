@@ -36,5 +36,4 @@ public final class MotorConstants {
     public static final int BACK_RIGHT_STEER_MOTOR = 11;
     public static final int BACK_RIGHT_STEER_ENCODER = 21;
 
-
 }
