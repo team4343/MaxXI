@@ -28,7 +28,8 @@ public class Gyroscope {
 
     /** The rotation angle is the angle between the X axis and the plane formed by the X and Z axes. */
     public Rotation2d getRotation2d() {
-        return navx.getRotation2d();
+//        return navx.getRotation2d();
+        return new Rotation2d();
     }
 
     /** The pitch angle is the angle between the X axis and the plane formed by the X and Y axes. */

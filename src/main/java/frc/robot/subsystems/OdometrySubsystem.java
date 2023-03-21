@@ -81,9 +81,16 @@ public class OdometrySubsystem extends SubsystemBase implements Loggable {
      * The angle of the vector is the angle the robot has to move up the charge station.
      * The magnitude of the vector is the angle of the charge station.
      */
-    public void getBalanceVector() {
-        // TODO - Implement
-    }
+//    public Rotation2d getInclineDirection() {
+//        double pitchMagnitude = gyroscope.getGyroscopePitch();
+//        double rollMagnitude = gyroscope.getGyroscopeRoll();
+//
+//
+//
+//
+//
+////        Rotation2d.fromDegrees(Math.toDegrees(Math.atan2(pitch, roll)));
+//    }
 
     public boolean isLevel() {
         return Math.abs(gyroscope.getGyroscopePitch()) < 5 && Math.abs(gyroscope.getGyroscopeRoll()) < 5;

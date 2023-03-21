@@ -18,38 +18,18 @@ public class HumanDevice {
 
     // Joystick X and Y are swapped due to orientation of the joystick relative to the field.
     public double getDriverX() {
-        return modifyAxis(driverStick.getY()) * DriveConstants.MAX_VELOCITY_METERS_PER_SECOND * -1;
+        return modifyAxis(driverStick.getX()) * DriveConstants.MAX_VELOCITY_METERS_PER_SECOND * -1;
     }
     public double getDriverY() {
-        return modifyAxis(driverStick.getX()) * DriveConstants.MAX_VELOCITY_METERS_PER_SECOND * -1;
+        return modifyAxis(driverStick.getY()) * DriveConstants.MAX_VELOCITY_METERS_PER_SECOND * -1;
     }
 
     public double getDriverT() {
         return modifyAxis(driverStick.getTwist()) * DriveConstants.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND;
     }
 
-    public double getOperatorLeftX() {
-        return modifyAxis(operatorStick.getLeftY()) * DriveConstants.MAX_VELOCITY_METERS_PER_SECOND * -1;
-    }
-
-    public double getOperatorLeftY() {
-        return modifyAxis(operatorStick.getLeftX()) * DriveConstants.MAX_VELOCITY_METERS_PER_SECOND * -1;
-    }
-
-    public double getOperatorRightX() {
-        return modifyAxis(operatorStick.getRightY()) * DriveConstants.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND;
-    }
-
-    public double getOperatorRightY() {
-        return modifyAxis(operatorStick.getRightX()) * DriveConstants.MAX_VELOCITY_METERS_PER_SECOND * -1;
-    }
-
     public JoystickButton setDriverCommand(int button) {
         return new JoystickButton(driverStick, button);
-    }
-
-    public JoystickButton setOperatorCommand(int button) {
-        return new JoystickButton(operatorStick, button);
     }
 
     private double deadband(double value) {
