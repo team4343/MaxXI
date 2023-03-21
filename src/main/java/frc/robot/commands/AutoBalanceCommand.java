@@ -19,4 +19,9 @@ public class AutoBalanceCommand extends CommandBase {
     public void execute() {
 
     }
+
+    @Override
+    public boolean isFinished() {
+        return this.odometrySubsystem.isLevel();
+    }
 }
