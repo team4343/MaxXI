@@ -1,4 +1,4 @@
-package frc.robot.constants;
+package com.maxtech.maxxi.constants;
 
 import com.swervedrivespecialties.swervelib.SdsModuleConfigurations;
 import edu.wpi.first.math.VecBuilder;

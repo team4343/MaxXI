@@ -1,10 +1,9 @@
-package frc.robot.constants;
+package com.maxtech.maxxi.constants;
 
+import static com.maxtech.maxxi.constants.VisionConstants.*;
 import edu.wpi.first.apriltag.AprilTag;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.util.Units;
-
-import static frc.robot.constants.VisionConstants.*;
 
 public final class LocationConstants {
     public static final double FIELD_WIDTH = Units.feetToMeters(27.0);

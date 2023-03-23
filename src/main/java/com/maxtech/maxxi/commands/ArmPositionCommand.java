@@ -1,7 +1,7 @@
-package frc.robot.commands;
+package com.maxtech.maxxi.commands;
 
+import com.maxtech.maxxi.subsystems.ArmSubsystem;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.ArmSubsystem;
 
 public class ArmPositionCommand extends CommandBase {
     private final ArmSubsystem armSubsystem;

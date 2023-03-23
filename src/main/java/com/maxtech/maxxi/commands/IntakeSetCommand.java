@@ -1,7 +1,7 @@
-package frc.robot.commands;
+package com.maxtech.maxxi.commands;
 
+import com.maxtech.maxxi.subsystems.IntakeSubsystem;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.IntakeSubsystem;
 
 public class IntakeSetCommand extends CommandBase {
     private final IntakeSubsystem intakeSubsystem;

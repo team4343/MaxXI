@@ -1,11 +1,10 @@
-package frc.robot.subsystems;
+package com.maxtech.maxxi.subsystems;
 
+import static com.maxtech.maxxi.constants.MotorConstants.*;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-
-import static frc.robot.constants.MotorConstants.*;
 
 public class ArmSubsystem extends SubsystemBase {
     public enum State {

@@ -1,4 +1,4 @@
-package frc.robot.util;
+package com.maxtech.maxxi.util;
 
 import edu.wpi.first.math.geometry.Pose2d;
 

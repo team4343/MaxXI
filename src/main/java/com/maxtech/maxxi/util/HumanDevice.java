@@ -1,12 +1,11 @@
-package frc.robot.util;
+package com.maxtech.maxxi.util;
 
+import static com.maxtech.maxxi.constants.DriveConstants.DEAD_BAND;
+import com.maxtech.maxxi.constants.DriveConstants;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
-import frc.robot.constants.DriveConstants;
-
-import static frc.robot.constants.DriveConstants.DEAD_BAND;
 
 public class HumanDevice {
     private final Joystick driverStick;

@@ -1,10 +1,10 @@
-package frc.robot;
+package com.maxtech.maxxi;
 
+import com.maxtech.maxxi.util.HumanDevice;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.util.HumanDevice;
 import io.github.oblarg.oblog.Logger;
 
 /**

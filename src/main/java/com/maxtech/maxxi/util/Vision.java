@@ -1,20 +1,18 @@
-package frc.robot.util;
+package com.maxtech.maxxi.util;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Transform3d;
-import frc.robot.constants.VisionConstants;
 import org.photonvision.PhotonCamera;
 import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
-
+import com.maxtech.maxxi.constants.VisionConstants;
+import static com.maxtech.maxxi.constants.LocationConstants.FIELD_LENGTH;
+import static com.maxtech.maxxi.constants.LocationConstants.FIELD_WIDTH;
+import static com.maxtech.maxxi.constants.VisionConstants.frameTimeout;
+import static com.maxtech.maxxi.constants.VisionConstants.getAprilTagList;
 import java.util.Optional;
-
-import static frc.robot.constants.LocationConstants.FIELD_LENGTH;
-import static frc.robot.constants.LocationConstants.FIELD_WIDTH;
-import static frc.robot.constants.VisionConstants.frameTimeout;
-import static frc.robot.constants.VisionConstants.getAprilTagList;
 
 public class Vision {
     private final AprilTagFieldLayout layout;

@@ -1,11 +1,10 @@
-package frc.robot.commands.drivebase;
+package com.maxtech.maxxi.commands.drivebase;
 
+import static com.maxtech.maxxi.constants.DriveConstants.*;
+import com.maxtech.maxxi.subsystems.DrivetrainSubsystem;
 import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.commands.PPSwerveControllerCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import frc.robot.subsystems.DrivetrainSubsystem;
-
-import static frc.robot.constants.DriveConstants.*;
 
 
 public class FollowTrajectory extends SequentialCommandGroup {

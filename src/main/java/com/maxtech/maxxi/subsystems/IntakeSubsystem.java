@@ -1,9 +1,9 @@
-package frc.robot.subsystems;
+package com.maxtech.maxxi.subsystems;
 
+import com.maxtech.maxxi.constants.MotorConstants;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.constants.MotorConstants;
 
 public class IntakeSubsystem extends SubsystemBase {
     public enum IntakeState {

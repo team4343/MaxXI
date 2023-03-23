@@ -1,4 +1,4 @@
-package frc.robot.constants;
+package com.maxtech.maxxi.constants;
 
 import edu.wpi.first.apriltag.AprilTag;
 import edu.wpi.first.math.geometry.Pose3d;

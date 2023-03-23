@@ -2,21 +2,20 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot;
+package com.maxtech.maxxi;
 
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
-import frc.robot.commands.ArmPositionCommand;
-import frc.robot.commands.IntakeSetCommand;
-import frc.robot.commands.drivebase.TeleopDrive;
-import frc.robot.subsystems.ArmSubsystem;
-import frc.robot.subsystems.ArmSubsystem.State;
-import frc.robot.subsystems.DrivetrainSubsystem;
-import frc.robot.subsystems.IntakeSubsystem;
-import frc.robot.subsystems.IntakeSubsystem.IntakeState;
-import frc.robot.util.HumanDevice;
-
 import java.util.function.BooleanSupplier;
+import com.maxtech.maxxi.commands.ArmPositionCommand;
+import com.maxtech.maxxi.commands.IntakeSetCommand;
+import com.maxtech.maxxi.commands.drivebase.TeleopDrive;
+import com.maxtech.maxxi.subsystems.ArmSubsystem;
+import com.maxtech.maxxi.subsystems.DrivetrainSubsystem;
+import com.maxtech.maxxi.subsystems.IntakeSubsystem;
+import com.maxtech.maxxi.subsystems.ArmSubsystem.State;
+import com.maxtech.maxxi.subsystems.IntakeSubsystem.IntakeState;
+import com.maxtech.maxxi.util.HumanDevice;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
