@@ -1,4 +1,4 @@
 /**
  * Deserialize specific variables for outside the parser.
  */
-package swervelib.parser.deserializer;
+package com.maxtech.lib.swervelib.parser.deserializer;

@@ -1,4 +1,4 @@
-package swervelib;
+package com.maxtech.lib.swervelib;
 
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
@@ -23,15 +23,15 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import swervelib.imu.SwerveIMU;
-import swervelib.math.SwerveKinematics2;
-import swervelib.math.SwerveMath;
-import swervelib.math.SwerveModuleState2;
-import swervelib.parser.SwerveControllerConfiguration;
-import swervelib.parser.SwerveDriveConfiguration;
-import swervelib.simulation.SwerveIMUSimulation;
-import swervelib.telemetry.SwerveDriveTelemetry;
-import swervelib.telemetry.SwerveDriveTelemetry.TelemetryVerbosity;
+import com.maxtech.lib.swervelib.imu.SwerveIMU;
+import com.maxtech.lib.swervelib.math.SwerveKinematics2;
+import com.maxtech.lib.swervelib.math.SwerveMath;
+import com.maxtech.lib.swervelib.math.SwerveModuleState2;
+import com.maxtech.lib.swervelib.parser.SwerveControllerConfiguration;
+import com.maxtech.lib.swervelib.parser.SwerveDriveConfiguration;
+import com.maxtech.lib.swervelib.simulation.SwerveIMUSimulation;
+import com.maxtech.lib.swervelib.telemetry.SwerveDriveTelemetry;
+import com.maxtech.lib.swervelib.telemetry.SwerveDriveTelemetry.TelemetryVerbosity;
 
 /**
  * Swerve Drive class representing and controlling the swerve drive.

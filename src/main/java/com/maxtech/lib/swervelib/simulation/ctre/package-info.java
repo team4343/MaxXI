@@ -1,4 +1,4 @@
 /**
  * CTRE Physics Simulator.
  */
-package swervelib.simulation.ctre;
+package com.maxtech.lib.swervelib.simulation.ctre;

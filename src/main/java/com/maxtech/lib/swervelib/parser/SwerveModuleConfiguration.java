@@ -1,17 +1,17 @@
-package swervelib.parser;
+package com.maxtech.lib.swervelib.parser;
 
-import static swervelib.math.SwerveMath.calculateAngleKV;
-import static swervelib.math.SwerveMath.calculateDegreesPerSteeringRotation;
-import static swervelib.math.SwerveMath.calculateMaxAcceleration;
-import static swervelib.math.SwerveMath.calculateMetersPerRotation;
+import static com.maxtech.lib.swervelib.math.SwerveMath.calculateAngleKV;
+import static com.maxtech.lib.swervelib.math.SwerveMath.calculateDegreesPerSteeringRotation;
+import static com.maxtech.lib.swervelib.math.SwerveMath.calculateMaxAcceleration;
+import static com.maxtech.lib.swervelib.math.SwerveMath.calculateMetersPerRotation;
 
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Translation2d;
-import swervelib.encoders.SwerveAbsoluteEncoder;
-import swervelib.motors.SwerveMotor;
+import com.maxtech.lib.swervelib.encoders.SwerveAbsoluteEncoder;
+import com.maxtech.lib.swervelib.motors.SwerveMotor;
 
 /**
- * Swerve Module configuration class which is used to configure {@link swervelib.SwerveModule}.
+ * Swerve Module configuration class which is used to configure {@link com.maxtech.lib.swervelib.SwerveModule}.
  */
 public class SwerveModuleConfiguration
 {

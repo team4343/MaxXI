@@ -1,9 +1,9 @@
-package swervelib.simulation.ctre;
+package com.maxtech.lib.swervelib.simulation.ctre;
 
-import static swervelib.simulation.ctre.PhysicsSim.random;
+import static com.maxtech.lib.swervelib.simulation.ctre.PhysicsSim.random;
 
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
-import swervelib.simulation.ctre.PhysicsSim.SimProfile;
+import com.maxtech.lib.swervelib.simulation.ctre.PhysicsSim.SimProfile;
 
 /**
  * Holds information about a simulated TalonSRX.

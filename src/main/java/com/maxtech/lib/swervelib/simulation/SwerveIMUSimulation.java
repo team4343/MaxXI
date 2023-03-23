@@ -1,4 +1,4 @@
-package swervelib.simulation;
+package com.maxtech.lib.swervelib.simulation;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -7,11 +7,11 @@ import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import java.util.Optional;
-import swervelib.math.SwerveKinematics2;
-import swervelib.math.SwerveModuleState2;
+import com.maxtech.lib.swervelib.math.SwerveKinematics2;
+import com.maxtech.lib.swervelib.math.SwerveModuleState2;
 
 /**
- * Simulation for {@link swervelib.SwerveDrive} IMU.
+ * Simulation for {@link com.maxtech.lib.swervelib.SwerveDrive} IMU.
  */
 public class SwerveIMUSimulation
 {
@@ -90,7 +90,7 @@ public class SwerveIMUSimulation
   }
 
   /**
-   * Update the odometry of the simulated {@link swervelib.SwerveDrive} and post the {@link swervelib.SwerveModule}
+   * Update the odometry of the simulated {@link com.maxtech.lib.swervelib.SwerveDrive} and post the {@link com.maxtech.lib.swervelib.SwerveModule}
    * states to the {@link Field2d}.
    *
    * @param kinematics  {@link SwerveKinematics2} of the swerve drive.

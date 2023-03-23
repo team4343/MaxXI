@@ -7,8 +7,8 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
-import swervelib.math.Matter;
-import swervelib.parser.PIDFConfig;
+import com.maxtech.lib.swervelib.math.Matter;
+import com.maxtech.lib.swervelib.parser.PIDFConfig;
 
 import static java.lang.Math.PI;
 

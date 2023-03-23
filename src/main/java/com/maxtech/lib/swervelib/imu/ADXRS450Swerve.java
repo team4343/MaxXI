@@ -1,4 +1,4 @@
-package swervelib.imu;
+package com.maxtech.lib.swervelib.imu;
 
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation3d;

@@ -1,4 +1,4 @@
-package swervelib.motors;
+package com.maxtech.lib.swervelib.motors;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.DemandType;
@@ -8,10 +8,10 @@ import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
 import com.ctre.phoenix.motorcontrol.can.TalonSRXConfiguration;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import edu.wpi.first.wpilibj.Timer;
-import swervelib.encoders.SwerveAbsoluteEncoder;
-import swervelib.parser.PIDFConfig;
-import swervelib.simulation.ctre.PhysicsSim;
-import swervelib.telemetry.SwerveDriveTelemetry;
+import com.maxtech.lib.swervelib.encoders.SwerveAbsoluteEncoder;
+import com.maxtech.lib.swervelib.parser.PIDFConfig;
+import com.maxtech.lib.swervelib.simulation.ctre.PhysicsSim;
+import com.maxtech.lib.swervelib.telemetry.SwerveDriveTelemetry;
 
 /**
  * {@link com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX} Swerve Motor.
@@ -134,7 +134,7 @@ public class TalonSRXSwerve extends SwerveMotor
   {
     this.positionConversionFactor = positionConversionFactor;
     // Taken from democat's library.
-    // https://github.com/democat3457/swerve-lib/blob/7c03126b8c22f23a501b2c2742f9d173a5bcbc40/src/main/java/com/swervedrivespecialties/swervelib/ctre/Falcon500DriveControllerFactoryBuilder.java#L16
+    // https://github.com/democat3457/swerve-lib/blob/7c03126b8c22f23a501b2c2742f9d173a5bcbc40/src/main/java/com/swervedrivespecialties/com.maxtech.lib.swervelib/ctre/Falcon500DriveControllerFactoryBuilder.java#L16
     configureCANStatusFrames(250);
   }
 

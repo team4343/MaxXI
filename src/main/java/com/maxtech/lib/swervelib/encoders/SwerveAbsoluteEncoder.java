@@ -1,4 +1,4 @@
-package swervelib.encoders;
+package com.maxtech.lib.swervelib.encoders;
 
 /**
  * Swerve abstraction class to define a standard interface with absolute encoders for swerve modules..

@@ -1,4 +1,4 @@
-package swervelib.encoders;
+package com.maxtech.lib.swervelib.encoders;
 
 import com.ctre.phoenix.ErrorCode;
 import com.ctre.phoenix.sensors.AbsoluteSensorRange;
@@ -101,7 +101,7 @@ public class CANCoderSwerve extends SwerveAbsoluteEncoder
     double angle = encoder.getAbsolutePosition();
 
     // Taken from democat's library.
-    // Source: https://github.com/democat3457/swerve-lib/blob/7c03126b8c22f23a501b2c2742f9d173a5bcbc40/src/main/java/com/swervedrivespecialties/swervelib/ctre/CanCoderFactoryBuilder.java#L51-L74
+    // Source: https://github.com/democat3457/swerve-lib/blob/7c03126b8c22f23a501b2c2742f9d173a5bcbc40/src/main/java/com/swervedrivespecialties/com.maxtech.lib.swervelib/ctre/CanCoderFactoryBuilder.java#L51-L74
     ErrorCode code     = encoder.getLastError();
     int       ATTEMPTS = 3;
     for (int i = 0; i < ATTEMPTS; i++)

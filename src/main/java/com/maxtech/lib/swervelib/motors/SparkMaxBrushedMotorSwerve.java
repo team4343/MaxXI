@@ -1,4 +1,4 @@
-package swervelib.motors;
+package com.maxtech.lib.swervelib.motors;
 
 import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.CANSparkMax;
@@ -11,9 +11,9 @@ import com.revrobotics.SparkMaxAlternateEncoder;
 import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.SparkMaxRelativeEncoder.Type;
 import edu.wpi.first.wpilibj.DriverStation;
-import swervelib.encoders.SwerveAbsoluteEncoder;
-import swervelib.motors.SparkMaxSwerve.SparkMAX_slotIdx;
-import swervelib.parser.PIDFConfig;
+import com.maxtech.lib.swervelib.encoders.SwerveAbsoluteEncoder;
+import com.maxtech.lib.swervelib.motors.SparkMaxSwerve.SparkMAX_slotIdx;
+import com.maxtech.lib.swervelib.parser.PIDFConfig;
 
 /**
  * Brushed motor control with SparkMax.

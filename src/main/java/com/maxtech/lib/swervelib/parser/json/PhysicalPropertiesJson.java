@@ -1,10 +1,10 @@
-package swervelib.parser.json;
+package com.maxtech.lib.swervelib.parser.json;
 
 import edu.wpi.first.math.util.Units;
-import swervelib.parser.SwerveModulePhysicalCharacteristics;
+import com.maxtech.lib.swervelib.parser.SwerveModulePhysicalCharacteristics;
 
 /**
- * {@link swervelib.parser.SwerveModulePhysicalCharacteristics} parsed data. Used to configure the SwerveModule.
+ * {@link com.maxtech.lib.swervelib.parser.SwerveModulePhysicalCharacteristics} parsed data. Used to configure the SwerveModule.
  */
 public class PhysicalPropertiesJson
 {

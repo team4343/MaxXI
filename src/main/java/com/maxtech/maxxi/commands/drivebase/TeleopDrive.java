@@ -8,7 +8,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import swervelib.SwerveController;
+import com.maxtech.lib.swervelib.SwerveController;
 
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;

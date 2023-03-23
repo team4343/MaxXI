@@ -1,11 +1,11 @@
-package swervelib.parser.json;
+package com.maxtech.lib.swervelib.parser.json;
 
-import swervelib.parser.PIDFConfig;
-import swervelib.parser.SwerveControllerConfiguration;
-import swervelib.parser.SwerveDriveConfiguration;
+import com.maxtech.lib.swervelib.parser.PIDFConfig;
+import com.maxtech.lib.swervelib.parser.SwerveControllerConfiguration;
+import com.maxtech.lib.swervelib.parser.SwerveDriveConfiguration;
 
 /**
- * {@link swervelib.SwerveController} parsed class. Used to access the JSON data.
+ * {@link com.maxtech.lib.swervelib.SwerveController} parsed class. Used to access the JSON data.
  */
 public class ControllerPropertiesJson
 {

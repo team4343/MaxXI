@@ -1,4 +1,4 @@
-package swervelib.math;
+package com.maxtech.lib.swervelib.math;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;

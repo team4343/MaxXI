@@ -1,4 +1,4 @@
 /**
  * Mathematics for swerve drives.
  */
-package swervelib.math;
+package com.maxtech.lib.swervelib.math;

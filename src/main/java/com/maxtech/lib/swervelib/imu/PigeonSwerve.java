@@ -1,4 +1,4 @@
-package swervelib.imu;
+package com.maxtech.lib.swervelib.imu;
 
 import com.ctre.phoenix.sensors.WPI_PigeonIMU;
 import edu.wpi.first.math.geometry.Quaternion;

@@ -1,9 +1,9 @@
-package swervelib.parser;
+package com.maxtech.lib.swervelib.parser;
 
-import static swervelib.math.SwerveMath.calculateMaxAngularVelocity;
+import static com.maxtech.lib.swervelib.math.SwerveMath.calculateMaxAngularVelocity;
 
 /**
- * Swerve Controller configuration class which is used to configure {@link swervelib.SwerveController}.
+ * Swerve Controller configuration class which is used to configure {@link com.maxtech.lib.swervelib.SwerveController}.
  */
 public class SwerveControllerConfiguration
 {
@@ -15,7 +15,7 @@ public class SwerveControllerConfiguration
   /**
    * Maximum angular velocity in rad/s
    */
-  public final double     maxAngularVelocity;
+  public double     maxAngularVelocity;
   /**
    * PIDF for the heading of the robot.
    */

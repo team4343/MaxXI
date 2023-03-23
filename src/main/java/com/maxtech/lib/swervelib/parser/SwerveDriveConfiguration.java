@@ -1,8 +1,8 @@
-package swervelib.parser;
+package com.maxtech.lib.swervelib.parser;
 
 import edu.wpi.first.math.geometry.Translation2d;
-import swervelib.SwerveModule;
-import swervelib.imu.SwerveIMU;
+import com.maxtech.lib.swervelib.SwerveModule;
+import com.maxtech.lib.swervelib.imu.SwerveIMU;
 
 /**
  * Swerve drive configurations used during SwerveDrive construction.

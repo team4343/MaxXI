@@ -1,9 +1,9 @@
-package swervelib.encoders;
+package com.maxtech.lib.swervelib.encoders;
 
 import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.SparkMaxAbsoluteEncoder.Type;
-import swervelib.motors.SwerveMotor;
+import com.maxtech.lib.swervelib.motors.SwerveMotor;
 
 /**
  * SparkMax absolute encoder, attached through the data port.

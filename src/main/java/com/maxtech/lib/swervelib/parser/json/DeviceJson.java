@@ -1,24 +1,24 @@
-package swervelib.parser.json;
+package com.maxtech.lib.swervelib.parser.json;
 
 import com.revrobotics.SparkMaxRelativeEncoder.Type;
 import edu.wpi.first.wpilibj.SerialPort.Port;
-import swervelib.encoders.AnalogAbsoluteEncoderSwerve;
-import swervelib.encoders.CANCoderSwerve;
-import swervelib.encoders.SparkMaxEncoderSwerve;
-import swervelib.encoders.SwerveAbsoluteEncoder;
-import swervelib.imu.ADIS16448Swerve;
-import swervelib.imu.ADIS16470Swerve;
-import swervelib.imu.ADXRS450Swerve;
-import swervelib.imu.AnalogGyroSwerve;
-import swervelib.imu.NavXSwerve;
-import swervelib.imu.Pigeon2Swerve;
-import swervelib.imu.PigeonSwerve;
-import swervelib.imu.SwerveIMU;
-import swervelib.motors.SparkMaxBrushedMotorSwerve;
-import swervelib.motors.SparkMaxSwerve;
-import swervelib.motors.SwerveMotor;
-import swervelib.motors.TalonFXSwerve;
-import swervelib.motors.TalonSRXSwerve;
+import com.maxtech.lib.swervelib.encoders.AnalogAbsoluteEncoderSwerve;
+import com.maxtech.lib.swervelib.encoders.CANCoderSwerve;
+import com.maxtech.lib.swervelib.encoders.SparkMaxEncoderSwerve;
+import com.maxtech.lib.swervelib.encoders.SwerveAbsoluteEncoder;
+import com.maxtech.lib.swervelib.imu.ADIS16448Swerve;
+import com.maxtech.lib.swervelib.imu.ADIS16470Swerve;
+import com.maxtech.lib.swervelib.imu.ADXRS450Swerve;
+import com.maxtech.lib.swervelib.imu.AnalogGyroSwerve;
+import com.maxtech.lib.swervelib.imu.NavXSwerve;
+import com.maxtech.lib.swervelib.imu.Pigeon2Swerve;
+import com.maxtech.lib.swervelib.imu.PigeonSwerve;
+import com.maxtech.lib.swervelib.imu.SwerveIMU;
+import com.maxtech.lib.swervelib.motors.SparkMaxBrushedMotorSwerve;
+import com.maxtech.lib.swervelib.motors.SparkMaxSwerve;
+import com.maxtech.lib.swervelib.motors.SwerveMotor;
+import com.maxtech.lib.swervelib.motors.TalonFXSwerve;
+import com.maxtech.lib.swervelib.motors.TalonSRXSwerve;
 
 /**
  * Device JSON parsed class. Used to access the JSON data.

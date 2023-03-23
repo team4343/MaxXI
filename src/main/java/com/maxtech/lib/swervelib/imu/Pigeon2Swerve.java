@@ -1,4 +1,4 @@
-package swervelib.imu;
+package com.maxtech.lib.swervelib.imu;
 
 import com.ctre.phoenix.sensors.Pigeon2Configuration;
 import com.ctre.phoenix.sensors.WPI_Pigeon2;

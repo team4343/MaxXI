@@ -1,4 +1,4 @@
 /**
- * Swerve motor controller wrappers which implement {@link swervelib.motors.SwerveMotor}.
+ * Swerve motor controller wrappers which implement {@link com.maxtech.lib.swervelib.motors.SwerveMotor}.
  */
-package swervelib.motors;
+package com.maxtech.lib.swervelib.motors;

@@ -1,4 +1,4 @@
-package swervelib.simulation.ctre;
+package com.maxtech.lib.swervelib.simulation.ctre;
 
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;

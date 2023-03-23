@@ -1,7 +1,7 @@
-package swervelib.motors;
+package com.maxtech.lib.swervelib.motors;
 
-import swervelib.encoders.SwerveAbsoluteEncoder;
-import swervelib.parser.PIDFConfig;
+import com.maxtech.lib.swervelib.encoders.SwerveAbsoluteEncoder;
+import com.maxtech.lib.swervelib.parser.PIDFConfig;
 
 /**
  * Swerve motor abstraction which defines a standard interface for motors within a swerve module.

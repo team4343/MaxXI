@@ -1,4 +1,4 @@
-package swervelib.encoders;
+package com.maxtech.lib.swervelib.encoders;
 
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.RobotController;

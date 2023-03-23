@@ -1,4 +1,4 @@
 /**
- * IMUs used for controlling the robot heading. All implement {@link swervelib.imu.SwerveIMU}.
+ * IMUs used for controlling the robot heading. All implement {@link com.maxtech.lib.swervelib.imu.SwerveIMU}.
  */
-package swervelib.imu;
+package com.maxtech.lib.swervelib.imu;

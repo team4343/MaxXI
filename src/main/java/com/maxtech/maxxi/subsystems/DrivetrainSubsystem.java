@@ -8,13 +8,13 @@ import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import swervelib.SwerveController;
-import swervelib.SwerveDrive;
-import swervelib.math.SwerveKinematics2;
-import swervelib.parser.SwerveDriveConfiguration;
-import swervelib.parser.SwerveParser;
-import swervelib.telemetry.SwerveDriveTelemetry;
-import swervelib.telemetry.SwerveDriveTelemetry.TelemetryVerbosity;
+import com.maxtech.lib.swervelib.SwerveController;
+import com.maxtech.lib.swervelib.SwerveDrive;
+import com.maxtech.lib.swervelib.math.SwerveKinematics2;
+import com.maxtech.lib.swervelib.parser.SwerveDriveConfiguration;
+import com.maxtech.lib.swervelib.parser.SwerveParser;
+import com.maxtech.lib.swervelib.telemetry.SwerveDriveTelemetry;
+import com.maxtech.lib.swervelib.telemetry.SwerveDriveTelemetry.TelemetryVerbosity;
 
 import java.io.File;
 import java.io.IOException;
@@ -36,6 +36,7 @@ public class DrivetrainSubsystem extends SubsystemBase
         SwerveDriveTelemetry.verbosity = TelemetryVerbosity.HIGH;
         try {
             swerveDrive = new SwerveParser(new File(Filesystem.getDeployDirectory(), "swerve")).createSwerveDrive();
+            swerveDrive.swerveController.config.maxAngularVelocity = 12;
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

@@ -1,16 +1,16 @@
-package swervelib.parser.json;
+package com.maxtech.lib.swervelib.parser.json;
 
 import edu.wpi.first.math.util.Units;
-import swervelib.encoders.SwerveAbsoluteEncoder;
-import swervelib.motors.SwerveMotor;
-import swervelib.parser.PIDFConfig;
-import swervelib.parser.SwerveModuleConfiguration;
-import swervelib.parser.SwerveModulePhysicalCharacteristics;
-import swervelib.parser.json.modules.BoolMotorJson;
-import swervelib.parser.json.modules.LocationJson;
+import com.maxtech.lib.swervelib.encoders.SwerveAbsoluteEncoder;
+import com.maxtech.lib.swervelib.motors.SwerveMotor;
+import com.maxtech.lib.swervelib.parser.PIDFConfig;
+import com.maxtech.lib.swervelib.parser.SwerveModuleConfiguration;
+import com.maxtech.lib.swervelib.parser.SwerveModulePhysicalCharacteristics;
+import com.maxtech.lib.swervelib.parser.json.modules.BoolMotorJson;
+import com.maxtech.lib.swervelib.parser.json.modules.LocationJson;
 
 /**
- * {@link swervelib.SwerveModule} JSON parsed class. Used to access the JSON data.
+ * {@link com.maxtech.lib.swervelib.SwerveModule} JSON parsed class. Used to access the JSON data.
  */
 public class ModuleJson
 {

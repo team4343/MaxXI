@@ -1,17 +1,17 @@
-package swervelib;
+package com.maxtech.lib.swervelib;
 
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import swervelib.encoders.SwerveAbsoluteEncoder;
-import swervelib.math.SwerveModuleState2;
-import swervelib.motors.SwerveMotor;
-import swervelib.parser.SwerveModuleConfiguration;
-import swervelib.simulation.SwerveModuleSimulation;
-import swervelib.telemetry.SwerveDriveTelemetry;
-import swervelib.telemetry.SwerveDriveTelemetry.TelemetryVerbosity;
+import com.maxtech.lib.swervelib.encoders.SwerveAbsoluteEncoder;
+import com.maxtech.lib.swervelib.math.SwerveModuleState2;
+import com.maxtech.lib.swervelib.motors.SwerveMotor;
+import com.maxtech.lib.swervelib.parser.SwerveModuleConfiguration;
+import com.maxtech.lib.swervelib.simulation.SwerveModuleSimulation;
+import com.maxtech.lib.swervelib.telemetry.SwerveDriveTelemetry;
+import com.maxtech.lib.swervelib.telemetry.SwerveDriveTelemetry.TelemetryVerbosity;
 
 /**
  * The Swerve Module class which represents and controls Swerve Modules for the swerve drive.

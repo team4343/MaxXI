@@ -1,4 +1,4 @@
-package swervelib.math;
+package com.maxtech.lib.swervelib.math;
 
 import edu.wpi.first.math.geometry.Translation3d;
 

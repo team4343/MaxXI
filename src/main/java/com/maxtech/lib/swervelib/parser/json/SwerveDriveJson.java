@@ -1,7 +1,7 @@
-package swervelib.parser.json;
+package com.maxtech.lib.swervelib.parser.json;
 
 /**
- * {@link swervelib.SwerveDrive} JSON parsed class. Used to access parsed data from the swervedrive.json file.
+ * {@link com.maxtech.lib.swervelib.SwerveDrive} JSON parsed class. Used to access parsed data from the swervedrive.json file.
  */
 public class SwerveDriveJson
 {

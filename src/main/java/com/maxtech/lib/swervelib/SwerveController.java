@@ -1,10 +1,10 @@
-package swervelib;
+package com.maxtech.lib.swervelib;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import swervelib.parser.SwerveControllerConfiguration;
+import com.maxtech.lib.swervelib.parser.SwerveControllerConfiguration;
 
 /**
  * Controller class used to convert raw inputs into robot speeds.

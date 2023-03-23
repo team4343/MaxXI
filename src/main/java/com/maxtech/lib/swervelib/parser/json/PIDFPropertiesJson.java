@@ -1,9 +1,9 @@
-package swervelib.parser.json;
+package com.maxtech.lib.swervelib.parser.json;
 
-import swervelib.parser.PIDFConfig;
+import com.maxtech.lib.swervelib.parser.PIDFConfig;
 
 /**
- * {@link swervelib.SwerveModule} PID with Feedforward for the drive motor and angle motor.
+ * {@link com.maxtech.lib.swervelib.SwerveModule} PID with Feedforward for the drive motor and angle motor.
  */
 public class PIDFPropertiesJson
 {

@@ -1,4 +1,4 @@
-package swervelib.math;
+package com.maxtech.lib.swervelib.math;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -7,10 +7,10 @@ import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import java.util.List;
-import swervelib.SwerveController;
-import swervelib.SwerveModule;
-import swervelib.parser.SwerveDriveConfiguration;
-import swervelib.parser.SwerveModuleConfiguration;
+import com.maxtech.lib.swervelib.SwerveController;
+import com.maxtech.lib.swervelib.SwerveModule;
+import com.maxtech.lib.swervelib.parser.SwerveDriveConfiguration;
+import com.maxtech.lib.swervelib.parser.SwerveModuleConfiguration;
 
 /**
  * Mathematical functions which pertain to swerve drive.

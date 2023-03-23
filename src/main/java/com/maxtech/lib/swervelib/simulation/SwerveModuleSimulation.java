@@ -1,12 +1,12 @@
-package swervelib.simulation;
+package com.maxtech.lib.swervelib.simulation;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.wpilibj.Timer;
-import swervelib.math.SwerveModuleState2;
+import com.maxtech.lib.swervelib.math.SwerveModuleState2;
 
 /**
- * Class to hold simulation data for {@link swervelib.SwerveModule}
+ * Class to hold simulation data for {@link com.maxtech.lib.swervelib.SwerveModule}
  */
 public class SwerveModuleSimulation
 {
@@ -52,7 +52,7 @@ public class SwerveModuleSimulation
   }
 
   /**
-   * Update the position and state of the module. Called from {@link swervelib.SwerveModule#setDesiredState} function
+   * Update the position and state of the module. Called from {@link com.maxtech.lib.swervelib.SwerveModule#setDesiredState} function
    * when simulated.
    *
    * @param desiredState State the swerve module is set to.

@@ -1,4 +1,4 @@
-package swervelib.parser;
+package com.maxtech.lib.swervelib.parser;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -6,13 +6,13 @@ import edu.wpi.first.math.util.Units;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
-import swervelib.SwerveDrive;
-import swervelib.SwerveModule;
-import swervelib.parser.json.ControllerPropertiesJson;
-import swervelib.parser.json.ModuleJson;
-import swervelib.parser.json.PIDFPropertiesJson;
-import swervelib.parser.json.PhysicalPropertiesJson;
-import swervelib.parser.json.SwerveDriveJson;
+import com.maxtech.lib.swervelib.SwerveDrive;
+import com.maxtech.lib.swervelib.SwerveModule;
+import com.maxtech.lib.swervelib.parser.json.ControllerPropertiesJson;
+import com.maxtech.lib.swervelib.parser.json.ModuleJson;
+import com.maxtech.lib.swervelib.parser.json.PIDFPropertiesJson;
+import com.maxtech.lib.swervelib.parser.json.PhysicalPropertiesJson;
+import com.maxtech.lib.swervelib.parser.json.SwerveDriveJson;
 
 /**
  * Helper class used to parse the JSON directory with specified configuration options.
