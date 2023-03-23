@@ -8,14 +8,15 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.commands.ArmPositionCommand;
 import frc.robot.commands.IntakeSetCommand;
-import frc.robot.commands.SuppliedDriveCommand;
+import frc.robot.commands.drivebase.TeleopDrive;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.ArmSubsystem.State;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.IntakeSubsystem.IntakeState;
-import frc.robot.subsystems.OdometrySubsystem;
 import frc.robot.util.HumanDevice;
+
+import java.util.function.BooleanSupplier;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -24,23 +25,34 @@ import frc.robot.util.HumanDevice;
  * subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
-    private final HumanDevice hid = new HumanDevice(0, 1);
+    private final HumanDevice hid = new HumanDevice(1, 0);
 
     public final DrivetrainSubsystem drivetrainSubsystem = new DrivetrainSubsystem();
     public final ArmSubsystem armSubsystem = new ArmSubsystem();
     public final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
-    public final OdometrySubsystem odometrySubsystem = new OdometrySubsystem();
 
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
      */
     public RobotContainer() {
         drivetrainSubsystem.setDefaultCommand(
-            new SuppliedDriveCommand(drivetrainSubsystem, odometrySubsystem,
-                hid::getDriverX,
-                hid::getDriverY,
-                hid::getDriverT));
+            new TeleopDrive(
+                drivetrainSubsystem,
+                hid::getOperatorX,
+                hid::getOperatorY,
+                hid::getOperatorR,
+                new BooleanSupplier() {
+                    @Override
+                    public boolean getAsBoolean() {
+                        return true;
+                    }
+                },
+                false,
+                false
+            ));
+
         configureButtonBindings();
+
     }
 
     /**
@@ -60,6 +72,16 @@ public class RobotContainer {
 
         hid.setDriverCommand(11).whileTrue(new IntakeSetCommand(intakeSubsystem, IntakeState.CUBE_IN)).onFalse(new IntakeSetCommand(intakeSubsystem, IntakeState.STOPPED));
         hid.setDriverCommand(12).onTrue(new IntakeSetCommand(intakeSubsystem, IntakeState.CUBE_OUT)).onFalse(new IntakeSetCommand(intakeSubsystem, IntakeState.STOPPED));
+
+        hid.setOperatorCommand(9).whileTrue(new IntakeSetCommand(intakeSubsystem, IntakeState.CUBE_IN)).onFalse(new IntakeSetCommand(intakeSubsystem, IntakeState.STOPPED));
+        hid.setOperatorCommand(10).onTrue(new IntakeSetCommand(intakeSubsystem, IntakeState.CUBE_OUT)).onFalse(new IntakeSetCommand(intakeSubsystem, IntakeState.STOPPED));
+
+        hid.setOperatorCommand(1).onTrue(new ArmPositionCommand(armSubsystem, State.PickupGround));
+        hid.setOperatorCommand(2).onTrue(new ArmPositionCommand(armSubsystem, State.Rest));
+//        hid.setDriverCommand(4).onTrue(new ArmPositionCommand(armSubsystem, State.PlacingMiddle));
+        hid.setOperatorCommand(4).onTrue(new ArmPositionCommand(armSubsystem, State.PLacingUpper));
+        hid.setOperatorCommand(3).onTrue(new ArmPositionCommand(armSubsystem, State.PickupStation));
+
     }
 
 }

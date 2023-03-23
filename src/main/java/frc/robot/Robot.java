@@ -48,17 +48,14 @@ public class Robot extends TimedRobot {
     public void disabledInit() {CommandScheduler.getInstance().cancelAll();}
 
     @Override
-    public void disabledPeriodic() {
-        robotContainer.odometrySubsystem.periodic();
-    }
+    public void disabledPeriodic() {}
 
     /**
      * This autonomous runs the autonomous command selected by your {@link RobotContainer} class.
      */
     @Override
     public void autonomousInit() {
-        // TODO schedule commands for auto here.
-        robotContainer.odometrySubsystem.resetRotationToGyro();
+        CommandScheduler.getInstance().cancelAll();
     }
 
     @Override

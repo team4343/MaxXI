@@ -1,141 +1,247 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
 package frc.robot.subsystems;
 
-import com.pathplanner.lib.PathPlannerTrajectory;
-import com.swervedrivespecialties.swervelib.MkSwerveModuleBuilder;
-import com.swervedrivespecialties.swervelib.MotorType;
-import com.swervedrivespecialties.swervelib.SdsModuleConfigurations;
-import com.swervedrivespecialties.swervelib.SwerveModule;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
-import edu.wpi.first.math.kinematics.SwerveModulePosition;
-import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.math.trajectory.Trajectory;
+import edu.wpi.first.wpilibj.Filesystem;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
-import io.github.oblarg.oblog.Loggable;
+import swervelib.SwerveController;
+import swervelib.SwerveDrive;
+import swervelib.math.SwerveKinematics2;
+import swervelib.parser.SwerveDriveConfiguration;
+import swervelib.parser.SwerveParser;
+import swervelib.telemetry.SwerveDriveTelemetry;
+import swervelib.telemetry.SwerveDriveTelemetry.TelemetryVerbosity;
 
-import java.util.function.Supplier;
+import java.io.File;
+import java.io.IOException;
 
-import static frc.robot.constants.DriveConstants.*;
-import static frc.robot.constants.MotorConstants.*;
-
-/**
- * The DrivetrainSubsystem class is the subsystem that controls the robot's drivetrain.
- * <p>
- * This handles the setup and main control of the odometry and vision tracking.
- */
-public class DrivetrainSubsystem extends SubsystemBase implements Loggable {
-    private static ChassisSpeeds chassisSpeeds = new ChassisSpeeds(0.0, 0.0, 0.0);
-
-    private static final ShuffleboardTab tab = Shuffleboard.getTab("Drivetrain");
-
-    private static final SwerveModule frontRightModule = new MkSwerveModuleBuilder()
-        .withLayout(tab.getLayout("Front Right Module", BuiltInLayouts.kList).withSize(2, 4).withPosition(2, 0)) // TODO Remove these
-        .withGearRatio(SdsModuleConfigurations.MK4I_L1)
-        .withDriveMotor(MotorType.FALCON, FRONT_RIGHT_DRIVE_MOTOR)
-        .withSteerMotor(MotorType.NEO, FRONT_RIGHT_STEER_MOTOR)
-        .withSteerEncoderPort(FRONT_RIGHT_STEER_ENCODER)
-        .withSteerOffset(FRONT_RIGHT_STEER_OFFSET).build();
-
-    private static final SwerveModule backLeftModule = new MkSwerveModuleBuilder()
-        .withLayout(tab.getLayout("Back Left Module", BuiltInLayouts.kList).withSize(2, 4).withPosition(4, 0))
-        .withGearRatio(SdsModuleConfigurations.MK4I_L1)
-        .withDriveMotor(MotorType.FALCON, BACK_LEFT_DRIVE_MOTOR)
-        .withSteerMotor(MotorType.NEO, BACK_LEFT_STEER_MOTOR)
-        .withSteerEncoderPort(BACK_LEFT_STEER_ENCODER)
-        .withSteerOffset(BACK_LEFT_STEER_OFFSET).build();
-
-    private static final SwerveModule backRightModule = new MkSwerveModuleBuilder()
-        .withLayout(tab.getLayout("Back Right Module", BuiltInLayouts.kList).withSize(2, 4).withPosition(6, 0))
-        .withGearRatio(SdsModuleConfigurations.MK4I_L1)
-        .withDriveMotor(MotorType.FALCON, BACK_RIGHT_DRIVE_MOTOR)
-        .withSteerMotor(MotorType.NEO, BACK_RIGHT_STEER_MOTOR)
-        .withSteerEncoderPort(BACK_RIGHT_STEER_ENCODER)
-        .withSteerOffset(BACK_RIGHT_STEER_OFFSET).build();
-
-    private static final SwerveModule frontLeftModule = new MkSwerveModuleBuilder()
-        .withLayout(tab.getLayout("Front Left Module", BuiltInLayouts.kList).withSize(2, 4).withPosition(0, 0))
-        .withGearRatio(SdsModuleConfigurations.MK4I_L1)
-        .withDriveMotor(MotorType.FALCON, FRONT_LEFT_DRIVE_MOTOR)
-        .withSteerMotor(MotorType.NEO, FRONT_LEFT_STEER_MOTOR)
-        .withSteerEncoderPort(FRONT_LEFT_STEER_ENCODER)
-        .withSteerOffset(FRONT_LEFT_STEER_OFFSET).build();
+public class DrivetrainSubsystem extends SubsystemBase
+{
 
     /**
-     * Run the drivetrain at the given chassis speeds and update the odometry.
-     * This is the main control of the drivetrain.
+     * Swerve drive object.
      */
+    private final SwerveDrive swerveDrive;
+
+    /**
+     * Initialize {@link SwerveDrive} with the directory provided.
+     *
+     */
+    public DrivetrainSubsystem() {
+        // Configure the Telemetry before creating the SwerveDrive to avoid unnecessary objects being created.
+        SwerveDriveTelemetry.verbosity = TelemetryVerbosity.HIGH;
+        try {
+            swerveDrive = new SwerveParser(new File(Filesystem.getDeployDirectory(), "swerve")).createSwerveDrive();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * The primary method for controlling the drivebase.  Takes a {@link Translation2d} and a rotation rate, and
+     * calculates and commands module states accordingly.  Can use either open-loop or closed-loop velocity control for
+     * the wheel velocities.  Also has field- and robot-relative modes, which affect how the translation vector is used.
+     *
+     * @param translation   {@link Translation2d} that is the commanded linear velocity of the robot, in meters per
+     *                      second. In robot-relative mode, positive x is torwards the bow (front) and positive y is
+     *                      torwards port (left).  In field-relative mode, positive x is away from the alliance wall
+     *                      (field North) and positive y is torwards the left wall when looking through the driver station
+     *                      glass (field West).
+     * @param rotation      Robot angular rate, in radians per second. CCW positive.  Unaffected by field/robot
+     *                      relativity.
+     * @param fieldRelative Drive mode.  True for field-relative, false for robot-relative.
+     * @param isOpenLoop    Whether to use closed-loop velocity control.  Set to true to disable closed-loop.
+     */
+    public void drive(Translation2d translation, double rotation, boolean fieldRelative, boolean isOpenLoop)
+    {
+        swerveDrive.drive(translation, rotation, fieldRelative, isOpenLoop);
+    }
+
     @Override
-    public void periodic() {
-        SwerveModuleState[] states = KINEMATICS.toSwerveModuleStates(chassisSpeeds);
-
-        // This is to make sure that the robot doesn't go faster than it can
-        SwerveDriveKinematics.desaturateWheelSpeeds(states, MAX_VELOCITY_METERS_PER_SECOND);
-
-        frontLeftModule.set(states[0].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, states[0].angle.getRadians());
-        frontRightModule.set(states[1].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, states[1].angle.getRadians());
-        backLeftModule.set(states[2].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, states[2].angle.getRadians());
-        backRightModule.set(states[3].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, states[3].angle.getRadians());
+    public void periodic()
+    {
+        swerveDrive.updateOdometry();
     }
 
     /**
-     * @return The current module positions.
-     */
-    public static SwerveModulePosition[] getModulePositions() {
-        return new SwerveModulePosition[] {
-            new SwerveModulePosition(frontLeftModule.getDriveDistance(), Rotation2d.fromRadians(frontLeftModule.getSteerAngle())),
-            new SwerveModulePosition(frontRightModule.getDriveDistance() , Rotation2d.fromRadians(frontRightModule.getSteerAngle())),
-            new SwerveModulePosition(backLeftModule.getDriveDistance() , Rotation2d.fromRadians(backLeftModule.getSteerAngle())),
-            new SwerveModulePosition(backRightModule.getDriveDistance() , Rotation2d.fromRadians(backRightModule.getSteerAngle()))
-        };
-    }
-
-    /**
-     * Set the chassis speeds directly.
+     * Get the swerve drive kinematics object.
      *
-     * @param chassisSpeeds The chassis speeds.
+     * @return {@link SwerveKinematics2} of the swerve drive.
      */
-    public void drive(ChassisSpeeds chassisSpeeds) {
-        DrivetrainSubsystem.chassisSpeeds = chassisSpeeds;
+    public SwerveKinematics2 getKinematics()
+    {
+        return swerveDrive.kinematics;
     }
 
     /**
-     * Set the chassis module states directly.
+     * Resets odometry to the given pose. Gyro angle and module positions do not need to be reset when calling this
+     * method.  However, if either gyro angle or module position is reset, this must be called in order for odometry to
+     * keep working.
      *
-     * @param states The module states.
+     * @param initialHolonomicPose The pose to set the odometry to
      */
-    public void setModuleStates(SwerveModuleState[] states) {
-        frontLeftModule.set(states[0].speedMetersPerSecond, states[0].angle.getRadians());
-        frontRightModule.set(states[1].speedMetersPerSecond, states[1].angle.getRadians());
-        backLeftModule.set(states[2].speedMetersPerSecond, states[2].angle.getRadians());
-        backRightModule.set(states[3].speedMetersPerSecond, states[3].angle.getRadians());
+    public void resetOdometry(Pose2d initialHolonomicPose)
+    {
+        swerveDrive.resetOdometry(initialHolonomicPose);
     }
 
-    public SwerveControllerCommand createTrajectoryCommand(PathPlannerTrajectory trajectory, Supplier<Pose2d> pose2dSupplier) {
-        // This is a new command, so we need to reset the PID controllers
-        xPIDController.reset();
-        yPIDController.reset();
-        rTrapezoidPIDController.reset(pose2dSupplier.get().getRotation().getRadians());
-
-        return new SwerveControllerCommand(
-            trajectory,
-            pose2dSupplier,
-            KINEMATICS,
-            xPIDController,
-            yPIDController,
-            rTrapezoidPIDController,
-            this::setModuleStates,
-            this
-        );
+    /**
+     * Gets the current pose (position and rotation) of the robot, as reported by odometry.
+     *
+     * @return The robot's pose
+     */
+    public Pose2d getPose()
+    {
+        return swerveDrive.getPose();
     }
 
+    /**
+     * Set chassis speeds with closed-loop velocity control.
+     *
+     * @param chassisSpeeds Chassis Speeds to set.
+     */
+    public void setChassisSpeeds(ChassisSpeeds chassisSpeeds)
+    {
+        swerveDrive.setChassisSpeeds(chassisSpeeds);
+    }
+
+    /**
+     * Post the trajectory to the field.
+     *
+     * @param trajectory The trajectory to post.
+     */
+    public void postTrajectory(Trajectory trajectory)
+    {
+        swerveDrive.postTrajectory(trajectory);
+    }
+
+    /**
+     * Resets the gyro angle to zero and resets odometry to the same position, but facing toward 0.
+     */
+    public void zeroGyro()
+    {
+        swerveDrive.zeroGyro();
+    }
+
+    /**
+     * Sets the drive motors to brake/coast mode.
+     *
+     * @param brake True to set motors to brake mode, false for coast.
+     */
+    public void setMotorBrake(boolean brake)
+    {
+        swerveDrive.setMotorIdleMode(brake);
+    }
+
+    /**
+     * Gets the current yaw angle of the robot, as reported by the imu.  CCW positive, not wrapped.
+     *
+     * @return The yaw angle
+     */
+    public Rotation2d getHeading()
+    {
+        return swerveDrive.getYaw();
+    }
+
+    /**
+     * Get the chassis speeds based on controller input of 2 joysticks. One for speeds in which direction. The other for
+     * the angle of the robot.
+     *
+     * @param xInput   X joystick input for the robot to move in the X direction.
+     * @param yInput   Y joystick input for the robot to move in the Y direction.
+     * @param headingX X joystick which controls the angle of the robot.
+     * @param headingY Y joystick which controls the angle of the robot.
+     * @return {@link ChassisSpeeds} which can be sent to th Swerve Drive.
+     */
+    public ChassisSpeeds getTargetSpeeds(double xInput, double yInput, double headingX, double headingY)
+    {
+        xInput = Math.pow(xInput, 3);
+        yInput = Math.pow(yInput, 3);
+        return swerveDrive.swerveController.getTargetSpeeds(xInput, yInput, headingX, headingY, getHeading().getRadians());
+    }
+
+    /**
+     * Get the chassis speeds based on controller input of 1 joystick and one angle.
+     *
+     * @param xInput X joystick input for the robot to move in the X direction.
+     * @param yInput Y joystick input for the robot to move in the Y direction.
+     * @param angle  The angle in as a {@link Rotation2d}.
+     * @return {@link ChassisSpeeds} which can be sent to th Swerve Drive.
+     */
+    public ChassisSpeeds getTargetSpeeds(double xInput, double yInput, Rotation2d angle)
+    {
+        xInput = Math.pow(xInput, 3);
+        yInput = Math.pow(yInput, 3);
+        return swerveDrive.swerveController.getTargetSpeeds(xInput, yInput, angle.getRadians(), getHeading().getRadians());
+    }
+
+    /**
+     * Gets the current field-relative velocity (x, y and omega) of the robot
+     *
+     * @return A ChassisSpeeds object of the current field-relative velocity
+     */
+    public ChassisSpeeds getFieldVelocity()
+    {
+        return swerveDrive.getFieldVelocity();
+    }
+
+    /**
+     * Gets the current velocity (x, y and omega) of the robot
+     *
+     * @return A {@link ChassisSpeeds} object of the current velocity
+     */
+    public ChassisSpeeds getRobotVelocity()
+    {
+        return swerveDrive.getRobotVelocity();
+    }
+
+    /**
+     * Get the {@link SwerveController} in the swerve drive.
+     *
+     * @return {@link SwerveController} from the {@link SwerveDrive}.
+     */
+    public SwerveController getSwerveController()
+    {
+        return swerveDrive.swerveController;
+    }
+
+    /**
+     * Get the {@link SwerveDriveConfiguration} object.
+     *
+     * @return The {@link SwerveDriveConfiguration} fpr the current drive.
+     */
+    public SwerveDriveConfiguration getSwerveDriveConfiguration()
+    {
+        return swerveDrive.swerveDriveConfiguration;
+    }
+
+    /**
+     * Lock the swerve drive to prevent it from moving.
+     */
+    public void lock()
+    {
+        swerveDrive.lockPose();
+    }
+
+    /**
+     * Gets the current pitch angle of the robot, as reported by the imu.
+     *
+     * @return The heading as a {@link Rotation2d} angle
+     */
+    public Rotation2d getPitch()
+    {
+        return swerveDrive.getPitch();
+    }
+
+    /**
+     * Add a fake vision reading for testing purposes.
+     */
+    public void addFakeVisionReading()
+    {
+        swerveDrive.addVisionMeasurement(new Pose2d(3, 3, Rotation2d.fromDegrees(65)), Timer.getFPGATimestamp(), false, 1);
+    }
 }
-

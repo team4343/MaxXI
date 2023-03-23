@@ -4,12 +4,11 @@ import com.swervedrivespecialties.swervelib.SdsModuleConfigurations;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.ProfiledPIDController;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.numbers.N3;
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
+import swervelib.math.Matter;
+import swervelib.parser.PIDFConfig;
 
 import static java.lang.Math.PI;
 
@@ -22,37 +21,25 @@ public final class DriveConstants {
     public static final PIDController yPIDController = new PIDController(0.6, 0.01, 0.0);
     public static final PIDController rPIDController = new PIDController(0.05, 0.005, 0.0);
 
+    public static final PIDFConfig xAutoPIDConf = new PIDFConfig(0.6, 0.01, 0.0);
+    public static final PIDFConfig yAutoPIDConf = new PIDFConfig(0.6, 0.01, 0.0);
+    public static final PIDFConfig rAutoPIDConf = new PIDFConfig(0.05, 0.005, 0.0);
+
     public static final PIDController xBalanceController = new PIDController(0.6, 0.01, 0.0);
     public static final PIDController yBalanceController = new PIDController(0.6, 0.01, 0.0);
     public static final PIDController rBalanceController = new PIDController(0.05, 0.005, 0.0);
-
-    public static final TrapezoidProfile.Constraints rTrapezoidConstraints = new TrapezoidProfile.Constraints(PI, 2 / PI);
-    public static final ProfiledPIDController rTrapezoidPIDController = new ProfiledPIDController(6.0, 0.02, 0.0, rTrapezoidConstraints);
 
     public static final double X_LIMITER_MANUAL = 1.5;
     public static final double Y_LIMITER_MANUAL = 1.5;
     public static final double R_LIMITER_MANUAL = 3.0;
 
-    public static final double DRIVETRAIN_TRACK_WIDTH_METERS = 0.56;
-    public static final double DRIVETRAIN_WHEELBASE_METERS = 0.56;
-    public static final double MAX_VOLTAGE = 11.0;
-    public static final double MAX_VELOCITY_METERS_PER_SECOND = 5676.0 / 60.0 * SdsModuleConfigurations.MK4I_L1.getDriveReduction() * SdsModuleConfigurations.MK4I_L1.getWheelDiameter() * PI; // SDS recommends 5676 RPM to M/S
+    public static final double ROBOT_MASS = 135 * 0.453592; // 135lbs * kg per pound
+    public static final Matter CHASSIS    = new Matter(new Translation3d(0, 0, Units.inchesToMeters(8)), ROBOT_MASS);
+    public static final double LOOP_TIME = 0.02 + 0.110; // 20ms + 110ms for the swerve controller
+    public static final double DEAD_BAND = 0.05;
+
+    public static final double MAX_VELOCITY_METERS_PER_SECOND = 5676.0 / 60.0 * SdsModuleConfigurations.MK4I_L1.getDriveReduction() * SdsModuleConfigurations.MK4I_L1.getWheelDiameter() * PI; // 3.659 - SDS recommends 5676 RPM to M/S
     public static final double MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND = 6.0; // SDS recommends 6 rad/s
-
-    public static final double FRONT_LEFT_STEER_OFFSET = Math.toRadians(0.0);
-    public static final double FRONT_RIGHT_STEER_OFFSET = Math.toRadians(0.0);
-    public static final double BACK_LEFT_STEER_OFFSET = Math.toRadians(0.0);
-    public static final double BACK_RIGHT_STEER_OFFSET = Math.toRadians(0.0);
-
-    public static final SwerveDriveKinematics KINEMATICS = new SwerveDriveKinematics(
-        // Positive X values are towards center of the field.
-        // Positive Y values are towards the left hand side of the robot.
-        // All kinematics and swerve modules should be referenced in this order.
-        new Translation2d(DRIVETRAIN_TRACK_WIDTH_METERS / 2.0, DRIVETRAIN_WHEELBASE_METERS / 2.0), // Front left
-        new Translation2d(DRIVETRAIN_TRACK_WIDTH_METERS / 2.0, -DRIVETRAIN_WHEELBASE_METERS / 2.0), // Front right
-        new Translation2d(-DRIVETRAIN_TRACK_WIDTH_METERS / 2.0, DRIVETRAIN_WHEELBASE_METERS / 2.0), // Back left
-        new Translation2d(-DRIVETRAIN_TRACK_WIDTH_METERS / 2.0, -DRIVETRAIN_WHEELBASE_METERS / 2.0) // Back right
-    );
 
 
 }
