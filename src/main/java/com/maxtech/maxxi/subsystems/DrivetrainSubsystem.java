@@ -4,6 +4,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.Timer;
@@ -15,7 +16,8 @@ import com.maxtech.lib.swervelib.parser.SwerveDriveConfiguration;
 import com.maxtech.lib.swervelib.parser.SwerveParser;
 import com.maxtech.lib.swervelib.telemetry.SwerveDriveTelemetry;
 import com.maxtech.lib.swervelib.telemetry.SwerveDriveTelemetry.TelemetryVerbosity;
-
+import com.maxtech.maxxi.util.Odometry;
+import com.maxtech.maxxi.util.PhotonCameraWrapper;
 import java.io.File;
 import java.io.IOException;
 
@@ -25,7 +27,11 @@ public class DrivetrainSubsystem extends SubsystemBase
     /**
      * Swerve drive object.
      */
-    private final SwerveDrive swerveDrive;
+    public final SwerveDrive swerveDrive;
+
+    private final PhotonCameraWrapper photonCameraWrapper = new PhotonCameraWrapper();
+
+    private final Odometry odometry = new Odometry(this::getPose, this::getModulePositions, photonCameraWrapper);
 
     /**
      * Initialize {@link SwerveDrive} with the directory provided.
@@ -98,6 +104,10 @@ public class DrivetrainSubsystem extends SubsystemBase
     public Pose2d getPose()
     {
         return swerveDrive.getPose();
+    }
+
+    public SwerveModulePosition[] getModulePositions() {
+        return swerveDrive.getModulePositions();
     }
 
     /**

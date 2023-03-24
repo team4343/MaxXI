@@ -51,7 +51,6 @@ public class RobotContainer {
             ));
 
         configureButtonBindings();
-
     }
 
     /**
@@ -80,7 +79,5 @@ public class RobotContainer {
 //        hid.setDriverCommand(4).onTrue(new ArmPositionCommand(armSubsystem, State.PlacingMiddle));
         hid.setOperatorCommand(4).onTrue(new ArmPositionCommand(armSubsystem, State.PLacingUpper));
         hid.setOperatorCommand(3).onTrue(new ArmPositionCommand(armSubsystem, State.PickupStation));
-
     }
-
 }
