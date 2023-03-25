@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import com.maxtech.lib.swervelib.SwerveController;
 import com.maxtech.lib.swervelib.SwerveDrive;
 import com.maxtech.lib.swervelib.math.SwerveKinematics2;
+import com.maxtech.lib.swervelib.math.SwerveModuleState2;
 import com.maxtech.lib.swervelib.parser.SwerveDriveConfiguration;
 import com.maxtech.lib.swervelib.parser.SwerveParser;
 import com.maxtech.lib.swervelib.telemetry.SwerveDriveTelemetry;
@@ -113,6 +114,10 @@ public class DrivetrainSubsystem extends SubsystemBase
 
     public SwerveModulePosition[] getModulePositions() {
         return swerveDrive.getModulePositions();
+    }
+
+    public void setModuleStates(SwerveModuleState2[] desiredStates) {
+        swerveDrive.setModuleStates(desiredStates, false);
     }
 
     /**

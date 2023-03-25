@@ -61,7 +61,7 @@ public class DriveToPoint extends CommandBase {
             SwerveModuleState2[] moduleStates =
                     drivetrainSubsystem.getKinematics().toSwerveModuleStates(adjustedSpeeds);
 
-            drivetrainSubsystem.swerveDrive.setModuleStates(moduleStates, false);
+            drivetrainSubsystem.setModuleStates(moduleStates);
         }
 
         finished = true;
