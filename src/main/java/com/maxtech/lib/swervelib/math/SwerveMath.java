@@ -1,16 +1,17 @@
 package com.maxtech.lib.swervelib.math;
 
+import com.maxtech.lib.swervelib.SwerveController;
+import com.maxtech.lib.swervelib.SwerveModule;
+import com.maxtech.lib.swervelib.parser.SwerveDriveConfiguration;
+import com.maxtech.lib.swervelib.parser.SwerveModuleConfiguration;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 import java.util.List;
-import com.maxtech.lib.swervelib.SwerveController;
-import com.maxtech.lib.swervelib.SwerveModule;
-import com.maxtech.lib.swervelib.parser.SwerveDriveConfiguration;
-import com.maxtech.lib.swervelib.parser.SwerveModuleConfiguration;
 
 /**
  * Mathematical functions which pertain to swerve drive.
@@ -46,6 +47,9 @@ public class SwerveMath
   public static double calculateMetersPerRotation(
       double wheelDiameter, double driveGearRatio, double pulsePerRotation)
   {
+    SmartDashboard.putNumber("wheelDiameter", wheelDiameter);
+    SmartDashboard.putNumber("driveGearRatio", driveGearRatio);
+    SmartDashboard.putNumber("pulsePerRotation", pulsePerRotation);
     return (Math.PI * wheelDiameter) / (driveGearRatio * pulsePerRotation);
   }
 

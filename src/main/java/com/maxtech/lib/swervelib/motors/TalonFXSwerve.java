@@ -6,11 +6,12 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
-import edu.wpi.first.wpilibj.Timer;
 import com.maxtech.lib.swervelib.encoders.SwerveAbsoluteEncoder;
 import com.maxtech.lib.swervelib.parser.PIDFConfig;
 import com.maxtech.lib.swervelib.simulation.ctre.PhysicsSim;
 import com.maxtech.lib.swervelib.telemetry.SwerveDriveTelemetry;
+import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  * {@link com.ctre.phoenix.motorcontrol.can.TalonFX} Swerve Motor. Made by Team 1466 WebbRobotics.
@@ -383,6 +384,9 @@ public class TalonFXSwerve extends SwerveMotor
   @Override
   public double getPosition()
   {
+    SmartDashboard.putNumber("TalonPositionRAW", motor.getSelectedSensorPosition());
+    SmartDashboard.putNumber("TalonPositionMS", motor.getSelectedSensorPosition() * positionConversionFactor);
+    SmartDashboard.putNumber("PositionConversionFactor", positionConversionFactor);
     return motor.getSelectedSensorPosition() * positionConversionFactor;
   }
 

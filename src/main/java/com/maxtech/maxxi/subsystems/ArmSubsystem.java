@@ -1,10 +1,12 @@
 package com.maxtech.maxxi.subsystems;
 
-import static com.maxtech.maxxi.constants.MotorConstants.*;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+
+import static com.maxtech.maxxi.constants.MotorConstants.*;
 
 public class ArmSubsystem extends SubsystemBase {
     public enum State {
@@ -23,6 +25,7 @@ public class ArmSubsystem extends SubsystemBase {
     // System State - init in rest state
     private static State state_desired = State.Rest;
     private static State state_actual = State.Rest;
+    private static State state_previous = State.Rest;
 
     private static final NetworkTableInstance nt_handle = NetworkTableInstance.getDefault();
 
@@ -48,24 +51,24 @@ public class ArmSubsystem extends SubsystemBase {
     }
 
     // Position Constants
-    private final POS REST      = new POS(1, 0, 10);
-    private final POS PICKUP_GROUND = new POS(0, 14, 50);
-    private final POS PLACING_MIDDLE = new POS(3, 5, 50);
-    private final POS PLACING_UPPER = new POS(7.5, 14, 45);
-    private final POS PICKUP_STATION = new POS(7, 14, 50);
-    private final POS PLACEHOLDER_A = new POS(0, 0, 0);
-    private final POS PLACEHOLDER_B = new POS(0, 0, 0);
+    private final POS REST              = new POS(1, 0, -10);
+    private final POS PICKUP_GROUND     = new POS(0, 13, 15);
+    private final POS PLACING_MIDDLE    = new POS(3, 7, 20);
+    private final POS PLACING_UPPER     = new POS(8, 15, 20);
+    private final POS PICKUP_STATION    = new POS(8, 15.5, 30);
+    private final POS INIT              = new POS(0, 0, 0);
+    private final POS PLACEHOLDER_B     = new POS(0, 0, 0);
 
     // PID Control
     // P. Proportional output to the error of the system
     // I. Sum of error over time. This increases output to counteract steady state error
     // D. Rate of change of error. This decreases output to counteract oscillation
     // Slot. So we can rapidly switch between PID configurations.
-    private static final PID SHOULDER_DEFAULT  = new PID(0.1, 0.00009, 0, 0);
-    private static final PID SHOULDER_STEADY   = new PID(0.12, 0.00012, 0, 1);
-    private static final PID ELBOW_DEFAULT     = new PID(0.042, 0.00001, 0, 0);
-    private static final PID ELBOW_STEADY      = new PID(0.03, 0.00004, 0, 1);
-    private static final PID ELBOW_PICKUP      = new PID(0.04, 0, 0, 2);
+    private static final PID SHOULDER_DEFAULT  = new PID(0.13, 0.00000, 0, 0);
+    private static final PID SHOULDER_STEADY   = new PID(0.2, 0.0007, 0, 1);
+    private static final PID ELBOW_DEFAULT     = new PID(0.045, 0.00001, 0, 0);
+    private static final PID ELBOW_STEADY      = new PID(0.03, 0.0005, 0, 1);
+    private static final PID ELBOW_PICKUP      = new PID(0.035, 0.0000, 0, 2);
     private static final PID WRIST_DEFAULT     = new PID(0.02, 0.00000, 0, 0);
 
     private final Double SHOULDER_RAMP_RATE = 0.5;
@@ -82,6 +85,7 @@ public class ArmSubsystem extends SubsystemBase {
 
     public ArmSubsystem() {
         elbow.setInverted(true);
+        wrist.setInverted(false);
 
         // Follow the main shoulder encoder, inverted.
         shoulderFollower.follow(shoulder, true);
@@ -179,16 +183,28 @@ public class ArmSubsystem extends SubsystemBase {
         int wrist_pid_slot;
 
         // If the state is not the same as the desired state, then run the periodic for that state.
+        if (!(state_previous == state_actual || state_previous == state_desired))  {
+            shoulder.getPIDController().setIAccum(0);
+            elbow.getPIDController().setIAccum(0);
+            wrist.getPIDController().setIAccum(0);
+        }
+
         if (state_actual != state_desired) {
             shoulder_pid_slot = SHOULDER_DEFAULT.slot;
             elbow_pid_slot = ELBOW_DEFAULT.slot;
             wrist_pid_slot = WRIST_DEFAULT.slot;
-            if (state_desired == State.PickupGround)
+            SmartDashboard.putString("Elbow State", "Default");
+            SmartDashboard.putString("Arm State", "Default");
+            if (state_desired == State.PickupGround) {
                 elbow_pid_slot = ELBOW_PICKUP.slot;
+                SmartDashboard.putString("Elbow State", "Ground");
+            }
         } else {
             shoulder_pid_slot = SHOULDER_STEADY.slot;
             elbow_pid_slot = ELBOW_STEADY.slot;
             wrist_pid_slot = WRIST_DEFAULT.slot;
+            SmartDashboard.putString("Elbow State", "Steady");
+            SmartDashboard.putString("Arm State", "Steady");
         }
 
 
@@ -197,20 +213,20 @@ public class ArmSubsystem extends SubsystemBase {
             case PlacingMiddle: position= PLACING_MIDDLE; break;
             case PLacingUpper: position= PLACING_UPPER; break;
             case PickupStation: position= PICKUP_STATION; break;
-            case PlaceholderA: position= PLACEHOLDER_A; break;
+            case PlaceholderA: position= INIT; break;
             case PlaceholderB: position= PLACEHOLDER_B; break;
             default: position=REST;
         }
+
+        state_previous = state_actual;
 
         elbow.getPIDController().setReference(position.elbow, CANSparkMax.ControlType.kPosition, elbow_pid_slot);
         shoulder.getPIDController().setReference(position.shoulder, CANSparkMax.ControlType.kPosition, shoulder_pid_slot);
         wrist.getPIDController().setReference(position.wrist, CANSparkMax.ControlType.kPosition, wrist_pid_slot);
 
-        nt_handle.getEntry("/ArmSubsystem/DesiredState").setString(String.valueOf(state_desired));
-        nt_handle.getEntry("/ArmSubsystem/ActualState").setString(String.valueOf(state_actual));
-        nt_handle.getEntry("/ArmSubsystem/ShoulderPosition").setDouble(shoulder.getEncoder().getPosition());
-        nt_handle.getEntry("/ArmSubsystem/ElbowPosition").setDouble(elbow.getEncoder().getPosition());
-        nt_handle.getEntry("/ArmSubsystem/WristPosition").setDouble(wrist.getEncoder().getPosition());
+        SmartDashboard.putNumber("ShoulderPosition", shoulder.getEncoder().getPosition());
+        SmartDashboard.putNumber("ElbowPosition", elbow.getEncoder().getPosition());
+        SmartDashboard.putNumber("WristPosition", wrist.getEncoder().getPosition());
     }
 
     private static boolean inRange(double value, double target) {
@@ -232,7 +248,7 @@ public class ArmSubsystem extends SubsystemBase {
             state_actual = State.PLacingUpper;
         else if (inRange(shoulder_pos, PICKUP_STATION.shoulder) && inRange(elbow_pos, PICKUP_STATION.elbow))
             state_actual = State.PickupStation;
-        else if (inRange(shoulder_pos, PLACEHOLDER_A.shoulder) && inRange(elbow_pos, PLACEHOLDER_A.elbow))
+        else if (inRange(shoulder_pos, INIT.shoulder) && inRange(elbow_pos, INIT.elbow))
             state_actual = State.PlaceholderA;
         else if (inRange(shoulder_pos, PLACEHOLDER_B.shoulder) && inRange(elbow_pos, PLACEHOLDER_B.elbow))
             state_actual = State.PlaceholderB;

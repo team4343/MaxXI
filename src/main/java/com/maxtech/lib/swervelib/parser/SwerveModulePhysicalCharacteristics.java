@@ -87,7 +87,7 @@ public class SwerveModulePhysicalCharacteristics
     this.angleGearRatio = angleGearRatio;
     this.driveGearRatio = driveGearRatio;
     this.angleEncoderPulsePerRotation = angleEncoderPulsePerRotation;
-    this.driveEncoderPulsePerRotation = driveEncoderPulsePerRotation;
+    this.driveEncoderPulsePerRotation = 2048; // driveEncoderPulsePerRotation;
     this.wheelDiameter = wheelDiameter;
 
     this.driveMotorCurrentLimit = driveMotorCurrentLimit;

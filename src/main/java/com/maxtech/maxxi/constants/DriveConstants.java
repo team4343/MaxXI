@@ -1,16 +1,13 @@
 package com.maxtech.maxxi.constants;
 
-import com.swervedrivespecialties.swervelib.SdsModuleConfigurations;
+import com.maxtech.lib.swervelib.math.Matter;
+import com.maxtech.lib.swervelib.parser.PIDFConfig;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
-import com.maxtech.lib.swervelib.math.Matter;
-import com.maxtech.lib.swervelib.parser.PIDFConfig;
-
-import static java.lang.Math.PI;
 
 public final class DriveConstants {
     // How much do we trust our odometry inputs. 0.0 is no trust, 1.0 is full trust.
@@ -38,7 +35,8 @@ public final class DriveConstants {
     public static final double LOOP_TIME = 0.02 + 0.110; // 20ms + 110ms for the swerve controller
     public static final double DEAD_BAND = 0.05;
 
-    public static final double MAX_VELOCITY_METERS_PER_SECOND = 5676.0 / 60.0 * SdsModuleConfigurations.MK4I_L1.getDriveReduction() * SdsModuleConfigurations.MK4I_L1.getWheelDiameter() * PI; // 3.659 - SDS recommends 5676 RPM to M/S
+//    public static final double MAX_VELOCITY_METERS_PER_SECOND = 5676.0 / 60.0 * SdsModuleConfigurations.MK4I_L1.getDriveReduction() * SdsModuleConfigurations.MK4I_L1.getWheelDiameter() * PI; // 3.659 - SDS recommends 5676 RPM to M/S
+    public static final double MAX_VELOCITY_METERS_PER_SECOND = 3.659 ; // 3.659 - SDS recommends 5676 RPM to M/S
     public static final double MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND = 6.0; // SDS recommends 6 rad/s
 
 
