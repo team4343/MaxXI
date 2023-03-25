@@ -1,13 +1,14 @@
 package com.maxtech.maxxi.commands.drivebase;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import com.maxtech.maxxi.subsystems.DrivetrainSubsystem;
 import edu.wpi.first.math.controller.HolonomicDriveController;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
@@ -35,24 +36,21 @@ public class DriveToPoint extends CommandBase {
         var currentPose = drivetrainSubsystem.getPose();
         var goalPose = pose.relativeTo(currentPose);
 
-        // TODO: construct this better.
-        var waypoints = new ArrayList<Pose2d>();
-        waypoints.add(currentPose);
-        waypoints.add(goalPose);
+        List<Pose2d> waypoints = Arrays.asList(currentPose, goalPose);
 
         var trajectory =
                 TrajectoryGenerator.generateTrajectory(waypoints, new TrajectoryConfig(1, .1));
 
         var controller = new HolonomicDriveController(new PIDController(1, 0, 0),
                 new PIDController(1, 0, 0),
-                new ProfiledPIDController(1, 0, 0, new TrapezoidProfile.Constraints(6.28, 3.14)));
+                new ProfiledPIDController(1, 0, 0, new TrapezoidProfile.Constraints(1, .1)));
 
         var totalTime = trajectory.getTotalTimeSeconds();
 
         var startTime = Timer.getFPGATimestamp();
 
         // TODO: double check that this for method is right.
-        for (double time = Timer.getFPGATimestamp(); (time - startTime) <= totalTime;) {
+        for (double time = Timer.getFPGATimestamp(); (time - startTime) <= totalTime; time = Timer.getFPGATimestamp()) {
             // TODO: we may have to round the FPGATimestamp because it's too precise.
             var sample = trajectory.sample(Timer.getFPGATimestamp());
 
