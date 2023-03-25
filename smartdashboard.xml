@@ -1,16 +1,179 @@
 <xml version="1.0">
 <dashboard>
+	<widget field="WristPosition" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="1397" y="507"/>
+	</widget>
+	<widget field="ElbowPosition" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="1397" y="551"/>
+	</widget>
+	<widget field="ShoulderPosition" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="1380" y="529"/>
+	</widget>
+	<widget field="Max Velocity" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="1375" y="218"/>
+	</widget>
+	<widget field="Arm State" type="String" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="1738" y="101"/>
+	</widget>
+	<widget field="Elbow State" type="String" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="1731" y="125"/>
+	</widget>
+	<widget field="Estimated Y" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="1374" y="34"/>
+	</widget>
+	<widget field="Estimated X" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="1373" y="8"/>
+	</widget>
+	<widget field="Drive TranslationY " type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="1534" y="33"/>
+	</widget>
+	<widget field="Drive TranslationX " type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="1534" y="10"/>
+	</widget>
+	<widget field="Auto Selector" type="String" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="968" y="76"/>
+	</widget>
+	<widget field="Translation" type="String" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="978" y="6"/>
+		<width>316</width>
+		<height>26</height>
+	</widget>
+	<widget field="LimitedTranslation" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="1348" y="120"/>
+		<width>159</width>
+	</widget>
+	<widget field="calcMaxAccel" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="1371" y="168"/>
+	</widget>
+	<widget field="deltaV" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="1403" y="144"/>
+	</widget>
+	<widget field="currentVelocity" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="1362" y="192"/>
+	</widget>
+	<widget field="navX-Sensor[1]" type="Gyro" class="edu.wpi.first.smartdashboard.gui.elements.Compass">
+		<location x="1422" y="806"/>
+	</widget>
+	<widget field="Module 3 Angle Setpoint: " type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="963" y="714"/>
+	</widget>
+	<widget field="Module 3 Speed Setpoint: " type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="963" y="693"/>
+	</widget>
+	<widget field="Module 3 Omega: " type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="963" y="672"/>
+	</widget>
+	<widget field="Optimized 3 Angle Setpoint: " type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="963" y="651"/>
+	</widget>
+	<widget field="Optimized 3 Speed Setpoint: " type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="963" y="630"/>
+	</widget>
+	<widget field="Module 2 Angle Setpoint: " type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="963" y="609"/>
+	</widget>
+	<widget field="Module 2 Speed Setpoint: " type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="963" y="588"/>
+	</widget>
+	<widget field="Module 2 Omega: " type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="963" y="567"/>
+	</widget>
+	<widget field="Optimized 2 Angle Setpoint: " type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="963" y="546"/>
+	</widget>
+	<widget field="Optimized 2 Speed Setpoint: " type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="963" y="525"/>
+	</widget>
+	<widget field="Module 1 Angle Setpoint: " type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="963" y="504"/>
+	</widget>
+	<widget field="Module 1 Speed Setpoint: " type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="963" y="483"/>
+	</widget>
+	<widget field="Module 1 Omega: " type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="963" y="462"/>
+	</widget>
+	<widget field="Optimized 1 Angle Setpoint: " type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="963" y="441"/>
+	</widget>
+	<widget field="Optimized 1 Speed Setpoint: " type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="240" y="804"/>
+	</widget>
+	<widget field="Module 0 Angle Setpoint: " type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="478" y="762"/>
+	</widget>
+	<widget field="Module 0 Speed Setpoint: " type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="475" y="784"/>
+	</widget>
+	<widget field="Module 0 Omega: " type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="694" y="763"/>
+	</widget>
+	<widget field="Optimized 0 Angle Setpoint: " type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="242" y="785"/>
+	</widget>
+	<widget field="Optimized 0 Speed Setpoint: " type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="239" y="763"/>
+	</widget>
+	<widget field="RobotVelocity" type="String" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="967" y="35"/>
+		<width>388</width>
+		<height>34</height>
+	</widget>
+	<widget field="omega" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="1752" y="56"/>
+	</widget>
+	<widget field="vY" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="1773" y="31"/>
+		<width>94</width>
+	</widget>
+	<widget field="vX" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="1772" y="7"/>
+	</widget>
+	<widget field="Module3Absolute Encoder" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="14" y="919"/>
+	</widget>
+	<widget field="Module3Relative Encoder" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="18" y="895"/>
+	</widget>
+	<widget field="Module2Absolute Encoder" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="15" y="871"/>
+	</widget>
+	<widget field="Module2Relative Encoder" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="17" y="848"/>
+	</widget>
+	<widget field="Module1Absolute Encoder" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="14" y="826"/>
+	</widget>
+	<widget field="Module1Relative Encoder" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="17" y="805"/>
+	</widget>
+	<widget field="Module0Absolute Encoder" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="14" y="784"/>
+		<height>20</height>
+	</widget>
+	<widget field="Module0Relative Encoder" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="17" y="763"/>
+	</widget>
+	<widget field="Module 3Angle" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="1496" y="642"/>
+	</widget>
+	<widget field="Module 2Angle" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="1317" y="643"/>
+	</widget>
+	<widget field="Module 1Angle" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="1499" y="670"/>
+	</widget>
+	<widget field="Module 0Angle" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="1319" y="670"/>
+	</widget>
 	<static-widget class="edu.wpi.first.smartdashboard.gui.elements.MjpgStreamViewerImpl">
 		<location x="0" y="0"/>
 		<width>962</width>
 		<height>745</height>
-	</static-widget>
-	<static-widget class="edu.wpi.first.smartdashboard.gui.elements.RobotPreferences">
-		<location x="0" y="751"/>
-		<width>467</width>
-		<height>211</height>
+		<property name="MJPG Server URL" value="http://photonvision.local:1182"/>
 	</static-widget>
 </dashboard>
 <live-window>
 </live-window>
+	<hidden field="Field"/>
 </xml>

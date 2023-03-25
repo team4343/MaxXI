@@ -12,7 +12,7 @@ public class SwerveDriveTelemetry
   /**
    * The current telemetry verbosity level.
    */
-  public static TelemetryVerbosity verbosity             = TelemetryVerbosity.MACHINE;
+  public static TelemetryVerbosity verbosity             = TelemetryVerbosity.HIGH;
   /**
    * State of simulation of the Robot, used to optimize retrieval.
    */

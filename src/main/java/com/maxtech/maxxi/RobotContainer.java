@@ -4,18 +4,17 @@
 
 package com.maxtech.maxxi;
 
-import edu.wpi.first.wpilibj.GenericHID;
-import edu.wpi.first.wpilibj.XboxController;
-import java.util.function.BooleanSupplier;
 import com.maxtech.maxxi.commands.ArmPositionCommand;
 import com.maxtech.maxxi.commands.IntakeSetCommand;
 import com.maxtech.maxxi.commands.drivebase.TeleopDrive;
 import com.maxtech.maxxi.subsystems.ArmSubsystem;
+import com.maxtech.maxxi.subsystems.ArmSubsystem.State;
 import com.maxtech.maxxi.subsystems.DrivetrainSubsystem;
 import com.maxtech.maxxi.subsystems.IntakeSubsystem;
-import com.maxtech.maxxi.subsystems.ArmSubsystem.State;
 import com.maxtech.maxxi.subsystems.IntakeSubsystem.IntakeState;
 import com.maxtech.maxxi.util.HumanDevice;
+import edu.wpi.first.wpilibj.GenericHID;
+import edu.wpi.first.wpilibj.XboxController;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -37,17 +36,12 @@ public class RobotContainer {
         drivetrainSubsystem.setDefaultCommand(
             new TeleopDrive(
                 drivetrainSubsystem,
-                hid::getOperatorX,
-                hid::getOperatorY,
-                hid::getOperatorR,
-                new BooleanSupplier() {
-                    @Override
-                    public boolean getAsBoolean() {
-                        return true;
-                    }
-                },
+                hid::getDriverX,
+                hid::getDriverY,
+                hid::getDriverT,
+                ()-> true,
                 false,
-                false
+                true
             ));
 
         configureButtonBindings();
@@ -77,9 +71,8 @@ public class RobotContainer {
 
         hid.setOperatorCommand(1).onTrue(new ArmPositionCommand(armSubsystem, State.PickupGround));
         hid.setOperatorCommand(2).onTrue(new ArmPositionCommand(armSubsystem, State.Rest));
-//        hid.setDriverCommand(4).onTrue(new ArmPositionCommand(armSubsystem, State.PlacingMiddle));
-        hid.setOperatorCommand(4).onTrue(new ArmPositionCommand(armSubsystem, State.PLacingUpper));
         hid.setOperatorCommand(3).onTrue(new ArmPositionCommand(armSubsystem, State.PickupStation));
+        hid.setOperatorCommand(4).onTrue(new ArmPositionCommand(armSubsystem, State.PlacingMiddle));
 
     }
 

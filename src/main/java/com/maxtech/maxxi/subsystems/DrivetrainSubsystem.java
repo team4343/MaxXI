@@ -1,5 +1,7 @@
 package com.maxtech.maxxi.subsystems;
 
+import com.maxtech.maxxi.util.Vision;
+import com.maxtech.maxxi.util.VisionPoseResult;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -7,6 +9,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import com.maxtech.lib.swervelib.SwerveController;
 import com.maxtech.lib.swervelib.SwerveDrive;
@@ -26,6 +29,7 @@ public class DrivetrainSubsystem extends SubsystemBase
      * Swerve drive object.
      */
     private final SwerveDrive swerveDrive;
+    public final Vision vision;
 
     /**
      * Initialize {@link SwerveDrive} with the directory provided.
@@ -36,10 +40,11 @@ public class DrivetrainSubsystem extends SubsystemBase
         SwerveDriveTelemetry.verbosity = TelemetryVerbosity.HIGH;
         try {
             swerveDrive = new SwerveParser(new File(Filesystem.getDeployDirectory(), "swerve")).createSwerveDrive();
-            swerveDrive.swerveController.config.maxAngularVelocity = 12;
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+        vision = new Vision();
+
     }
 
     /**
@@ -65,7 +70,13 @@ public class DrivetrainSubsystem extends SubsystemBase
     @Override
     public void periodic()
     {
+        VisionPoseResult result = vision.getPose();
+        if (result != null)
+            swerveDrive.addVisionMeasurement(result.pose, result.timestamp, true, 1);
         swerveDrive.updateOdometry();
+        SmartDashboard.putNumber("Estimated X", swerveDrive.swerveDrivePoseEstimator.getEstimatedPosition().getX());
+        SmartDashboard.putNumber("Estimated Y", swerveDrive.swerveDrivePoseEstimator.getEstimatedPosition().getY());
+        SmartDashboard.putNumber("Max Velocity", swerveDrive.swerveDriveConfiguration.maxSpeed);
     }
 
     /**

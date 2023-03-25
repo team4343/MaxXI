@@ -1,14 +1,12 @@
 package com.maxtech.lib.swervelib.parser;
 
-import static com.maxtech.lib.swervelib.math.SwerveMath.calculateAngleKV;
-import static com.maxtech.lib.swervelib.math.SwerveMath.calculateDegreesPerSteeringRotation;
-import static com.maxtech.lib.swervelib.math.SwerveMath.calculateMaxAcceleration;
-import static com.maxtech.lib.swervelib.math.SwerveMath.calculateMetersPerRotation;
-
-import edu.wpi.first.math.controller.SimpleMotorFeedforward;
-import edu.wpi.first.math.geometry.Translation2d;
 import com.maxtech.lib.swervelib.encoders.SwerveAbsoluteEncoder;
 import com.maxtech.lib.swervelib.motors.SwerveMotor;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
+import static com.maxtech.lib.swervelib.math.SwerveMath.*;
 
 /**
  * Swerve Module configuration class which is used to configure {@link com.maxtech.lib.swervelib.SwerveModule}.
@@ -194,11 +192,16 @@ public class SwerveModuleConfiguration
    */
   public double getPositionEncoderConversion(boolean isDriveMotor)
   {
+    SmartDashboard.putNumber("meters per rotation", calculateMetersPerRotation(
+        physicalCharacteristics.wheelDiameter,
+        physicalCharacteristics.driveGearRatio,
+        angleMotorEncoderPulsePerRevolution));
+
     return isDriveMotor
            ? calculateMetersPerRotation(
         physicalCharacteristics.wheelDiameter,
         physicalCharacteristics.driveGearRatio,
-        angleMotorEncoderPulsePerRevolution)
+        physicalCharacteristics.driveEncoderPulsePerRotation)
            : calculateDegreesPerSteeringRotation(
                physicalCharacteristics.angleGearRatio,
                angleMotorEncoderPulsePerRevolution);

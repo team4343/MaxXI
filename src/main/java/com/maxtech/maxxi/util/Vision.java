@@ -1,5 +1,6 @@
 package com.maxtech.maxxi.util;
 
+import com.maxtech.maxxi.constants.VisionConstants;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
@@ -7,12 +8,13 @@ import edu.wpi.first.math.geometry.Transform3d;
 import org.photonvision.PhotonCamera;
 import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
-import com.maxtech.maxxi.constants.VisionConstants;
+
+import java.util.Optional;
+
 import static com.maxtech.maxxi.constants.LocationConstants.FIELD_LENGTH;
 import static com.maxtech.maxxi.constants.LocationConstants.FIELD_WIDTH;
 import static com.maxtech.maxxi.constants.VisionConstants.frameTimeout;
 import static com.maxtech.maxxi.constants.VisionConstants.getAprilTagList;
-import java.util.Optional;
 
 public class Vision {
     private final AprilTagFieldLayout layout;
@@ -56,6 +58,7 @@ public class Vision {
     public PhotonTrackedTarget getLatestTarget() {
         return latestTarget;
     }
+
 
     public boolean hasTarget() {
         if (latestTargetTime > camera.getLatestResult().getTimestampSeconds() - frameTimeout)

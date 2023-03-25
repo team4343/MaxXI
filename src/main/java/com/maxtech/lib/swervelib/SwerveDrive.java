@@ -1,28 +1,5 @@
 package com.maxtech.lib.swervelib;
 
-import edu.wpi.first.math.Matrix;
-import edu.wpi.first.math.VecBuilder;
-import edu.wpi.first.math.controller.SimpleMotorFeedforward;
-import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
-import edu.wpi.first.math.filter.SlewRateLimiter;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.math.geometry.Transform2d;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.geometry.Translation3d;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.kinematics.SwerveModulePosition;
-import edu.wpi.first.math.numbers.N1;
-import edu.wpi.first.math.numbers.N3;
-import edu.wpi.first.math.trajectory.Trajectory;
-import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.Field2d;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
 import com.maxtech.lib.swervelib.imu.SwerveIMU;
 import com.maxtech.lib.swervelib.math.SwerveKinematics2;
 import com.maxtech.lib.swervelib.math.SwerveMath;
@@ -32,6 +9,25 @@ import com.maxtech.lib.swervelib.parser.SwerveDriveConfiguration;
 import com.maxtech.lib.swervelib.simulation.SwerveIMUSimulation;
 import com.maxtech.lib.swervelib.telemetry.SwerveDriveTelemetry;
 import com.maxtech.lib.swervelib.telemetry.SwerveDriveTelemetry.TelemetryVerbosity;
+import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
+import edu.wpi.first.math.filter.SlewRateLimiter;
+import edu.wpi.first.math.geometry.*;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.math.trajectory.Trajectory;
+import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * Swerve Drive class representing and controlling the swerve drive.
@@ -127,6 +123,7 @@ public class SwerveDrive
     this.swerveModules = config.modules;
 
     //    odometry = new SwerveDriveOdometry(kinematics, getYaw(), getModulePositions());
+
     swerveDrivePoseEstimator =
         new SwerveDrivePoseEstimator(
             kinematics,
@@ -396,8 +393,7 @@ public class SwerveDrive
    */
   public SwerveModulePosition[] getModulePositions()
   {
-    SwerveModulePosition[] positions =
-        new SwerveModulePosition[swerveDriveConfiguration.moduleCount];
+    SwerveModulePosition[] positions = new SwerveModulePosition[swerveDriveConfiguration.moduleCount];
     for (SwerveModule module : swerveModules)
     {
       positions[module.moduleNumber] = module.getPosition();
@@ -405,6 +401,8 @@ public class SwerveDrive
       {
         positions[module.moduleNumber].distanceMeters *= -1;
       }
+      SmartDashboard.putNumber("Module " + module.moduleNumber + " Position: ",
+                               positions[module.moduleNumber].distanceMeters);
     }
     return positions;
   }
@@ -615,6 +613,8 @@ public class SwerveDrive
       }
 
       ChassisSpeeds measuredChassisSpeeds = getRobotVelocity();
+      SmartDashboard.putNumber("Odometry Robot Velocity X", measuredChassisSpeeds.vxMetersPerSecond);
+      SmartDashboard.putNumber("Odometry Robot Velocity Y", measuredChassisSpeeds.vyMetersPerSecond);
       SwerveDriveTelemetry.measuredChassisSpeeds[1] = measuredChassisSpeeds.vyMetersPerSecond;
       SwerveDriveTelemetry.measuredChassisSpeeds[0] = measuredChassisSpeeds.vxMetersPerSecond;
       SwerveDriveTelemetry.measuredChassisSpeeds[2] = Math.toDegrees(measuredChassisSpeeds.omegaRadiansPerSecond);
