@@ -19,8 +19,6 @@ import com.maxtech.lib.swervelib.parser.SwerveDriveConfiguration;
 import com.maxtech.lib.swervelib.parser.SwerveParser;
 import com.maxtech.lib.swervelib.telemetry.SwerveDriveTelemetry;
 import com.maxtech.lib.swervelib.telemetry.SwerveDriveTelemetry.TelemetryVerbosity;
-import com.maxtech.maxxi.util.Odometry;
-import com.maxtech.maxxi.util.PhotonCameraWrapper;
 import java.io.File;
 import java.io.IOException;
 
