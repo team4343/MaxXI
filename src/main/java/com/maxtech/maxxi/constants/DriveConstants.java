@@ -1,7 +1,7 @@
 package com.maxtech.maxxi.constants;
 
-import com.maxtech.lib.swervelib.math.Matter;
-import com.maxtech.lib.swervelib.parser.PIDFConfig;
+import com.maxtech.swervelib.math.Matter;
+import com.maxtech.swervelib.parser.PIDFConfig;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.controller.PIDController;

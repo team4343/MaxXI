@@ -36,9 +36,9 @@ public class RobotContainer {
         drivetrainSubsystem.setDefaultCommand(
             new TeleopDrive(
                 drivetrainSubsystem,
-                hid::getDriverX,
-                hid::getDriverY,
-                hid::getDriverT,
+                hid::getOperatorX,
+                hid::getOperatorY,
+                hid::getOperatorR,
                 ()-> true,
                 false,
                 true

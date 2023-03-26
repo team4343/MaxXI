@@ -4,7 +4,7 @@
 
 package com.maxtech.maxxi.commands.drivebase;
 
-import com.maxtech.lib.swervelib.SwerveController;
+import com.maxtech.swervelib.SwerveController;
 import com.maxtech.maxxi.subsystems.DrivetrainSubsystem;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.Timer;
@@ -69,21 +69,19 @@ public class TeleopDrive extends CommandBase
   @Override
   public void execute()
   {
-//    double xVelocity   = Math.pow(vX.getAsDouble(), 3);
-//    double yVelocity   = Math.pow(vY.getAsDouble(), 3);
-//    double angVelocity = Math.pow(omega.getAsDouble(), 3);
     double xVelocity   = vX.getAsDouble();
     double yVelocity   = vY.getAsDouble();
     double angVelocity = omega.getAsDouble();
+
     SmartDashboard.putNumber("vX", xVelocity * controller.config.maxSpeed);
     SmartDashboard.putNumber("vY", yVelocity * controller.config.maxSpeed);
     SmartDashboard.putNumber("omega", angVelocity  * controller.config.maxAngularVelocity);
 
 
-    swerve.drive(new Translation2d(
+    swerve.drive(
+        new Translation2d(
             xVelocity * controller.config.maxSpeed,
-            yVelocity * controller.config.maxSpeed
-        ),
+            yVelocity * controller.config.maxSpeed),
         angVelocity * controller.config.maxAngularVelocity,
         driveMode.getAsBoolean(),
         isOpenLoop);

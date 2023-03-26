@@ -32,16 +32,17 @@ public class HumanDevice {
     }
 
     public double getOperatorX() {
-        SmartDashboard.putNumber("Drive TranslationX " , modifyAxis(operatorStick.getLeftY() * -1));
+        SmartDashboard.putNumber("Operator X " , modifyAxis(operatorStick.getLeftY() * -1));
         return modifyAxis(operatorStick.getLeftY() * -1);
     }
 
     public double getOperatorY() {
-        SmartDashboard.putNumber("Drive TranslationY " , modifyAxis(operatorStick.getLeftX() * -1));
+        SmartDashboard.putNumber("Operator Y " , modifyAxis(operatorStick.getLeftX() * -1));
         return modifyAxis(operatorStick.getLeftX() * -1);
     }
 
     public double getOperatorR() {
+        SmartDashboard.putNumber("Operator R " , modifyAxis(operatorStick.getRightX() * -1));
         return modifyAxis(operatorStick.getRightX() * -1);
     }
 
@@ -76,6 +77,7 @@ public class HumanDevice {
         if (driverStick.getRawButton(1)) {
             value = Math.copySign(value * 0.5, value);
         }
+        value *= 0.4;
         return value;
     }
 }
