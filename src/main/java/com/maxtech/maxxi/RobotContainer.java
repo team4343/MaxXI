@@ -4,17 +4,18 @@
 
 package com.maxtech.maxxi;
 
+import com.maxtech.maxxi.commands.AbsoluteFieldDrive;
 import com.maxtech.maxxi.commands.ArmPositionCommand;
 import com.maxtech.maxxi.commands.IntakeSetCommand;
-import com.maxtech.maxxi.commands.drivebase.TeleopDrive;
+import com.maxtech.maxxi.commands.TeleopDrive;
 import com.maxtech.maxxi.subsystems.ArmSubsystem;
 import com.maxtech.maxxi.subsystems.ArmSubsystem.State;
 import com.maxtech.maxxi.subsystems.DrivetrainSubsystem;
 import com.maxtech.maxxi.subsystems.IntakeSubsystem;
-import com.maxtech.maxxi.subsystems.IntakeSubsystem.IntakeState;
 import com.maxtech.maxxi.util.HumanDevice;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj2.command.Command;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -33,19 +34,12 @@ public class RobotContainer {
      * The container for the robot. Contains subsystems, OI devices, and commands.
      */
     public RobotContainer() {
-        drivetrainSubsystem.setDefaultCommand(
-            new TeleopDrive(
-                drivetrainSubsystem,
-                hid::getOperatorX,
-                hid::getOperatorY,
-                hid::getOperatorR,
-                ()-> true,
-                false,
-                true
-            ));
-
+        drivetrainSubsystem.setDefaultCommand(getAbsoluteFieldDriveCommand());
+        intakeSubsystem.setDefaultCommand(new IntakeSetCommand(
+            intakeSubsystem,
+            () -> hid.getOperatorTriggerL() - hid.getOperatorTriggerR()
+        ));
         configureButtonBindings();
-
     }
 
     /**
@@ -56,24 +50,41 @@ public class RobotContainer {
      */
     private void configureButtonBindings() {
         // Driver
-        // hid.setDriverCommand(1).onTrue(new ResetOdometry(drivetrainSubsystem));
         hid.setDriverCommand(3).onTrue(new ArmPositionCommand(armSubsystem, State.PickupGround));
         hid.setDriverCommand(5).onTrue(new ArmPositionCommand(armSubsystem, State.Rest));
         hid.setDriverCommand(4).onTrue(new ArmPositionCommand(armSubsystem, State.PlacingMiddle));
         hid.setDriverCommand(6).onTrue(new ArmPositionCommand(armSubsystem, State.PLacingUpper));
         hid.setDriverCommand(2).onTrue(new ArmPositionCommand(armSubsystem, State.PickupStation));
 
-        hid.setDriverCommand(11).whileTrue(new IntakeSetCommand(intakeSubsystem, IntakeState.CUBE_IN)).onFalse(new IntakeSetCommand(intakeSubsystem, IntakeState.STOPPED));
-        hid.setDriverCommand(12).onTrue(new IntakeSetCommand(intakeSubsystem, IntakeState.CUBE_OUT)).onFalse(new IntakeSetCommand(intakeSubsystem, IntakeState.STOPPED));
-
-        hid.setOperatorCommand(9).whileTrue(new IntakeSetCommand(intakeSubsystem, IntakeState.CUBE_IN)).onFalse(new IntakeSetCommand(intakeSubsystem, IntakeState.STOPPED));
-        hid.setOperatorCommand(10).onTrue(new IntakeSetCommand(intakeSubsystem, IntakeState.CUBE_OUT)).onFalse(new IntakeSetCommand(intakeSubsystem, IntakeState.STOPPED));
-
         hid.setOperatorCommand(1).onTrue(new ArmPositionCommand(armSubsystem, State.PickupGround));
         hid.setOperatorCommand(2).onTrue(new ArmPositionCommand(armSubsystem, State.Rest));
-        hid.setOperatorCommand(3).onTrue(new ArmPositionCommand(armSubsystem, State.PickupStation));
-        hid.setOperatorCommand(4).onTrue(new ArmPositionCommand(armSubsystem, State.PlacingMiddle));
+        hid.setOperatorCommand(6).onTrue(new ArmPositionCommand(armSubsystem, State.PickupStation));
+        hid.setOperatorCommand(3).onTrue(new ArmPositionCommand(armSubsystem, State.PlacingMiddle));
+        hid.setOperatorCommand(4).onTrue(new ArmPositionCommand(armSubsystem, State.PLacingUpper));
 
     }
+
+    public Command getAbsoluteFieldDriveCommand() {
+        return new AbsoluteFieldDrive(
+            drivetrainSubsystem,
+            hid::getOperatorX,
+            hid::getOperatorY,
+            hid::getOperatorR,
+            false
+        );
+    }
+
+    public Command getTeleopDriveCommand() {
+        return new TeleopDrive(
+            drivetrainSubsystem,
+            hid::getOperatorX,
+            hid::getOperatorY,
+            hid::getOperatorR,
+            ()-> true,
+            false,
+            true
+        );
+    }
+
 
 }

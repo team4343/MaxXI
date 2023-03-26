@@ -73,11 +73,10 @@ public class HumanDevice {
 
     private double modifyAxis(double value) {
         value = (Math.abs(value) < DEAD_BAND) ? 0 : value;
-        value = Math.copySign(value * value, value);
+//        value = Math.copySign(value * value * value, value);
         if (driverStick.getRawButton(1)) {
             value = Math.copySign(value * 0.5, value);
         }
-        value *= 0.4;
         return value;
     }
 }

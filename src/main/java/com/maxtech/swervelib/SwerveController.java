@@ -5,6 +5,7 @@ import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import com.maxtech.swervelib.parser.SwerveControllerConfiguration;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  * Controller class used to convert raw inputs into robot speeds.
@@ -184,9 +185,11 @@ public class SwerveController
   {
     // Calculates an angular rate using a PIDController and the commanded angle. Returns a value between -1 and 1
     // which is then scaled to be between -maxAngularVelocity and +maxAngularVelocity.
+    SmartDashboard.putNumber("Max Calculated Angular Velocity", config.maxAngularVelocity);
+    SmartDashboard.putNumber("Max Actual Angular Velocity", 3);
     return getRawTargetSpeeds(xSpeed, ySpeed,
                               thetaController.calculate(currentHeadingAngleRadians, targetHeadingAngleRadians) *
-                              config.maxAngularVelocity);
+                              3);
   }
 
   /**

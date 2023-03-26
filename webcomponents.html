@@ -1,0 +1,36 @@
+<dashboard-tab
+    tab-name="TeleOperated"
+    slot="tab"
+    source-provider="NetworkTables"
+    selected=""
+>
+    <frc-field
+        source-key="/SmartDashboard/Field"
+        source-provider="NetworkTables"
+        style="transform: translate(12px, 9px); width: 815px; height: 415.812px;"
+        width="54.27083"
+        height="26.2916"
+        image="/field-images/2023-field.jpg"
+        top-left-field-corner-x="46"
+        top-left-field-corner-y="36"
+        bottom-right-field-corner-x="1088"
+        bottom-right-field-corner-y="544"
+    >
+        <frc-field-robot
+            source-key="/SmartDashboard/Field/Robot"
+            source-provider="NetworkTables"
+            style="width: 27.0961px; height: 40.6442px; transform: translate(66.7141px, 368.075px) rotate(261.044deg);"
+            opacity="100"
+            pose="[0,0,0]"
+        ></frc-field-robot>
+    </frc-field>
+    <frc-gyro
+        source-provider="NetworkTables"
+        style="transform: translate(1020px, 15px);"
+    ></frc-gyro>
+</dashboard-tab>
+<dashboard-tab
+    slot="tab"
+    tab-name="Autonomous"
+    source-provider="NetworkTables"
+></dashboard-tab>

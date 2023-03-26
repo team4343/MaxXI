@@ -46,9 +46,9 @@ public class DrivetrainSubsystem extends SubsystemBase
         }
         vision = new Vision();
 
-        SlewRateLimiter xSlewRateLimiter = new SlewRateLimiter(1);
-        SlewRateLimiter ySlewRateLimiter = new SlewRateLimiter(1);
-        SlewRateLimiter rSlewRateLimiter = new SlewRateLimiter(1);
+        SlewRateLimiter xSlewRateLimiter = new SlewRateLimiter(3);
+        SlewRateLimiter ySlewRateLimiter = new SlewRateLimiter(3);
+        SlewRateLimiter rSlewRateLimiter = new SlewRateLimiter(3);
         swerveDrive.swerveController.addSlewRateLimiters(xSlewRateLimiter, ySlewRateLimiter, rSlewRateLimiter);
         swerveDrive.setMotorIdleMode(false); // Set to Coast
 
@@ -195,8 +195,8 @@ public class DrivetrainSubsystem extends SubsystemBase
      */
     public ChassisSpeeds getTargetSpeeds(double xInput, double yInput, Rotation2d angle)
     {
-        xInput = Math.pow(xInput, 3);
-        yInput = Math.pow(yInput, 3);
+//        xInput = Math.pow(xInput, 3);
+//        yInput = Math.pow(yInput, 3);
         return swerveDrive.swerveController.getTargetSpeeds(xInput, yInput, angle.getRadians(), getHeading().getRadians());
     }
 

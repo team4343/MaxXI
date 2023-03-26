@@ -2,10 +2,10 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package com.maxtech.maxxi.commands.drivebase;
+package com.maxtech.maxxi.commands;
 
-import com.maxtech.swervelib.SwerveController;
 import com.maxtech.maxxi.subsystems.DrivetrainSubsystem;
+import com.maxtech.swervelib.SwerveController;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -77,15 +77,14 @@ public class TeleopDrive extends CommandBase
     SmartDashboard.putNumber("vY", yVelocity * controller.config.maxSpeed);
     SmartDashboard.putNumber("omega", angVelocity  * controller.config.maxAngularVelocity);
 
-
     swerve.drive(
         new Translation2d(
             xVelocity * controller.config.maxSpeed,
             yVelocity * controller.config.maxSpeed),
         angVelocity * controller.config.maxAngularVelocity,
         driveMode.getAsBoolean(),
-        isOpenLoop);
-
+        isOpenLoop
+    );
   }
 
   // Returns true when the command should end.

@@ -1,4 +1,4 @@
-package com.maxtech.maxxi.commands.drivebase;
+package com.maxtech.maxxi.commands;
 
 import static com.maxtech.maxxi.constants.DriveConstants.*;
 import com.maxtech.maxxi.subsystems.DrivetrainSubsystem;

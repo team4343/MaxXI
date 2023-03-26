@@ -72,7 +72,7 @@ public class SwerveDrive
   /**
    * Invert odometry readings of drive motor positions, used as a patch for debugging currently.
    */
-  public        boolean                  invertOdometry               = false;
+  public        boolean                  invertOdometry               = true;
   /**
    * Swerve IMU device for sensing the heading of the robot.
    */

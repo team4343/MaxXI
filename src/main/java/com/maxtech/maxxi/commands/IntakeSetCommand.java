@@ -3,19 +3,21 @@ package com.maxtech.maxxi.commands;
 import com.maxtech.maxxi.subsystems.IntakeSubsystem;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
+import java.util.function.DoubleSupplier;
+
 public class IntakeSetCommand extends CommandBase {
     private final IntakeSubsystem intakeSubsystem;
-    private final IntakeSubsystem.IntakeState state;
+    private final DoubleSupplier speedSupplier;
 
-    public IntakeSetCommand(IntakeSubsystem intakeSubsystem, IntakeSubsystem.IntakeState state) {
+    public IntakeSetCommand(IntakeSubsystem intakeSubsystem, DoubleSupplier speed) {
         addRequirements(intakeSubsystem);
         this.intakeSubsystem = intakeSubsystem;
-        this.state = state;
+        this.speedSupplier = speed;
     }
 
     @Override
     public void execute() {
-        intakeSubsystem.setState(state);
+        intakeSubsystem.setSpeed(speedSupplier.getAsDouble());
     }
 
     @Override
@@ -25,7 +27,6 @@ public class IntakeSetCommand extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        // Only needs to set the state once.
-        return true;
+        return false;
     }
 }

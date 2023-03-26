@@ -241,6 +241,7 @@ public class SwerveMath
     // Get the robot's current field-relative velocity
     Translation2d currentVelocity = SwerveController.getTranslation2d(fieldVelocity);
     SmartDashboard.putNumber("currentVelocity", currentVelocity.getX());
+    SmartDashboard.putNumber("commandedVelocity", commandedVelocity.getX());
 
     // Calculate the commanded change in velocity by subtracting current velocity
     // from commanded velocity

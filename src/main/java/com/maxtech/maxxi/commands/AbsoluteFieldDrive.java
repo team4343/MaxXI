@@ -2,19 +2,21 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package com.maxtech.maxxi.commands.drivebase;
+package com.maxtech.maxxi.commands;
 
+import com.maxtech.maxxi.subsystems.DrivetrainSubsystem;
+import com.maxtech.swervelib.SwerveController;
+import com.maxtech.swervelib.math.SwerveMath;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import com.maxtech.swervelib.SwerveController;
-import com.maxtech.swervelib.math.SwerveMath;
-import static com.maxtech.maxxi.constants.DriveConstants.*;
+
 import java.util.List;
 import java.util.function.DoubleSupplier;
-import com.maxtech.maxxi.subsystems.DrivetrainSubsystem;
+
+import static com.maxtech.maxxi.constants.DriveConstants.*;
 
 
 public class AbsoluteFieldDrive extends CommandBase
@@ -57,10 +59,14 @@ public class AbsoluteFieldDrive extends CommandBase
   @Override
   public void execute() {
     // Get the desired chassis speeds based on a 2 joystick module.
+    Rotation2d lastHeading = swerve.getHeading();
+    Rotation2d headingChange = Rotation2d.fromRadians(heading.getAsDouble() * Math.PI / 2);
+    Rotation2d newHeading = lastHeading.plus(headingChange);
+
     ChassisSpeeds desiredSpeeds = swerve.getTargetSpeeds(
         vX.getAsDouble(),
         vY.getAsDouble(),
-        new Rotation2d(heading.getAsDouble() * Math.PI)
+        newHeading
     );
 
     // Limit velocity to prevent tippy

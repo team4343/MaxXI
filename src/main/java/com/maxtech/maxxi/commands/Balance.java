@@ -1,4 +1,4 @@
-package com.maxtech.maxxi.commands.drivebase;
+package com.maxtech.maxxi.commands;
 
 public class Balance {
     // TODO: Implement this command
