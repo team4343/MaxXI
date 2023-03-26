@@ -7,7 +7,7 @@
     <frc-field
         source-key="/SmartDashboard/Field"
         source-provider="NetworkTables"
-        style="transform: translate(12px, 9px); width: 815px; height: 415.812px;"
+        style="transform: translate(0px, 0px); width: 862px; height: 440.797px;"
         width="54.27083"
         height="26.2916"
         image="/field-images/2023-field.jpg"
@@ -19,18 +19,180 @@
         <frc-field-robot
             source-key="/SmartDashboard/Field/Robot"
             source-provider="NetworkTables"
-            style="width: 27.0961px; height: 40.6442px; transform: translate(66.7141px, 368.075px) rotate(261.044deg);"
+            style="width: 25.8518px; height: 25.8518px; transform: translate(540.899px, 232.713px) rotate(105.521deg);"
+            opacity="100"
+            pose="[0,0,0]"
+            width="0.54"
+            height="0.54"
+        ></frc-field-robot>
+    </frc-field>
+    <frc-swerve-drivebase
+        source-provider="NetworkTables"
+        style="transform: translate(1324px, 157px); width: 361px; height: 379px;"
+        source-key="/SmartDashboard/swerve"
+        wheellocations="[2.5,2,2.5,-2,-2.5,2,-2.5,-2]"
+        measuredstates="[0,0,0,0,0,0,0,0]"
+        desiredstates="[0,0,0,0,0,0,0,0]"
+        sizeleftright="4"
+        sizefrontback="5"
+    ></frc-swerve-drivebase>
+    <frc-gyro
+        source-provider="NetworkTables"
+        style="transform: translate(860px, 0px); width: 272px; height: 253px;"
+        source-key="/SmartDashboard/navX-Sensor[1]/Value"
+    ></frc-gyro>
+    <frc-line-chart
+        title="Shoulder"
+        source-provider="NetworkTables"
+        style="transform: translate(20px, 446px); width: 328px; height: 465px;"
+        tracked-time="20"
+    >
+        <frc-chart-axis
+            source-provider="NetworkTables"
+            min="-2"
+            max="10"
+            tick-values="[]"
+        ></frc-chart-axis>
+        <frc-chart-data
+            label="Position"
+            color="#00aa00"
+            source-provider="NetworkTables"
+            source-key="/SmartDashboard/ShoulderPosition"
+        ></frc-chart-data>
+    </frc-line-chart>
+    <frc-line-chart
+        title="Elbow"
+        source-provider="NetworkTables"
+        style="transform: translate(325px, 446px); width: 353px; height: 467px;"
+    >
+        <frc-chart-axis
+            source-provider="NetworkTables"
+            min="-4"
+            max="20"
+            tick-values="[]"
+        ></frc-chart-axis>
+        <frc-chart-data
+            label="Position"
+            color="#00aa00"
+            source-provider="NetworkTables"
+            source-key="/SmartDashboard/ElbowPosition"
+        ></frc-chart-data>
+    </frc-line-chart>
+    <frc-line-chart
+        title="Wrist"
+        source-provider="NetworkTables"
+        style="transform: translate(650px, 447px); width: 353px; height: 464px;"
+    >
+        <frc-chart-axis
+            source-provider="NetworkTables"
+            min="-15"
+            max="25"
+            tick-values="[]"
+        ></frc-chart-axis>
+        <frc-chart-data
+            label="Position"
+            color="#00aa00"
+            source-provider="NetworkTables"
+            source-key="/SmartDashboard/WristPosition"
+        ></frc-chart-data>
+    </frc-line-chart>
+    <frc-boolean-box
+        source-provider="NetworkTables"
+        style="width: 57px; height: 54px; transform: translate(402px, 0px);"
+        source-key="/photonvision/Microsoft_LifeCam_HD-3000/hasTarget"
+        label="Vision"
+    ></frc-boolean-box>
+    <vaadin-text-field
+        label="Elbow State"
+        source-provider="NetworkTables"
+        style="transform: translate(869px, 298px); width: 191px; height: 145px;"
+        placeholder="NA"
+        has-label=""
+        source-key="/SmartDashboard/Elbow State"
+        has-value=""
+    ><input
+            slot="input"
+            type="text"
+            id="vaadin-text-field-243"
+            aria-labelledby="label-vaadin-text-field-1378"
+            aria-describedby=""
+            placeholder="NA"
+            tabindex="0"
+        ><label
+            slot="label"
+            id="label-vaadin-text-field-1378"
+            for="vaadin-text-field-243"
+        >Elbow State</label>
+        <div
+            slot="error-message"
+            id="error-message-vaadin-text-field-1257"
+            hidden=""
+        ></div>
+    </vaadin-text-field>
+    <vaadin-text-field
+        label="Shoulder State"
+        has-label=""
+        source-provider="NetworkTables"
+        style="transform: translate(870px, 367px); width: 186px; height: 99px;"
+        placeholder="NA"
+        source-key="/SmartDashboard/Arm State"
+        has-value=""
+    ><input
+            slot="input"
+            type="text"
+            id="vaadin-text-field-244"
+            aria-labelledby="label-vaadin-text-field-1492"
+            aria-describedby=""
+            tabindex="0"
+            placeholder="NA"
+        ><label
+            slot="label"
+            id="label-vaadin-text-field-1492"
+            for="vaadin-text-field-244"
+        >Shoulder State</label>
+        <div
+            slot="error-message"
+            id="error-message-vaadin-text-field-1332"
+            hidden=""
+        ></div>
+    </vaadin-text-field>
+</dashboard-tab>
+<dashboard-tab
+    tab-name="Vision"
+    slot="tab"
+    source-provider="NetworkTables"
+>
+    <frc-camera
+        source-provider="NetworkTables"
+        style="--image-width:0px; --image-height:NaNpx; --crosshair-width:2px; --crosshair-color:#ffffff; --image-display:block; transform: translate(0px, 442px); width: 865px; height: 486px;"
+        source-key="/CameraPublisher/photonvision_Port_1182_MJPEG_Server"
+        streams="[]"
+    ></frc-camera>
+    <frc-field
+        source-key="/SmartDashboard/Field"
+        source-provider="NetworkTables"
+        style="transform: translate(0px, 0px); width: 863px; height: 443.812px;"
+        width="54.27083"
+        height="26.2916"
+        image="/field-images/2023-field.jpg"
+        top-left-field-corner-x="46"
+        top-left-field-corner-y="36"
+        bottom-right-field-corner-x="1088"
+        bottom-right-field-corner-y="544"
+    >
+        <frc-field-robot
+            source-key="/SmartDashboard/Field/Robot"
+            source-provider="NetworkTables"
+            style="width: 0px; height: 0px; transform: translate(0px, 0px) rotate(105.521deg);"
+            width="0.54"
+            height="0.54"
             opacity="100"
             pose="[0,0,0]"
         ></frc-field-robot>
     </frc-field>
-    <frc-gyro
+    <frc-boolean-box
         source-provider="NetworkTables"
-        style="transform: translate(1020px, 15px);"
-    ></frc-gyro>
+        style="transform: translate(0px, 441px); width: 80px; height: 80px;"
+        source-key="/photonvision/Microsoft_LifeCam_HD-3000/hasTarget"
+    ></frc-boolean-box>
 </dashboard-tab>
-<dashboard-tab
-    slot="tab"
-    tab-name="Autonomous"
-    source-provider="NetworkTables"
-></dashboard-tab>

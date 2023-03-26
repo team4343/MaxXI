@@ -4,15 +4,16 @@
 
 package com.maxtech.maxxi;
 
-import com.maxtech.maxxi.commands.AbsoluteFieldDrive;
-import com.maxtech.maxxi.commands.ArmPositionCommand;
-import com.maxtech.maxxi.commands.IntakeSetCommand;
-import com.maxtech.maxxi.commands.TeleopDrive;
+import com.maxtech.maxxi.commands.*;
 import com.maxtech.maxxi.subsystems.ArmSubsystem;
 import com.maxtech.maxxi.subsystems.ArmSubsystem.State;
 import com.maxtech.maxxi.subsystems.DrivetrainSubsystem;
 import com.maxtech.maxxi.subsystems.IntakeSubsystem;
 import com.maxtech.maxxi.util.HumanDevice;
+import com.pathplanner.lib.PathConstraints;
+import com.pathplanner.lib.PathPlanner;
+import com.pathplanner.lib.PathPlannerTrajectory;
+import com.pathplanner.lib.PathPoint;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -24,7 +25,7 @@ import edu.wpi.first.wpilibj2.command.Command;
  * subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
-    private final HumanDevice hid = new HumanDevice(1, 0);
+    private final HumanDevice hid = new HumanDevice(1, 0, 2);
 
     public final DrivetrainSubsystem drivetrainSubsystem = new DrivetrainSubsystem();
     public final ArmSubsystem armSubsystem = new ArmSubsystem();
@@ -37,7 +38,8 @@ public class RobotContainer {
         drivetrainSubsystem.setDefaultCommand(getAbsoluteFieldDriveCommand());
         intakeSubsystem.setDefaultCommand(new IntakeSetCommand(
             intakeSubsystem,
-            () -> hid.getOperatorTriggerL() - hid.getOperatorTriggerR()
+//            () -> hid.getOperatorTriggerL() - hid.getOperatorTriggerR()
+            () -> hid.getPlaystationTriggerL() - hid.getPlaystationTriggerR()
         ));
         configureButtonBindings();
     }
@@ -62,19 +64,29 @@ public class RobotContainer {
         hid.setOperatorCommand(3).onTrue(new ArmPositionCommand(armSubsystem, State.PlacingMiddle));
         hid.setOperatorCommand(4).onTrue(new ArmPositionCommand(armSubsystem, State.PLacingUpper));
 
+        hid.setPlaystationCommand(2).onTrue(new ArmPositionCommand(armSubsystem, State.PickupGround));
+        hid.setPlaystationCommand(3).onTrue(new ArmPositionCommand(armSubsystem, State.Rest));
+        hid.setPlaystationCommand(6).onTrue(new ArmPositionCommand(armSubsystem, State.PickupStation));
+        hid.setPlaystationCommand(1).onTrue(new ArmPositionCommand(armSubsystem, State.PlacingMiddle));
+        hid.setPlaystationCommand(4).onTrue(new ArmPositionCommand(armSubsystem, State.PLacingUpper));
+
     }
 
     public Command getAbsoluteFieldDriveCommand() {
         return new AbsoluteFieldDrive(
             drivetrainSubsystem,
-            hid::getOperatorX,
-            hid::getOperatorY,
-            hid::getOperatorR,
+//            hid::getOperatorX,
+//            hid::getOperatorY,
+//            hid::getOperatorR,
+            hid::getPlaystationX,
+            hid::getPlaystationY,
+            hid::getPlaystationR,
             false
         );
     }
 
     public Command getTeleopDriveCommand() {
+        // Not needed
         return new TeleopDrive(
             drivetrainSubsystem,
             hid::getOperatorX,
@@ -83,6 +95,20 @@ public class RobotContainer {
             ()-> true,
             false,
             true
+        );
+    }
+
+    public Command getAutonomousCommand() {
+        PathPlannerTrajectory trajectory = PathPlanner.generatePath(
+            new PathConstraints(1, 0.5),
+            new PathPoint(drivetrainSubsystem.getPose().getTranslation(), drivetrainSubsystem.getHeading(), drivetrainSubsystem.getHeading()),
+            new PathPoint(drivetrainSubsystem.getPose().getTranslation(), drivetrainSubsystem.getHeading(), drivetrainSubsystem.getHeading())
+        );
+
+        return new FollowTrajectory(
+            drivetrainSubsystem,
+            trajectory,
+            false
         );
     }
 

@@ -29,7 +29,6 @@ public class Vision {
 
     /**
      * Get the robot's pose relative to the target.
-     * <p><b>THIS METHOD IS ONLY CALLED FROM ODOMETRY SUBSYSTEM.</b></p>
      *
      * @return The robot's pose relative to the target.
      */
@@ -39,9 +38,11 @@ public class Vision {
         this.latestTargetTime = result.getTimestampSeconds();
         this.latestTarget = result.getBestTarget();
 
-        // If there are no targets, return null.
+        // If there are no accurate targets, return null.
         PhotonTrackedTarget bestTarget = result.getBestTarget();
         if (bestTarget == null) return null;
+        if (bestTarget.getPoseAmbiguity() > 0.5) return null;
+
         Transform3d camToTargetTrans = bestTarget.getBestCameraToTarget();
         Optional<Pose3d> tagPoseOptional = layout.getTagPose(latestTarget.getFiducialId());
 

@@ -186,10 +186,10 @@ public class SwerveController
     // Calculates an angular rate using a PIDController and the commanded angle. Returns a value between -1 and 1
     // which is then scaled to be between -maxAngularVelocity and +maxAngularVelocity.
     SmartDashboard.putNumber("Max Calculated Angular Velocity", config.maxAngularVelocity);
-    SmartDashboard.putNumber("Max Actual Angular Velocity", 3);
+    SmartDashboard.putNumber("Max Actual Angular Velocity", com.maxtech.maxxi.constants.DriveConstants.MAX_ANGULAR_VELOCITY);
     return getRawTargetSpeeds(xSpeed, ySpeed,
                               thetaController.calculate(currentHeadingAngleRadians, targetHeadingAngleRadians) *
-                              3);
+                              com.maxtech.maxxi.constants.DriveConstants.MAX_ANGULAR_VELOCITY);
   }
 
   /**
