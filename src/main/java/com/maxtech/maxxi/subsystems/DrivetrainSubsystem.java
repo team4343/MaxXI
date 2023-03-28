@@ -7,6 +7,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.Timer;
@@ -15,6 +16,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import com.maxtech.swervelib.SwerveController;
 import com.maxtech.swervelib.SwerveDrive;
 import com.maxtech.swervelib.math.SwerveKinematics2;
+import com.maxtech.swervelib.math.SwerveModuleState2;
 import com.maxtech.swervelib.parser.SwerveDriveConfiguration;
 import com.maxtech.swervelib.parser.SwerveParser;
 import com.maxtech.swervelib.telemetry.SwerveDriveTelemetry;
@@ -118,6 +120,14 @@ public class DrivetrainSubsystem extends SubsystemBase
     public Pose2d getPose()
     {
         return swerveDrive.getPose();
+    }
+
+    public SwerveModulePosition[] getModulePositions() {
+        return swerveDrive.getModulePositions();
+    }
+
+    public void setModuleStates(SwerveModuleState2[] desiredStates) {
+        swerveDrive.setModuleStates(desiredStates, false);
     }
 
     /**
