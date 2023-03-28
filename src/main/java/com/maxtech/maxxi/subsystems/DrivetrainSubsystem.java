@@ -2,6 +2,7 @@ package com.maxtech.maxxi.subsystems;
 
 import com.maxtech.maxxi.util.Vision;
 import com.maxtech.maxxi.util.VisionPoseResult;
+import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -12,14 +13,15 @@ import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import com.maxtech.lib.swervelib.SwerveController;
-import com.maxtech.lib.swervelib.SwerveDrive;
-import com.maxtech.lib.swervelib.math.SwerveKinematics2;
-import com.maxtech.lib.swervelib.math.SwerveModuleState2;
-import com.maxtech.lib.swervelib.parser.SwerveDriveConfiguration;
-import com.maxtech.lib.swervelib.parser.SwerveParser;
-import com.maxtech.lib.swervelib.telemetry.SwerveDriveTelemetry;
-import com.maxtech.lib.swervelib.telemetry.SwerveDriveTelemetry.TelemetryVerbosity;
+import com.maxtech.swervelib.SwerveController;
+import com.maxtech.swervelib.SwerveDrive;
+import com.maxtech.swervelib.math.SwerveKinematics2;
+import com.maxtech.swervelib.math.SwerveModuleState2;
+import com.maxtech.swervelib.parser.SwerveDriveConfiguration;
+import com.maxtech.swervelib.parser.SwerveParser;
+import com.maxtech.swervelib.telemetry.SwerveDriveTelemetry;
+import com.maxtech.swervelib.telemetry.SwerveDriveTelemetry.TelemetryVerbosity;
+
 import java.io.File;
 import java.io.IOException;
 
@@ -45,6 +47,13 @@ public class DrivetrainSubsystem extends SubsystemBase
             throw new RuntimeException(e);
         }
         vision = new Vision();
+
+        SlewRateLimiter xSlewRateLimiter = new SlewRateLimiter(3);
+        SlewRateLimiter ySlewRateLimiter = new SlewRateLimiter(3);
+        SlewRateLimiter rSlewRateLimiter = new SlewRateLimiter(3);
+        swerveDrive.swerveController.addSlewRateLimiters(xSlewRateLimiter, ySlewRateLimiter, rSlewRateLimiter);
+        swerveDrive.setMotorIdleMode(false); // Set to Coast
+
 
     }
 
@@ -75,6 +84,7 @@ public class DrivetrainSubsystem extends SubsystemBase
         if (result != null)
             swerveDrive.addVisionMeasurement(result.pose, result.timestamp, true, 1);
         swerveDrive.updateOdometry();
+
         SmartDashboard.putNumber("Estimated X", swerveDrive.swerveDrivePoseEstimator.getEstimatedPosition().getX());
         SmartDashboard.putNumber("Estimated Y", swerveDrive.swerveDrivePoseEstimator.getEstimatedPosition().getY());
         SmartDashboard.putNumber("Max Velocity", swerveDrive.swerveDriveConfiguration.maxSpeed);
@@ -195,8 +205,8 @@ public class DrivetrainSubsystem extends SubsystemBase
      */
     public ChassisSpeeds getTargetSpeeds(double xInput, double yInput, Rotation2d angle)
     {
-        xInput = Math.pow(xInput, 3);
-        yInput = Math.pow(yInput, 3);
+//        xInput = Math.pow(xInput, 3);
+//        yInput = Math.pow(yInput, 3);
         return swerveDrive.swerveController.getTargetSpeeds(xInput, yInput, angle.getRadians(), getHeading().getRadians());
     }
 

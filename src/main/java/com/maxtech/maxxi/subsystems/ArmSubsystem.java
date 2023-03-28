@@ -51,11 +51,11 @@ public class ArmSubsystem extends SubsystemBase {
     }
 
     // Position Constants
-    private final POS REST              = new POS(1, 0, -10);
-    private final POS PICKUP_GROUND     = new POS(0, 13, 15);
+    private final POS REST              = new POS(1, -1, -10);
+    private final POS PICKUP_GROUND     = new POS(0, 14.3, 10);
     private final POS PLACING_MIDDLE    = new POS(3, 7, 20);
-    private final POS PLACING_UPPER     = new POS(8, 15, 20);
-    private final POS PICKUP_STATION    = new POS(8, 15.5, 30);
+    private final POS PLACING_UPPER     = new POS(8, 15.5, 20);
+    private final POS PICKUP_STATION    = new POS(7.5, 16, 10);
     private final POS INIT              = new POS(0, 0, 0);
     private final POS PLACEHOLDER_B     = new POS(0, 0, 0);
 
@@ -64,22 +64,22 @@ public class ArmSubsystem extends SubsystemBase {
     // I. Sum of error over time. This increases output to counteract steady state error
     // D. Rate of change of error. This decreases output to counteract oscillation
     // Slot. So we can rapidly switch between PID configurations.
-    private static final PID SHOULDER_DEFAULT  = new PID(0.13, 0.00000, 0, 0);
+    private static final PID SHOULDER_DEFAULT  = new PID(0.17, 0.000001, 0, 0);
     private static final PID SHOULDER_STEADY   = new PID(0.2, 0.0007, 0, 1);
     private static final PID ELBOW_DEFAULT     = new PID(0.045, 0.00001, 0, 0);
-    private static final PID ELBOW_STEADY      = new PID(0.03, 0.0005, 0, 1);
+    private static final PID ELBOW_STEADY      = new PID(0.055, 0.00015, 0, 1);
     private static final PID ELBOW_PICKUP      = new PID(0.035, 0.0000, 0, 2);
     private static final PID WRIST_DEFAULT     = new PID(0.02, 0.00000, 0, 0);
 
-    private final Double SHOULDER_RAMP_RATE = 0.5;
+    private final Double SHOULDER_RAMP_RATE = 0.2;
     private final Double ELBOW_RAMP_RATE = 0.3; 
     private final Double WRIST_RAMP_RATE = 0.5;
 
-    private final float SHOULDER_MAX_POS = 9.5f;
+    private final float SHOULDER_MAX_POS = 9.0f;
     private final float SHOULDER_MIN_POS = 0;
     private final float ELBOW_MAX_POS = 20;
     private final float ELBOW_MIN_POS = 0;
-    private final float WRIST_MAX_POS = 60;
+    private final float WRIST_MAX_POS = 30;
     private final float WRIST_MIN_POS = -10;
 
 
@@ -98,10 +98,10 @@ public class ArmSubsystem extends SubsystemBase {
 
         // Set the peak and nominal output
         shoulder.setSmartCurrentLimit(80);
-        elbow.setSmartCurrentLimit(60);
+        elbow.setSmartCurrentLimit(80);
         wrist.setSmartCurrentLimit(60);
 
-        // Set the ramp rate of 0.25 seconds to full power
+        // Set the ramp rate of X seconds to full power
         shoulder.setClosedLoopRampRate(SHOULDER_RAMP_RATE);
         elbow.setClosedLoopRampRate(ELBOW_RAMP_RATE);
         wrist.setClosedLoopRampRate(WRIST_RAMP_RATE);

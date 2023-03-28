@@ -1,7 +1,7 @@
 package com.maxtech.maxxi.constants;
 
-import com.maxtech.lib.swervelib.math.Matter;
-import com.maxtech.lib.swervelib.parser.PIDFConfig;
+import com.maxtech.swervelib.math.Matter;
+import com.maxtech.swervelib.parser.PIDFConfig;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.controller.PIDController;
@@ -18,9 +18,9 @@ public final class DriveConstants {
     public static final PIDController yPIDController = new PIDController(0.6, 0.01, 0.0);
     public static final PIDController rPIDController = new PIDController(0.05, 0.005, 0.0);
 
-    public static final PIDFConfig xAutoPIDConf = new PIDFConfig(0.6, 0.01, 0.0);
-    public static final PIDFConfig yAutoPIDConf = new PIDFConfig(0.6, 0.01, 0.0);
-    public static final PIDFConfig rAutoPIDConf = new PIDFConfig(0.05, 0.005, 0.0);
+    public static final PIDFConfig xAutoPIDConf = new PIDFConfig(0.4, 0, 0);
+    public static final PIDFConfig yAutoPIDConf = new PIDFConfig(0.4, 0, 0);
+    public static final PIDFConfig rAutoPIDConf = new PIDFConfig(0.2, 0, 0.01);
 
     public static final PIDController xBalanceController = new PIDController(0.6, 0.01, 0.0);
     public static final PIDController yBalanceController = new PIDController(0.6, 0.01, 0.0);
@@ -35,9 +35,7 @@ public final class DriveConstants {
     public static final double LOOP_TIME = 0.02 + 0.110; // 20ms + 110ms for the swerve controller
     public static final double DEAD_BAND = 0.05;
 
-//    public static final double MAX_VELOCITY_METERS_PER_SECOND = 5676.0 / 60.0 * SdsModuleConfigurations.MK4I_L1.getDriveReduction() * SdsModuleConfigurations.MK4I_L1.getWheelDiameter() * PI; // 3.659 - SDS recommends 5676 RPM to M/S
-    public static final double MAX_VELOCITY_METERS_PER_SECOND = 3.659 ; // 3.659 - SDS recommends 5676 RPM to M/S
-    public static final double MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND = 6.0; // SDS recommends 6 rad/s
-
+    public static final double MAX_ANGULAR_VELOCITY = 6; // SDS recommends 6 rad/s
+    public static final double SLOW_MODE_FACTOR = 0.35;
 
 }

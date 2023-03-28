@@ -1,8 +1,5 @@
 package com.maxtech.maxxi;
 
-import com.maxtech.maxxi.util.HumanDevice;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import io.github.oblarg.oblog.Logger;
@@ -22,10 +19,7 @@ public class Robot extends TimedRobot {
      */
     @Override
     public void robotInit() {
-        // Instantiate our RobotContainer. This will perform all our button bindings
         robotContainer = new RobotContainer();
-
-        // Set up logging.
         Logger.configureLoggingAndConfig(robotContainer, false);
     }
 
@@ -56,6 +50,7 @@ public class Robot extends TimedRobot {
     @Override
     public void autonomousInit() {
         CommandScheduler.getInstance().cancelAll();
+        CommandScheduler.getInstance().schedule(robotContainer.getAutonomousCommand());
     }
 
     @Override
@@ -64,8 +59,6 @@ public class Robot extends TimedRobot {
     @Override
     public void teleopInit() {
         CommandScheduler.getInstance().cancelAll();
-
-        HumanDevice.alliance_modifier = DriverStation.getAlliance() == Alliance.Red ? -1 : 1;
     }
 
     @Override
