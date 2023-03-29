@@ -28,7 +28,7 @@ public class DriveToPoint extends SequentialCommandGroup {
                 xAutoPIDConf.createPIDController(),
                 yAutoPIDConf.createPIDController(),
                 rAutoPIDConf.createPIDController(),
-                drivebase::setChassisSpeeds,
+                drivebase::setChassisSpeedsAuto,
                 drivebase)
         );
     }

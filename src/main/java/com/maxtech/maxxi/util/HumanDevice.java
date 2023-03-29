@@ -104,7 +104,7 @@ public class HumanDevice {
     private double modifyAxis(double value) {
         value = (Math.abs(value) < DEAD_BAND) ? 0 : value;
 
-        if (playstationStick.getRawButton(5) || driverStick.getRawButton(1))
+        if (playstationStick.getRawButton(5) || driverStick.getRawButton(1) || playstationStick.getRawButton(11))
             value *= SLOW_MODE_FACTOR;
 
         return value;

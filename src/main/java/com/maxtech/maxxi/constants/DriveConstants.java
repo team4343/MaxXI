@@ -18,9 +18,9 @@ public final class DriveConstants {
     public static final PIDController yPIDController = new PIDController(0.6, 0.01, 0.0);
     public static final PIDController rPIDController = new PIDController(0.05, 0.005, 0.0);
 
-    public static final PIDFConfig xAutoPIDConf = new PIDFConfig(0.4, 0, 0);
-    public static final PIDFConfig yAutoPIDConf = new PIDFConfig(0.4, 0, 0);
-    public static final PIDFConfig rAutoPIDConf = new PIDFConfig(0.2, 0, 0.01);
+    public static final PIDFConfig xAutoPIDConf = new PIDFConfig(0.7, 0, 0);
+    public static final PIDFConfig yAutoPIDConf = new PIDFConfig(0.7, 0, 0);
+    public static final PIDFConfig rAutoPIDConf = new PIDFConfig(0.5, 0.1, 0.01);
 
     public static final PIDController xBalanceController = new PIDController(0.6, 0.01, 0.0);
     public static final PIDController yBalanceController = new PIDController(0.6, 0.01, 0.0);

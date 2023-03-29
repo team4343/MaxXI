@@ -9,9 +9,10 @@ import edu.wpi.first.math.geometry.Translation3d;
 import java.util.List;
 
 public final class VisionConstants {
-    public static final Transform3d robotToCam = new Transform3d(new Translation3d(.1524, .0889, .762), new Rotation3d(0, 0, 0));
+    public static final Transform3d robotToCam = new Transform3d(new Translation3d(.1524, .0889, .762 - .184), new Rotation3d(0, 0, 0));
     public static final String cameraName = "Microsoft_LifeCam_HD-3000";
     public static final double frameTimeout = 0.2; // Seconds
+    public static final double ambiguityMax = 0.5;
 
     // https://firstfrc.blob.core.windows.net/frc2023/FieldAssets/2023LayoutMarkingDiagram.pdf
     // RED

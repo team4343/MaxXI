@@ -13,8 +13,7 @@ import java.util.Optional;
 
 import static com.maxtech.maxxi.constants.LocationConstants.FIELD_LENGTH;
 import static com.maxtech.maxxi.constants.LocationConstants.FIELD_WIDTH;
-import static com.maxtech.maxxi.constants.VisionConstants.frameTimeout;
-import static com.maxtech.maxxi.constants.VisionConstants.getAprilTagList;
+import static com.maxtech.maxxi.constants.VisionConstants.*;
 
 public class Vision {
     private final AprilTagFieldLayout layout;
@@ -41,7 +40,7 @@ public class Vision {
         // If there are no accurate targets, return null.
         PhotonTrackedTarget bestTarget = result.getBestTarget();
         if (bestTarget == null) return null;
-        if (bestTarget.getPoseAmbiguity() > 0.5) return null;
+        if (bestTarget.getPoseAmbiguity() > ambiguityMax) return null;
 
         Transform3d camToTargetTrans = bestTarget.getBestCameraToTarget();
         Optional<Pose3d> tagPoseOptional = layout.getTagPose(latestTarget.getFiducialId());

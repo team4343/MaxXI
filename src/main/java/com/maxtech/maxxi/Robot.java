@@ -1,6 +1,8 @@
 package com.maxtech.maxxi;
 
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import io.github.oblarg.oblog.Logger;
 
@@ -12,6 +14,8 @@ import io.github.oblarg.oblog.Logger;
  */
 public class Robot extends TimedRobot {
     private RobotContainer robotContainer;
+    private NetworkTableInstance nt_handle;
+
 
     /**
      * This function is run when the robot is first started up and should be used for any
@@ -20,6 +24,7 @@ public class Robot extends TimedRobot {
     @Override
     public void robotInit() {
         robotContainer = new RobotContainer();
+        nt_handle = NetworkTableInstance.getDefault();
         Logger.configureLoggingAndConfig(robotContainer, false);
     }
 
@@ -42,13 +47,19 @@ public class Robot extends TimedRobot {
     public void disabledInit() {CommandScheduler.getInstance().cancelAll();}
 
     @Override
-    public void disabledPeriodic() {}
+    public void disabledPeriodic() {
+        String desiredAuto = nt_handle.getEntry("/autonomous").getString("default");
+        nt_handle.getEntry("/autonomous").setString(desiredAuto);
+    }
 
     /**
      * This autonomous runs the autonomous command selected by your {@link RobotContainer} class.
      */
     @Override
     public void autonomousInit() {
+        SmartDashboard.putNumber("Auto Start X", robotContainer.drivetrainSubsystem.getPose().getTranslation().getX());
+        SmartDashboard.putNumber("Auto Start Y", robotContainer.drivetrainSubsystem.getPose().getTranslation().getY());
+
         CommandScheduler.getInstance().cancelAll();
         CommandScheduler.getInstance().schedule(robotContainer.getAutonomousCommand());
     }

@@ -46,9 +46,9 @@ public class DrivetrainSubsystem extends SubsystemBase
         }
         vision = new Vision();
 
-        SlewRateLimiter xSlewRateLimiter = new SlewRateLimiter(3);
-        SlewRateLimiter ySlewRateLimiter = new SlewRateLimiter(3);
-        SlewRateLimiter rSlewRateLimiter = new SlewRateLimiter(3);
+        SlewRateLimiter xSlewRateLimiter = new SlewRateLimiter(2.25);
+        SlewRateLimiter ySlewRateLimiter = new SlewRateLimiter(2.25);
+        SlewRateLimiter rSlewRateLimiter = new SlewRateLimiter(3.0);
         swerveDrive.swerveController.addSlewRateLimiters(xSlewRateLimiter, ySlewRateLimiter, rSlewRateLimiter);
         swerveDrive.setMotorIdleMode(false); // Set to Coast
 
@@ -76,8 +76,7 @@ public class DrivetrainSubsystem extends SubsystemBase
     }
 
     @Override
-    public void periodic()
-    {
+    public void periodic() {
         VisionPoseResult result = vision.getPose();
         if (result != null)
             swerveDrive.addVisionMeasurement(result.pose, result.timestamp, true, 1);
@@ -93,8 +92,7 @@ public class DrivetrainSubsystem extends SubsystemBase
      *
      * @return {@link SwerveKinematics2} of the swerve drive.
      */
-    public SwerveKinematics2 getKinematics()
-    {
+    public SwerveKinematics2 getKinematics() {
         return swerveDrive.kinematics;
     }
 
@@ -105,8 +103,7 @@ public class DrivetrainSubsystem extends SubsystemBase
      *
      * @param initialHolonomicPose The pose to set the odometry to
      */
-    public void resetOdometry(Pose2d initialHolonomicPose)
-    {
+    public void resetOdometry(Pose2d initialHolonomicPose) {
         swerveDrive.resetOdometry(initialHolonomicPose);
     }
 
@@ -115,8 +112,7 @@ public class DrivetrainSubsystem extends SubsystemBase
      *
      * @return The robot's pose
      */
-    public Pose2d getPose()
-    {
+    public Pose2d getPose() {
         return swerveDrive.getPose();
     }
 
@@ -125,8 +121,13 @@ public class DrivetrainSubsystem extends SubsystemBase
      *
      * @param chassisSpeeds Chassis Speeds to set.
      */
-    public void setChassisSpeeds(ChassisSpeeds chassisSpeeds)
-    {
+    public void setChassisSpeeds(ChassisSpeeds chassisSpeeds) {
+        swerveDrive.setChassisSpeeds(chassisSpeeds);
+    }
+
+    public void setChassisSpeedsAuto(ChassisSpeeds chassisSpeeds) {
+        chassisSpeeds.vxMetersPerSecond *= -1;
+        chassisSpeeds.vyMetersPerSecond *= -1;
         swerveDrive.setChassisSpeeds(chassisSpeeds);
     }
 
@@ -135,16 +136,14 @@ public class DrivetrainSubsystem extends SubsystemBase
      *
      * @param trajectory The trajectory to post.
      */
-    public void postTrajectory(Trajectory trajectory)
-    {
+    public void postTrajectory(Trajectory trajectory) {
         swerveDrive.postTrajectory(trajectory);
     }
 
     /**
      * Resets the gyro angle to zero and resets odometry to the same position, but facing toward 0.
      */
-    public void zeroGyro()
-    {
+    public void zeroGyro() {
         swerveDrive.zeroGyro();
     }
 
@@ -153,8 +152,7 @@ public class DrivetrainSubsystem extends SubsystemBase
      *
      * @param brake True to set motors to brake mode, false for coast.
      */
-    public void setMotorBrake(boolean brake)
-    {
+    public void setMotorBrake(boolean brake) {
         swerveDrive.setMotorIdleMode(brake);
     }
 
@@ -163,8 +161,7 @@ public class DrivetrainSubsystem extends SubsystemBase
      *
      * @return The yaw angle
      */
-    public Rotation2d getHeading()
-    {
+    public Rotation2d getHeading() {
         return swerveDrive.getYaw();
     }
 
@@ -178,8 +175,7 @@ public class DrivetrainSubsystem extends SubsystemBase
      * @param headingY Y joystick which controls the angle of the robot.
      * @return {@link ChassisSpeeds} which can be sent to th Swerve Drive.
      */
-    public ChassisSpeeds getTargetSpeeds(double xInput, double yInput, double headingX, double headingY)
-    {
+    public ChassisSpeeds getTargetSpeeds(double xInput, double yInput, double headingX, double headingY) {
         xInput = Math.pow(xInput, 3);
         yInput = Math.pow(yInput, 3);
         return swerveDrive.swerveController.getTargetSpeeds(xInput, yInput, headingX, headingY, getHeading().getRadians());
@@ -193,10 +189,7 @@ public class DrivetrainSubsystem extends SubsystemBase
      * @param angle  The angle in as a {@link Rotation2d}.
      * @return {@link ChassisSpeeds} which can be sent to th Swerve Drive.
      */
-    public ChassisSpeeds getTargetSpeeds(double xInput, double yInput, Rotation2d angle)
-    {
-//        xInput = Math.pow(xInput, 3);
-//        yInput = Math.pow(yInput, 3);
+    public ChassisSpeeds getTargetSpeeds(double xInput, double yInput, Rotation2d angle) {
         return swerveDrive.swerveController.getTargetSpeeds(xInput, yInput, angle.getRadians(), getHeading().getRadians());
     }
 
@@ -205,8 +198,7 @@ public class DrivetrainSubsystem extends SubsystemBase
      *
      * @return A ChassisSpeeds object of the current field-relative velocity
      */
-    public ChassisSpeeds getFieldVelocity()
-    {
+    public ChassisSpeeds getFieldVelocity() {
         return swerveDrive.getFieldVelocity();
     }
 
@@ -215,8 +207,7 @@ public class DrivetrainSubsystem extends SubsystemBase
      *
      * @return A {@link ChassisSpeeds} object of the current velocity
      */
-    public ChassisSpeeds getRobotVelocity()
-    {
+    public ChassisSpeeds getRobotVelocity() {
         return swerveDrive.getRobotVelocity();
     }
 
@@ -225,8 +216,7 @@ public class DrivetrainSubsystem extends SubsystemBase
      *
      * @return {@link SwerveController} from the {@link SwerveDrive}.
      */
-    public SwerveController getSwerveController()
-    {
+    public SwerveController getSwerveController() {
         return swerveDrive.swerveController;
     }
 
@@ -235,16 +225,14 @@ public class DrivetrainSubsystem extends SubsystemBase
      *
      * @return The {@link SwerveDriveConfiguration} fpr the current drive.
      */
-    public SwerveDriveConfiguration getSwerveDriveConfiguration()
-    {
+    public SwerveDriveConfiguration getSwerveDriveConfiguration() {
         return swerveDrive.swerveDriveConfiguration;
     }
 
     /**
      * Lock the swerve drive to prevent it from moving.
      */
-    public void lock()
-    {
+    public void lock() {
         swerveDrive.lockPose();
     }
 
@@ -253,16 +241,14 @@ public class DrivetrainSubsystem extends SubsystemBase
      *
      * @return The heading as a {@link Rotation2d} angle
      */
-    public Rotation2d getPitch()
-    {
+    public Rotation2d getPitch() {
         return swerveDrive.getPitch();
     }
 
     /**
      * Add a fake vision reading for testing purposes.
      */
-    public void addFakeVisionReading()
-    {
+    public void addFakeVisionReading() {
         swerveDrive.addVisionMeasurement(new Pose2d(3, 3, Rotation2d.fromDegrees(65)), Timer.getFPGATimestamp(), false, 1);
     }
 }

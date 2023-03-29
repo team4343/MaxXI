@@ -1,0 +1,9 @@
+{
+  "lengthUnit": "Meter",
+  "exportUnit": "Always Meters",
+  "maxVelocity": 1.5,
+  "maxAcceleration": 0.5,
+  "trackWidth": 0.56,
+  "gameName": "Charged Up",
+  "outputDir": "../.pathplanner"
+}
