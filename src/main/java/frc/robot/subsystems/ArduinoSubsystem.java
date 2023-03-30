@@ -10,6 +10,7 @@ import io.github.oblarg.oblog.Loggable;
 public class ArduinoSubsystem extends SubsystemBase implements Loggable {
     private SPI spi;
     private final Mode mode = Mode.kMode3;
+    public boolean match_started = false;
     NetworkTableEntry team;
     byte[] buff = new byte[] {0};
     byte[] send = new byte[] {0,2};
@@ -25,12 +26,16 @@ public class ArduinoSubsystem extends SubsystemBase implements Loggable {
         spi.read(true, buff, 1);
         spi.write(send, 2);
     }
+
     void get_team() {
         team = nt_handle.getTable("/FMSInfo").getEntry("IsRedAlliance");
-        if (team.getBoolean(false))
+        if (match_started == false)
+            send[1] = 22;
+        else if (team.getBoolean(false))
             send[1] = 20;
         else
             send[1] = 21;
+        System.out.println(buff[0]);
 
     }
 }

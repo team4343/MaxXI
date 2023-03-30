@@ -15,8 +15,8 @@ import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.IntakeSubsystem.IntakeState;
 import frc.robot.subsystems.OdometrySubsystem;
-import frc.robot.util.HumanDevice;
 
+import frc.robot.util.HumanDevice;
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
  * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
@@ -25,7 +25,6 @@ import frc.robot.util.HumanDevice;
  */
 public class RobotContainer {
     private final HumanDevice hid = new HumanDevice(0, 1);
-
     public final DrivetrainSubsystem drivetrainSubsystem = new DrivetrainSubsystem();
     public final ArmSubsystem armSubsystem = new ArmSubsystem();
     public final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();

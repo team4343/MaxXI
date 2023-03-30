@@ -6,7 +6,7 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.util.HumanDevice;
 import io.github.oblarg.oblog.Logger;
-
+import frc.robot.subsystems.ArduinoSubsystem;;
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
  * each mode, as described in the TimedRobot documentation. If you change the name of this class or
@@ -14,8 +14,8 @@ import io.github.oblarg.oblog.Logger;
  * project.
  */
 public class Robot extends TimedRobot {
+    ArduinoSubsystem e_arduino = new ArduinoSubsystem();
     private RobotContainer robotContainer;
-
     /**
      * This function is run when the robot is first started up and should be used for any
      * initialization code.
@@ -24,6 +24,7 @@ public class Robot extends TimedRobot {
     public void robotInit() {
         // Instantiate our RobotContainer. This will perform all our button bindings
         robotContainer = new RobotContainer();
+        e_arduino.match_started = false;
 
         // Set up logging.
         Logger.configureLoggingAndConfig(robotContainer, false);
@@ -67,7 +68,7 @@ public class Robot extends TimedRobot {
     @Override
     public void teleopInit() {
         CommandScheduler.getInstance().cancelAll();
-
+        e_arduino.match_started = true;
         HumanDevice.alliance_modifier = DriverStation.getAlliance() == Alliance.Red ? -1 : 1;
     }
 
