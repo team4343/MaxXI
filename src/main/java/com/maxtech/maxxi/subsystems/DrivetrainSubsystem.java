@@ -2,7 +2,13 @@ package com.maxtech.maxxi.subsystems;
 
 import com.maxtech.maxxi.util.Vision;
 import com.maxtech.maxxi.util.VisionPoseResult;
-import edu.wpi.first.math.filter.SlewRateLimiter;
+import com.maxtech.swervelib.SwerveController;
+import com.maxtech.swervelib.SwerveDrive;
+import com.maxtech.swervelib.math.SwerveKinematics2;
+import com.maxtech.swervelib.parser.SwerveDriveConfiguration;
+import com.maxtech.swervelib.parser.SwerveParser;
+import com.maxtech.swervelib.telemetry.SwerveDriveTelemetry;
+import com.maxtech.swervelib.telemetry.SwerveDriveTelemetry.TelemetryVerbosity;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -12,13 +18,6 @@ import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import com.maxtech.swervelib.SwerveController;
-import com.maxtech.swervelib.SwerveDrive;
-import com.maxtech.swervelib.math.SwerveKinematics2;
-import com.maxtech.swervelib.parser.SwerveDriveConfiguration;
-import com.maxtech.swervelib.parser.SwerveParser;
-import com.maxtech.swervelib.telemetry.SwerveDriveTelemetry;
-import com.maxtech.swervelib.telemetry.SwerveDriveTelemetry.TelemetryVerbosity;
 
 import java.io.File;
 import java.io.IOException;
@@ -29,7 +28,7 @@ public class DrivetrainSubsystem extends SubsystemBase
     /**
      * Swerve drive object.
      */
-    private final SwerveDrive swerveDrive;
+    public final SwerveDrive swerveDrive;
     public final Vision vision;
 
     /**
@@ -46,10 +45,6 @@ public class DrivetrainSubsystem extends SubsystemBase
         }
         vision = new Vision();
 
-        SlewRateLimiter xSlewRateLimiter = new SlewRateLimiter(2.25);
-        SlewRateLimiter ySlewRateLimiter = new SlewRateLimiter(2.25);
-        SlewRateLimiter rSlewRateLimiter = new SlewRateLimiter(3.0);
-        swerveDrive.swerveController.addSlewRateLimiters(xSlewRateLimiter, ySlewRateLimiter, rSlewRateLimiter);
         swerveDrive.setMotorIdleMode(false); // Set to Coast
 
 
@@ -114,6 +109,10 @@ public class DrivetrainSubsystem extends SubsystemBase
      */
     public Pose2d getPose() {
         return swerveDrive.getPose();
+    }
+
+    public Pose2d getPoseAuto() {
+        return new Pose2d(swerveDrive.getPose().getX(), swerveDrive.getPose().getY(), swerveDrive.getPose().getRotation());
     }
 
     /**

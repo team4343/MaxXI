@@ -18,7 +18,7 @@ public class FollowTrajectory extends SequentialCommandGroup {
         addCommands(
             new PPSwerveControllerCommand(
                 trajectory,
-                drivebase::getPose,
+                drivebase::getPoseAuto,
                 xAutoPIDConf.createPIDController(),
                 yAutoPIDConf.createPIDController(),
                 rAutoPIDConf.createPIDController(),

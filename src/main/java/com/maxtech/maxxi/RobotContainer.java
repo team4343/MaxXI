@@ -15,14 +15,18 @@ import com.pathplanner.lib.PathConstraints;
 import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.PathPoint;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import static com.maxtech.maxxi.constants.LocationConstants.RED_GRID_CENTER;
 
@@ -39,6 +43,7 @@ public class RobotContainer {
     public final ArmSubsystem armSubsystem = new ArmSubsystem();
     public final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
     private ArrayList<Auto> autos = new ArrayList<>();
+    private final NetworkTableInstance nt_handle = NetworkTableInstance.getDefault();
 
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -47,8 +52,8 @@ public class RobotContainer {
         drivetrainSubsystem.setDefaultCommand(getAbsoluteFieldDriveCommand());
         intakeSubsystem.setDefaultCommand(new IntakeSetCommand(
             intakeSubsystem,
-            () -> hid.getOperatorTriggerL() - hid.getOperatorTriggerR()
-//            () -> hid.getPlaystationTriggerL() - hid.getPlaystationTriggerR()
+//            () -> hid.getOperatorTriggerL() - hid.getOperatorTriggerR()
+            () -> hid.getPlaystationTriggerL() - hid.getPlaystationTriggerR()
         ));
 
         configureButtonBindings();
@@ -86,12 +91,12 @@ public class RobotContainer {
     public Command getAbsoluteFieldDriveCommand() {
         return new AbsoluteFieldDrive(
             drivetrainSubsystem,
-            hid::getOperatorX,
-            hid::getOperatorY,
-            hid::getOperatorR,
-//            hid::getPlaystationX,
-//            hid::getPlaystationY,
-//            hid::getPlaystationR,
+//            hid::getOperatorX,
+//            hid::getOperatorY,
+//            hid::getOperatorR,
+            hid::getPlaystationX,
+            hid::getPlaystationY,
+            hid::getPlaystationR,
             false
         );
     }
@@ -110,24 +115,49 @@ public class RobotContainer {
     }
 
     public Command getAutonomousCommand() {
-        Translation2d end2 = new Translation2d(drivetrainSubsystem.getPose().getTranslation().getX() + 3, drivetrainSubsystem.getPose().getTranslation().getY());
+        double startingY = nt_handle.getEntry("/SmartDashboard/startingY").getDouble(0.0);
+        double startingX = nt_handle.getEntry("/SmartDashboard/startingX").getDouble(0.0);
+        double startingR = nt_handle.getEntry("/SmartDashboard/startingR").getDouble(0.0);
+
+        drivetrainSubsystem.resetOdometry(new Pose2d(startingX, startingY, Rotation2d.fromDegrees(startingR)));
 
         PathPlannerTrajectory trajectory = PathPlanner.generatePath(
-            new PathConstraints(1.5, 0.4),
+            new PathConstraints(1, 0.25),
             new PathPoint(drivetrainSubsystem.getPose().getTranslation(), drivetrainSubsystem.getHeading(), drivetrainSubsystem.getHeading()),
-            new PathPoint(new Translation2d(14.5, 4), Rotation2d.fromDegrees(0), Rotation2d.fromDegrees(0)),
-            new PathPoint(new Translation2d(12, 4.5), Rotation2d.fromDegrees(0), Rotation2d.fromDegrees(0)),
-            new PathPoint(new Translation2d(10, 4.5), Rotation2d.fromDegrees(180), Rotation2d.fromDegrees(180))
+            new PathPoint(new Translation2d(12, 4.75), drivetrainSubsystem.getHeading(), drivetrainSubsystem.getHeading())
+//            new PathPoint(new Translation2d(10, 4.5), drivetrainSubsystem.getHeading(), Rotation2d.fromDegrees(180))
         );
+
+        PathPlannerTrajectory trajectoryToCone = PathPlanner.generatePath(
+            new PathConstraints(1, 0.25),
+            new PathPoint(new Translation2d(12, 4.75), drivetrainSubsystem.getHeading(), drivetrainSubsystem.getHeading()),
+            new PathPoint(new Translation2d(10, 4.5), drivetrainSubsystem.getHeading(), Rotation2d.fromDegrees(180))
+        );
+
+        PathPlannerTrajectory basic = PathPlanner.loadPath("Basic", new PathConstraints(1, 0.25), false);
+        HashMap<String, Command> eventMap = new HashMap<>();
+        eventMap.put("setArmGround", new ArmPositionCommand(armSubsystem, State.PickupGround));
 
 
         return new SequentialCommandGroup(
-            new FollowTrajectory(
-                drivetrainSubsystem,
-                trajectory,
-                true),
-            new IntakeSetCommand(intakeSubsystem, 0.5).withTimeout(1),
-            new IntakeSetCommand(intakeSubsystem, 0.0).withTimeout(0)
+            new ArmPositionCommand(armSubsystem, State.PLacingUpper),
+            new ArmPositionCommand(armSubsystem, State.PLacingUpper),
+            new ArmPositionCommand(armSubsystem, State.PLacingUpper),
+            new WaitCommand(2),
+            new IntakeSetCommand(intakeSubsystem, 0.5).withTimeout(0.75),
+            new IntakeSetCommand(intakeSubsystem, 0.0).withTimeout(0.0),
+            new ArmPositionCommand(armSubsystem, State.Rest),
+            new FollowTrajectory(drivetrainSubsystem, basic, true)
+//            new DriveToPoint(drivetrainSubsystem, new Pose2d(12, 4, new Rotation2d()))
+//            new FollowTrajectory( drivetrainSubsystem, trajectory, true),
+//            new ParallelCommandGroup(
+//                new ArmPositionCommand(armSubsystem, State.PickupGround),
+//                new FollowTrajectory(drivetrainSubsystem, trajectoryToCone, true),
+//                new IntakeSetCommand(intakeSubsystem, 0.5).withTimeout(4)
+//            ),
+//            new IntakeSetCommand(intakeSubsystem, 0.0).withTimeout(0),
+//            new ArmPositionCommand(armSubsystem, State.Rest),
+//            new DriveToPoint(drivetrainSubsystem, new Pose2d(12, 4.75, new Rotation2d()))
         );
     }
 

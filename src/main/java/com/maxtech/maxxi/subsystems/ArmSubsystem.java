@@ -54,11 +54,11 @@ public class ArmSubsystem extends SubsystemBase {
     }
 
     // Position Constants
-    private final POS REST              = new POS(2, -2, -10);
-    private final POS PICKUP_GROUND     = new POS(0, 14.3, 10);
+    private final POS REST              = new POS(1, -2, -10);
+    private final POS PICKUP_GROUND     = new POS(0, 15, 10);
     private final POS PLACING_MIDDLE    = new POS(3, 7, 20);
-    private final POS PLACING_UPPER     = new POS(8, 15.5, 20);
-    private final POS PICKUP_STATION    = new POS(8, 15, 20);
+    private final POS PLACING_UPPER     = new POS(7, 15.5, 20);
+    private final POS PICKUP_STATION    = new POS(7, 15, 20);
     private final POS INIT              = new POS(0, 0, 0);
     private final POS PLACEHOLDER_B     = new POS(0, 0, 0);
 
@@ -71,7 +71,7 @@ public class ArmSubsystem extends SubsystemBase {
     private static final PID SHOULDER_STEADY   = new PID(0.2, 0.0007, 0, 1);
     private static final PID ELBOW_DEFAULT     = new PID(0.045, 0.00001, 0, 0);
     private static final PID ELBOW_STEADY      = new PID(0.055, 0.00015, 0, 1);
-    private static final PID ELBOW_PICKUP      = new PID(0.02, 0.0000, 0, 2);
+    private static final PID ELBOW_PICKUP      = new PID(0.03, 0.0000, 0, 2);
     private static final PID WRIST_DEFAULT     = new PID(0.02, 0.00000, 0, 0);
 
     private final Double retractDelay = 0.5;
