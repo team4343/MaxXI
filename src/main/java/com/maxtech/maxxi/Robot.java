@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import io.github.oblarg.oblog.Logger;
+import frc.robot.subsystems.ArduinoSubsystem;;
 
 import static com.maxtech.maxxi.constants.DriveConstants.*;
 
@@ -16,6 +17,7 @@ import static com.maxtech.maxxi.constants.DriveConstants.*;
  * project.
  */
 public class Robot extends TimedRobot {
+    ArduinoSubsystem e_arduino = new ArduinoSubsystem();
     private RobotContainer robotContainer;
     private NetworkTableInstance nt_handle;
 
@@ -26,12 +28,15 @@ public class Robot extends TimedRobot {
      */
     @Override
     public void robotInit() {
+        // Instantiate our RobotContainer. This will perform all our button bindings
         robotContainer = new RobotContainer();
+        e_arduino.match_started = false;
         nt_handle = NetworkTableInstance.getDefault();
         nt_handle.getEntry("/SmartDashboard/startingX").setDouble(14.75);
         nt_handle.getEntry("/SmartDashboard/startingY").setDouble(5.0);
         nt_handle.getEntry("/SmartDashboard/startingR").setDouble(0.0);
 
+        // Set up logging.
         Logger.configureLoggingAndConfig(robotContainer, false);
     }
 
@@ -89,6 +94,8 @@ public class Robot extends TimedRobot {
     public void teleopInit() {
         robotContainer.drivetrainSubsystem.swerveDrive.swerveController.addSlewRateLimiters(xSlewRateLimiter, ySlewRateLimiter, rSlewRateLimiter);
         CommandScheduler.getInstance().cancelAll();
+        e_arduino.match_started = true;
+        HumanDevice.alliance_modifier = DriverStation.getAlliance() == Alliance.Red ? -1 : 1;
     }
 
     @Override
