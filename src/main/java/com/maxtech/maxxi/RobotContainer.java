@@ -42,7 +42,7 @@ public class RobotContainer {
     public final DrivetrainSubsystem drivetrainSubsystem = new DrivetrainSubsystem();
     public final ArmSubsystem armSubsystem = new ArmSubsystem();
     public final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
-    private ArrayList<Auto> autos = new ArrayList<>();
+    private final ArrayList<Auto> autos = new ArrayList<>();
     private final NetworkTableInstance nt_handle = NetworkTableInstance.getDefault();
 
     /**

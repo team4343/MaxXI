@@ -1,12 +1,12 @@
 package com.maxtech.maxxi;
 
+import com.maxtech.maxxi.subsystems.ArduinoSubsystem;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import io.github.oblarg.oblog.Logger;
-import frc.robot.subsystems.ArduinoSubsystem;;
 
 import static com.maxtech.maxxi.constants.DriveConstants.*;
 
@@ -17,7 +17,7 @@ import static com.maxtech.maxxi.constants.DriveConstants.*;
  * project.
  */
 public class Robot extends TimedRobot {
-    ArduinoSubsystem e_arduino = new ArduinoSubsystem();
+    ArduinoSubsystem arduino = new ArduinoSubsystem();
     private RobotContainer robotContainer;
     private NetworkTableInstance nt_handle;
 
@@ -30,7 +30,7 @@ public class Robot extends TimedRobot {
     public void robotInit() {
         // Instantiate our RobotContainer. This will perform all our button bindings
         robotContainer = new RobotContainer();
-        e_arduino.match_started = false;
+        arduino.match_started = false;
         nt_handle = NetworkTableInstance.getDefault();
         nt_handle.getEntry("/SmartDashboard/startingX").setDouble(14.75);
         nt_handle.getEntry("/SmartDashboard/startingY").setDouble(5.0);
@@ -82,6 +82,7 @@ public class Robot extends TimedRobot {
         SmartDashboard.putNumber("Auto Start Y", robotContainer.drivetrainSubsystem.getPose().getTranslation().getY());
 
         robotContainer.drivetrainSubsystem.swerveDrive.swerveController.addSlewRateLimiters(new SlewRateLimiter(0.0), new SlewRateLimiter(0.0), new SlewRateLimiter(0.0));
+        arduino.match_started = true;
 
         CommandScheduler.getInstance().cancelAll();
         CommandScheduler.getInstance().schedule(robotContainer.getAutonomousCommand());
@@ -94,8 +95,6 @@ public class Robot extends TimedRobot {
     public void teleopInit() {
         robotContainer.drivetrainSubsystem.swerveDrive.swerveController.addSlewRateLimiters(xSlewRateLimiter, ySlewRateLimiter, rSlewRateLimiter);
         CommandScheduler.getInstance().cancelAll();
-        e_arduino.match_started = true;
-        HumanDevice.alliance_modifier = DriverStation.getAlliance() == Alliance.Red ? -1 : 1;
     }
 
     @Override
