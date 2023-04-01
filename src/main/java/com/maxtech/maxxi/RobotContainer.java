@@ -9,7 +9,6 @@ import com.maxtech.maxxi.subsystems.ArmSubsystem;
 import com.maxtech.maxxi.subsystems.ArmSubsystem.State;
 import com.maxtech.maxxi.subsystems.DrivetrainSubsystem;
 import com.maxtech.maxxi.subsystems.IntakeSubsystem;
-import com.maxtech.maxxi.util.Auto;
 import com.maxtech.maxxi.util.HumanDevice;
 import com.pathplanner.lib.PathConstraints;
 import com.pathplanner.lib.PathPlanner;
@@ -24,10 +23,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 
-import java.util.ArrayList;
-
-import static com.maxtech.maxxi.constants.LocationConstants.RED_GRID_CENTER;
-
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
  * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
@@ -40,7 +35,6 @@ public class RobotContainer {
     public final DrivetrainSubsystem drivetrainSubsystem = new DrivetrainSubsystem();
     public final ArmSubsystem armSubsystem = new ArmSubsystem();
     public final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
-    private final ArrayList<Auto> autos = new ArrayList<>();
     private final NetworkTableInstance nt_handle = NetworkTableInstance.getDefault();
 
     /**
@@ -55,7 +49,6 @@ public class RobotContainer {
         ));
 
         configureButtonBindings();
-        createAutos();
     }
 
     /**
@@ -99,19 +92,6 @@ public class RobotContainer {
         );
     }
 
-    public Command getTeleopDriveCommand() {
-        // Not needed
-        return new TeleopDrive(
-            drivetrainSubsystem,
-            hid::getOperatorX,
-            hid::getOperatorY,
-            hid::getOperatorR,
-            ()-> true,
-            false,
-            true
-        );
-    }
-
     public Command getAutonomousCommand(String auto) {
         double startingY = nt_handle.getEntry("/SmartDashboard/startingY").getDouble(0.0);
         double startingX = nt_handle.getEntry("/SmartDashboard/startingX").getDouble(0.0);
@@ -134,19 +114,21 @@ public class RobotContainer {
         );
 
         switch (auto) {
-            case "BlueCover":
-            case "BlueOpen":
-            case "RedCover":
-            case "RedOpen":
+            case "BlueCover.path":
+            case "BlueOpen.path":
+            case "RedCover.path":
+            case "RedOpen.path":
                 autoCommands.addCommands(
                     new FollowTrajectory(drivetrainSubsystem, trajectory, true),
                     new PointRotate(drivetrainSubsystem, drivetrainSubsystem.getHeading().plus(Rotation2d.fromDegrees(180))),
                     new ArmPositionCommand(armSubsystem, State.PickupGround),
-                    new IntakeStateCommand(intakeSubsystem, IntakeSubsystem.State.ConeIn)
+                    new IntakeStateCommand(intakeSubsystem, IntakeSubsystem.State.ConeIn),
+                    new WaitCommand(1),
+                    new IntakeStateCommand(intakeSubsystem, IntakeSubsystem.State.ConeOut)
                 );
                 return autoCommands;
-            case "BluePlatform":
-            case "RedPlatform":
+            case "BluePlatform.path":
+            case "RedPlatform.path":
                 autoCommands.addCommands(
                     new FollowTrajectory(drivetrainSubsystem, trajectory, true)
                 );
@@ -157,22 +139,5 @@ public class RobotContainer {
 
         // Defualt to place the cone.
         return autoCommands;
-
-
     }
-
-    private void createAutos() {
-        this.autos.add(new Auto("Default")); // Default Do Nothing
-        this.autos.add(new Auto("Red 1", new DriveToPoint(drivetrainSubsystem, RED_GRID_CENTER.pose))); // Drive to center grid pose.
-    }
-
-    public Auto matchAuto(String autoName) {
-        for (Auto auto : this.autos)
-            if (auto.name.equals(autoName))
-                return auto;
-
-        return new Auto("Errored Out On matchAuto()");
-    }
-
-
 }

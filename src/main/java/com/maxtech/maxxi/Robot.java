@@ -1,8 +1,9 @@
 package com.maxtech.maxxi;
 
 import com.maxtech.maxxi.subsystems.ArduinoSubsystem;
-import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -11,9 +12,6 @@ import io.github.oblarg.oblog.Logger;
 
 import java.io.File;
 import java.util.Objects;
-
-import static com.maxtech.maxxi.constants.DriveConstants.*;
-import static edu.wpi.first.wpilibj.Filesystem.getDeployDirectory;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -43,8 +41,10 @@ public class Robot extends TimedRobot {
         nt_handle.getEntry("/SmartDashboard/startingR").setDouble(0.0);
 
         chooser.setDefaultOption("Default Auto", "Default");
-        for (File file: Objects.requireNonNull(getDeployDirectory().listFiles()))
-            chooser.addOption(file.getName().replaceAll("([A-Z])\\w+", ""), file.getName().replaceAll("([A-Z])\\w+", ""));
+        for (File file: Objects.requireNonNull(new File(Filesystem.getDeployDirectory(), "pathplanner/").listFiles())) {
+            System.out.println(file.getName());
+            chooser.addOption(file.getName(), file.getName());
+        }
         SmartDashboard.putData("AutoChoices", chooser);
 
         // Set up logging.
@@ -82,6 +82,11 @@ public class Robot extends TimedRobot {
         nt_handle.getEntry("/SmartDashboard/startingConfirmRobot").setDoubleArray(new double[]{startingX, startingY, startingR});
 
         nt_handle.getEntry("/autonomous").setString(desiredAuto);
+
+        nt_handle.getEntry("/autoConfirmSelection").setString(chooser.getSelected());
+
+        if (chooser.getSelected().contains("Default") || chooser.getSelected().contains("default") || chooser.getSelected().contains("DEFAULT"))
+            DriverStation.reportWarning("SOMEONE DID NOT SELECT AUTO", false);
     }
 
     /**
@@ -92,7 +97,7 @@ public class Robot extends TimedRobot {
         SmartDashboard.putNumber("Auto Start X", robotContainer.drivetrainSubsystem.getPose().getTranslation().getX());
         SmartDashboard.putNumber("Auto Start Y", robotContainer.drivetrainSubsystem.getPose().getTranslation().getY());
 
-        robotContainer.drivetrainSubsystem.swerveDrive.swerveController.addSlewRateLimiters(new SlewRateLimiter(0.0), new SlewRateLimiter(0.0), new SlewRateLimiter(0.0));
+//        robotContainer.drivetrainSubsystem.swerveDrive.swerveController.addSlewRateLimiters(new SlewRateLimiter(0.0), new SlewRateLimiter(0.0), new SlewRateLimiter(0.0));
         arduino.match_started = true;
 
         CommandScheduler.getInstance().cancelAll();
@@ -104,7 +109,7 @@ public class Robot extends TimedRobot {
 
     @Override
     public void teleopInit() {
-        robotContainer.drivetrainSubsystem.swerveDrive.swerveController.addSlewRateLimiters(xSlewRateLimiter, ySlewRateLimiter, rSlewRateLimiter);
+//        robotContainer.drivetrainSubsystem.swerveDrive.swerveController.addSlewRateLimiters(xSlewRateLimiter, ySlewRateLimiter, rSlewRateLimiter);
         CommandScheduler.getInstance().cancelAll();
     }
 

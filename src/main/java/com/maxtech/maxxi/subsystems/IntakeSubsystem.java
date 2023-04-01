@@ -25,9 +25,9 @@ public class IntakeSubsystem extends SubsystemBase {
         setIntakeSpeed = speed;
     }
 
-    public void setState(State state, double percentOut) {
+    public void setState(State state) {
         this.state = state;
-        this.setIntakeSpeed = percentOut;
+        this.setIntakeSpeed = 0.75; // absolute value
     }
 
     @Override

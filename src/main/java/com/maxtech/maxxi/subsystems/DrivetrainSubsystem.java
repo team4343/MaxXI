@@ -9,6 +9,7 @@ import com.maxtech.swervelib.parser.SwerveDriveConfiguration;
 import com.maxtech.swervelib.parser.SwerveParser;
 import com.maxtech.swervelib.telemetry.SwerveDriveTelemetry;
 import com.maxtech.swervelib.telemetry.SwerveDriveTelemetry.TelemetryVerbosity;
+import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -47,6 +48,10 @@ public class DrivetrainSubsystem extends SubsystemBase
 
         swerveDrive.setMotorIdleMode(false); // Set to Coast
 
+        SlewRateLimiter xSlewRateLimiter = new SlewRateLimiter(2.25);
+        SlewRateLimiter ySlewRateLimiter = new SlewRateLimiter(2.25);
+        SlewRateLimiter rSlewRateLimiter = new SlewRateLimiter(3.0);
+        swerveDrive.swerveController.addSlewRateLimiters(xSlewRateLimiter, ySlewRateLimiter, rSlewRateLimiter);
 
     }
 

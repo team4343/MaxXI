@@ -9,11 +9,11 @@ import edu.wpi.first.math.util.Units;
 public final class DriveConstants {
     public static final SlewRateLimiter xSlewRateLimiter = new SlewRateLimiter(2);
     public static final SlewRateLimiter ySlewRateLimiter = new SlewRateLimiter(2);
-    public static final SlewRateLimiter rSlewRateLimiter = new SlewRateLimiter(1);
+    public static final SlewRateLimiter rSlewRateLimiter = new SlewRateLimiter(0.1);
 
-    public static final PIDFConfig xAutoPIDConf = new PIDFConfig(0.5, 0, 0);
-    public static final PIDFConfig yAutoPIDConf = new PIDFConfig(0.5, 0, 0);
-    public static final PIDFConfig rAutoPIDConf = new PIDFConfig(0.5, 0.01, 0.1);
+    public static final PIDFConfig xAutoPIDConf = new PIDFConfig(0.7, 0, 0);
+    public static final PIDFConfig yAutoPIDConf = new PIDFConfig(0.7, 0, 0);
+    public static final PIDFConfig rAutoPIDConf = new PIDFConfig(0.6, 0.01, 0.1);
 
     public static final double ROBOT_MASS = 135 * 0.453592; // 135lbs * kg per pound
     public static final Matter CHASSIS    = new Matter(new Translation3d(0, 0, Units.inchesToMeters(8)), ROBOT_MASS);
