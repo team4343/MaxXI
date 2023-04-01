@@ -1,22 +1,105 @@
 <xml version="1.0">
 <dashboard>
+	<widget field="Max Actual Angular Velocity" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="0" y="717"/>
+	</widget>
+	<widget field="Max Calculated Angular Velocity" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="0" y="611"/>
+	</widget>
+	<widget field="Max Angular Velocity" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="0" y="590"/>
+	</widget>
+	<widget field="HeadingChange" type="String" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="0" y="569"/>
+		<width>386</width>
+	</widget>
+	<widget field="Heading" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="0" y="548"/>
+	</widget>
+	<widget field="commandedVelocity" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="1289" y="750"/>
+	</widget>
+	<widget field="Operator R " type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="0" y="940"/>
+	</widget>
+	<widget field="Operator Y " type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="996" y="82"/>
+	</widget>
+	<widget field="Operator X " type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="992" y="57"/>
+		<height>20</height>
+	</widget>
+	<widget field="Auto Selector" type="String" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="977" y="330"/>
+	</widget>
+	<widget field="meters per rotation" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="1322" y="462"/>
+	</widget>
+	<widget field="pulsePerRotation" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="1332" y="436"/>
+	</widget>
+	<widget field="driveGearRatio" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="1342" y="409"/>
+	</widget>
+	<widget field="wheelDiameter" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="1341" y="383"/>
+	</widget>
+	<widget field="PositionConversionFactor" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="1289" y="299"/>
+	</widget>
+	<widget field="TalonPositionMS" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="1334" y="347"/>
+		<height>21</height>
+	</widget>
+	<widget field="TalonPositionRAW" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="1325" y="324"/>
+	</widget>
+	<widget field="Module 3 Position: " type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="0" y="696"/>
+	</widget>
+	<widget field="Module 2 Position: " type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="0" y="675"/>
+	</widget>
+	<widget field="Module 1 Position: " type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="0" y="654"/>
+	</widget>
+	<widget field="Module 0 Position: " type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="0" y="633"/>
+	</widget>
+	<widget field="Odometry Robot Velocity Y" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="1525" y="35"/>
+	</widget>
+	<widget field="Odometry Robot Velocity X" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="1524" y="8"/>
+	</widget>
+	<static-widget class="edu.wpi.first.smartdashboard.gui.elements.CameraServerViewer">
+		<location x="-3" y="-3"/>
+		<width>960</width>
+		<height>547</height>
+		<property name="Camera Choice" value="photonvision_Port_1182_MJPEG_Server"/>
+	</static-widget>
+	<static-widget class="edu.wpi.first.smartdashboard.gui.elements.ConnectionIndicator">
+		<location x="898" y="763"/>
+		<width>125</width>
+		<height>110</height>
+	</static-widget>
 	<widget field="WristPosition" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
-		<location x="1397" y="507"/>
+		<location x="986" y="137"/>
 	</widget>
 	<widget field="ElbowPosition" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
-		<location x="1397" y="551"/>
+		<location x="985" y="187"/>
 	</widget>
 	<widget field="ShoulderPosition" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
-		<location x="1380" y="529"/>
+		<location x="970" y="162"/>
 	</widget>
 	<widget field="Max Velocity" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
-		<location x="1375" y="218"/>
+		<location x="1184" y="139"/>
 	</widget>
 	<widget field="Arm State" type="String" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
-		<location x="1738" y="101"/>
+		<location x="998" y="235"/>
 	</widget>
 	<widget field="Elbow State" type="String" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
-		<location x="1731" y="125"/>
+		<location x="988" y="260"/>
 	</widget>
 	<widget field="Estimated Y" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
 		<location x="1374" y="34"/>
@@ -24,86 +107,59 @@
 	<widget field="Estimated X" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
 		<location x="1373" y="8"/>
 	</widget>
-	<widget field="Drive TranslationY " type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
-		<location x="1534" y="33"/>
-	</widget>
-	<widget field="Drive TranslationX " type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
-		<location x="1534" y="10"/>
-	</widget>
-	<widget field="Auto Selector" type="String" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
-		<location x="968" y="76"/>
-	</widget>
-	<widget field="Translation" type="String" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
-		<location x="978" y="6"/>
-		<width>316</width>
-		<height>26</height>
-	</widget>
-	<widget field="LimitedTranslation" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
-		<location x="1348" y="120"/>
-		<width>159</width>
-	</widget>
-	<widget field="calcMaxAccel" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
-		<location x="1371" y="168"/>
-	</widget>
-	<widget field="deltaV" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
-		<location x="1403" y="144"/>
-	</widget>
-	<widget field="currentVelocity" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
-		<location x="1362" y="192"/>
-	</widget>
 	<widget field="navX-Sensor[1]" type="Gyro" class="edu.wpi.first.smartdashboard.gui.elements.Compass">
-		<location x="1422" y="806"/>
+		<location x="1047" y="779"/>
 	</widget>
 	<widget field="Module 3 Angle Setpoint: " type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
-		<location x="963" y="714"/>
+		<location x="478" y="916"/>
 	</widget>
 	<widget field="Module 3 Speed Setpoint: " type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
-		<location x="963" y="693"/>
+		<location x="474" y="890"/>
 	</widget>
 	<widget field="Module 3 Omega: " type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
-		<location x="963" y="672"/>
+		<location x="696" y="843"/>
 	</widget>
 	<widget field="Optimized 3 Angle Setpoint: " type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
-		<location x="963" y="651"/>
+		<location x="245" y="916"/>
 	</widget>
 	<widget field="Optimized 3 Speed Setpoint: " type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
-		<location x="963" y="630"/>
+		<location x="240" y="894"/>
 	</widget>
 	<widget field="Module 2 Angle Setpoint: " type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
-		<location x="963" y="609"/>
+		<location x="478" y="866"/>
 	</widget>
 	<widget field="Module 2 Speed Setpoint: " type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
-		<location x="963" y="588"/>
+		<location x="476" y="842"/>
 	</widget>
 	<widget field="Module 2 Omega: " type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
-		<location x="963" y="567"/>
+		<location x="697" y="814"/>
 	</widget>
 	<widget field="Optimized 2 Angle Setpoint: " type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
-		<location x="963" y="546"/>
+		<location x="243" y="872"/>
 	</widget>
 	<widget field="Optimized 2 Speed Setpoint: " type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
-		<location x="963" y="525"/>
+		<location x="240" y="850"/>
 	</widget>
 	<widget field="Module 1 Angle Setpoint: " type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
-		<location x="963" y="504"/>
+		<location x="477" y="803"/>
 	</widget>
 	<widget field="Module 1 Speed Setpoint: " type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
-		<location x="963" y="483"/>
+		<location x="474" y="823"/>
 	</widget>
 	<widget field="Module 1 Omega: " type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
-		<location x="963" y="462"/>
+		<location x="695" y="787"/>
 	</widget>
 	<widget field="Optimized 1 Angle Setpoint: " type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
-		<location x="963" y="441"/>
+		<location x="242" y="828"/>
 	</widget>
 	<widget field="Optimized 1 Speed Setpoint: " type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
-		<location x="240" y="804"/>
+		<location x="239" y="807"/>
 	</widget>
 	<widget field="Module 0 Angle Setpoint: " type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
 		<location x="478" y="762"/>
 	</widget>
 	<widget field="Module 0 Speed Setpoint: " type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
-		<location x="475" y="784"/>
+		<location x="475" y="783"/>
 	</widget>
 	<widget field="Module 0 Omega: " type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
 		<location x="694" y="763"/>
@@ -115,19 +171,19 @@
 		<location x="239" y="763"/>
 	</widget>
 	<widget field="RobotVelocity" type="String" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
-		<location x="967" y="35"/>
+		<location x="967" y="10"/>
 		<width>388</width>
 		<height>34</height>
 	</widget>
 	<widget field="omega" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
-		<location x="1752" y="56"/>
+		<location x="1219" y="164"/>
 	</widget>
 	<widget field="vY" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
-		<location x="1773" y="31"/>
+		<location x="1359" y="163"/>
 		<width>94</width>
 	</widget>
 	<widget field="vX" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
-		<location x="1772" y="7"/>
+		<location x="1358" y="137"/>
 	</widget>
 	<widget field="Module3Absolute Encoder" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
 		<location x="14" y="919"/>
@@ -155,23 +211,48 @@
 		<location x="17" y="763"/>
 	</widget>
 	<widget field="Module 3Angle" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
-		<location x="1496" y="642"/>
+		<location x="871" y="890"/>
 	</widget>
 	<widget field="Module 2Angle" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
-		<location x="1317" y="643"/>
+		<location x="704" y="890"/>
 	</widget>
 	<widget field="Module 1Angle" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
-		<location x="1499" y="670"/>
+		<location x="870" y="918"/>
 	</widget>
 	<widget field="Module 0Angle" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
-		<location x="1319" y="670"/>
+		<location x="702" y="916"/>
 	</widget>
-	<static-widget class="edu.wpi.first.smartdashboard.gui.elements.MjpgStreamViewerImpl">
-		<location x="0" y="0"/>
-		<width>962</width>
-		<height>745</height>
-		<property name="MJPG Server URL" value="http://photonvision.local:1182"/>
-	</static-widget>
+	<widget field="SwerveSubsystem" type="Subsystem" class="edu.wpi.first.smartdashboard.gui.elements.Subsystem">
+		<location x="1276" y="546"/>
+	</widget>
+	<widget field="calcMaxAccel" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="1298" y="583"/>
+	</widget>
+	<widget field="Translation" type="String" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="1253" y="625"/>
+	</widget>
+	<widget field="deltaV" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="1352" y="728"/>
+	</widget>
+	<widget field="currentVelocity" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="1437" y="692"/>
+	</widget>
+	<widget field="LimitedTranslation" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="1205" y="702"/>
+	</widget>
+	<widget field="AutoChoices" type="String Chooser" class="edu.wpi.first.smartdashboard.gui.elements.Chooser">
+		<location x="1707" y="473"/>
+	</widget>
+	<widget field="startingY" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="1594" y="333"/>
+		<height>20</height>
+	</widget>
+	<widget field="startingX" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="1623" y="393"/>
+	</widget>
+	<widget field="startingR" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="1569" y="243"/>
+	</widget>
 </dashboard>
 <live-window>
 </live-window>
