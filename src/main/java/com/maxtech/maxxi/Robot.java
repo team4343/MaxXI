@@ -4,11 +4,16 @@ import com.maxtech.maxxi.subsystems.ArduinoSubsystem;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import io.github.oblarg.oblog.Logger;
 
+import java.io.File;
+import java.util.Objects;
+
 import static com.maxtech.maxxi.constants.DriveConstants.*;
+import static edu.wpi.first.wpilibj.Filesystem.getDeployDirectory;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -20,6 +25,7 @@ public class Robot extends TimedRobot {
     ArduinoSubsystem arduino = new ArduinoSubsystem();
     private RobotContainer robotContainer;
     private NetworkTableInstance nt_handle;
+    public static final SendableChooser<String> chooser = new SendableChooser<>();
 
 
     /**
@@ -35,6 +41,11 @@ public class Robot extends TimedRobot {
         nt_handle.getEntry("/SmartDashboard/startingX").setDouble(14.75);
         nt_handle.getEntry("/SmartDashboard/startingY").setDouble(5.0);
         nt_handle.getEntry("/SmartDashboard/startingR").setDouble(0.0);
+
+        chooser.setDefaultOption("Default Auto", "Default");
+        for (File file: Objects.requireNonNull(getDeployDirectory().listFiles()))
+            chooser.addOption(file.getName().replaceAll("([A-Z])\\w+", ""), file.getName().replaceAll("([A-Z])\\w+", ""));
+        SmartDashboard.putData("AutoChoices", chooser);
 
         // Set up logging.
         Logger.configureLoggingAndConfig(robotContainer, false);
@@ -85,7 +96,7 @@ public class Robot extends TimedRobot {
         arduino.match_started = true;
 
         CommandScheduler.getInstance().cancelAll();
-        CommandScheduler.getInstance().schedule(robotContainer.getAutonomousCommand());
+        CommandScheduler.getInstance().schedule(robotContainer.getAutonomousCommand(chooser.getSelected()));
     }
 
     @Override

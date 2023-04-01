@@ -6,9 +6,13 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class IntakeSubsystem extends SubsystemBase {
+    public enum State {
+        DriverControl, ConeIn, ConeOut, Stopped
+    }
     private final CANSparkMax intake = new CANSparkMax(MotorConstants.INTAKE_ID, MotorType.kBrushless);
     private double setIntakeSpeed = 0;
     private double prevIntakeSpeed = 0;
+    private State state = State.DriverControl;
 
     public IntakeSubsystem() {
         intake.setIdleMode(CANSparkMax.IdleMode.kBrake);
@@ -17,15 +21,34 @@ public class IntakeSubsystem extends SubsystemBase {
     }
 
     public void setSpeed(Double speed) {
+        this.state = State.DriverControl;
         setIntakeSpeed = speed;
     }
 
+    public void setState(State state, double percentOut) {
+        this.state = state;
+        this.setIntakeSpeed = percentOut;
+    }
 
     @Override
     public void periodic() {
+        // Ignore a double set.
         if (prevIntakeSpeed == setIntakeSpeed)
             return;
-        prevIntakeSpeed = setIntakeSpeed;
-        intake.set(setIntakeSpeed);
+
+        // If we're using state
+        if (state != State.DriverControl) {
+            switch (state) {
+                case ConeIn:
+                    intake.set(-setIntakeSpeed); // TODO Confirm
+                case ConeOut:
+                    intake.set(setIntakeSpeed);
+                case Stopped:
+                    intake.set(0);
+            }
+        } else {
+            prevIntakeSpeed = setIntakeSpeed;
+            intake.set(setIntakeSpeed);
+        }
     }
 }
