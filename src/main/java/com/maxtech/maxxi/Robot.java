@@ -42,8 +42,8 @@ public class Robot extends TimedRobot {
 
         chooser.setDefaultOption("Default Auto", "Default");
         for (File file: Objects.requireNonNull(new File(Filesystem.getDeployDirectory(), "pathplanner/").listFiles())) {
-            System.out.println(file.getName());
-            chooser.addOption(file.getName(), file.getName());
+            String name = file.getName().replaceAll("[.][^.]+$", "");
+            chooser.addOption(name, name);
         }
         SmartDashboard.putData("AutoChoices", chooser);
 

@@ -30,7 +30,7 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
  * subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
-    private final HumanDevice hid = new HumanDevice(1, 0, 2);
+    private final HumanDevice hid = new HumanDevice(2);
 
     public final DrivetrainSubsystem drivetrainSubsystem = new DrivetrainSubsystem();
     public final ArmSubsystem armSubsystem = new ArmSubsystem();
@@ -44,7 +44,6 @@ public class RobotContainer {
         drivetrainSubsystem.setDefaultCommand(getAbsoluteFieldDriveCommand());
         intakeSubsystem.setDefaultCommand(new IntakeSetCommand(
             intakeSubsystem,
-//            () -> hid.getOperatorTriggerL() - hid.getOperatorTriggerR()
             () -> hid.getPlaystationTriggerL() - hid.getPlaystationTriggerR()
         ));
 
@@ -59,18 +58,6 @@ public class RobotContainer {
      */
     private void configureButtonBindings() {
         // Driver
-        hid.setDriverCommand(3).onTrue(new ArmPositionCommand(armSubsystem, State.PickupGround));
-        hid.setDriverCommand(5).onTrue(new ArmPositionCommand(armSubsystem, State.Rest));
-        hid.setDriverCommand(4).onTrue(new ArmPositionCommand(armSubsystem, State.PlacingMiddle));
-        hid.setDriverCommand(6).onTrue(new ArmPositionCommand(armSubsystem, State.PLacingUpper));
-        hid.setDriverCommand(2).onTrue(new ArmPositionCommand(armSubsystem, State.PickupStation));
-
-        hid.setOperatorCommand(1).onTrue(new ArmPositionCommand(armSubsystem, State.PickupGround));
-        hid.setOperatorCommand(2).onTrue(new ArmPositionCommand(armSubsystem, State.Rest));
-        hid.setOperatorCommand(6).onTrue(new ArmPositionCommand(armSubsystem, State.PickupStation));
-        hid.setOperatorCommand(3).onTrue(new ArmPositionCommand(armSubsystem, State.PlacingMiddle));
-        hid.setOperatorCommand(4).onTrue(new ArmPositionCommand(armSubsystem, State.PLacingUpper));
-
         hid.setPlaystationCommand(2).onTrue(new ArmPositionCommand(armSubsystem, State.PickupGround));
         hid.setPlaystationCommand(3).onTrue(new ArmPositionCommand(armSubsystem, State.Rest));
         hid.setPlaystationCommand(6).onTrue(new ArmPositionCommand(armSubsystem, State.PickupStation));
@@ -104,8 +91,8 @@ public class RobotContainer {
 
         // Default to place the cone or cube
         SequentialCommandGroup autoCommands = new SequentialCommandGroup(
-            new ArmPositionCommand(armSubsystem, State.PLacingUpper),
-            new ArmPositionCommand(armSubsystem, State.PLacingUpper),
+            new ArmPositionCommand(armSubsystem, State.Rest),
+            new WaitCommand(1),
             new ArmPositionCommand(armSubsystem, State.PLacingUpper),
             new WaitCommand(2),
             new IntakeSetCommand(intakeSubsystem, intakeSpeed).withTimeout(0.75),
@@ -113,11 +100,13 @@ public class RobotContainer {
             new ArmPositionCommand(armSubsystem, State.Rest)
         );
 
+        nt_handle.getEntry("/runningAuto").setString(auto);
+
         switch (auto) {
-            case "BlueCover.path":
-            case "BlueOpen.path":
-            case "RedCover.path":
-            case "RedOpen.path":
+            case "BlueCover":
+            case "BlueOpen":
+            case "RedCover":
+            case "RedOpen":
                 autoCommands.addCommands(
                     new FollowTrajectory(drivetrainSubsystem, trajectory, true),
                     new PointRotate(drivetrainSubsystem, drivetrainSubsystem.getHeading().plus(Rotation2d.fromDegrees(180))),
@@ -127,8 +116,8 @@ public class RobotContainer {
                     new IntakeStateCommand(intakeSubsystem, IntakeSubsystem.State.ConeOut)
                 );
                 return autoCommands;
-            case "BluePlatform.path":
-            case "RedPlatform.path":
+            case "BluePlatform":
+            case "RedPlatform":
                 autoCommands.addCommands(
                     new FollowTrajectory(drivetrainSubsystem, trajectory, true)
                 );
