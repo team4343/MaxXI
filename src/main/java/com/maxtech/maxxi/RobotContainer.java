@@ -92,8 +92,8 @@ public class RobotContainer {
 //            new ArmPositionCommand(armSubsystem, State.Rest),
             new ArmPositionCommand(armSubsystem, State.PLacingUpper),
             new WaitCommand(2.3),
-            new IntakeSetCommand(intakeSubsystem, 1.0).withTimeout(0.3),
-            new IntakeSetCommand(intakeSubsystem, 0.0).withTimeout(0.0),
+            new IntakeSetCommand(intakeSubsystem, () -> 1.0).withTimeout(0.3),
+            new IntakeSetCommand(intakeSubsystem, () -> 0.0).withTimeout(0.0),
             new ArmPositionCommand(armSubsystem, State.Rest)
         );
 
@@ -113,16 +113,10 @@ public class RobotContainer {
                         new SequentialCommandGroup(
                             new WaitCommand(1.5),
                             new ArmPositionCommand(armSubsystem, State.PickupGround),
-                            new IntakeSetCommand(intakeSubsystem, -0.8)
+                            new IntakeSetCommand(intakeSubsystem, () -> -0.8)
                         )
                     ),
-//                    new ArmPositionCommand(armSubsystem, State.Rest),
-                    new IntakeSetCommand(intakeSubsystem, 0.0).withTimeout(0.0)
-//                    new ArmPositionCommand(armSubsystem, State.PlacingMiddle),
-//                    new FollowTrajectory(drivetrainSubsystem, trajectoryBack, true) // 5s
-//                    new IntakeSetCommand(intakeSubsystem, 0.8).withTimeout(1),
-//                    new ArmPositionCommand(armSubsystem, State.Rest),
-//                    new FollowTrajectory(drivetrainSubsystem, trajectory, false)
+                    new IntakeSetCommand(intakeSubsystem, () -> 0.0).withTimeout(0.0)
                 );
                 return autoCommands;
             case "BluePlatform":

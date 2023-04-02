@@ -1,7 +1,5 @@
 package com.maxtech.maxxi.subsystems;
 
-import com.maxtech.maxxi.util.Vision;
-import com.maxtech.maxxi.util.VisionPoseResult;
 import com.maxtech.swervelib.SwerveController;
 import com.maxtech.swervelib.SwerveDrive;
 import com.maxtech.swervelib.math.SwerveKinematics2;
@@ -31,7 +29,7 @@ public class DrivetrainSubsystem extends SubsystemBase
      * Swerve drive object.
      */
     public final SwerveDrive swerveDrive;
-    public final Vision vision;
+//    public final Vision vision;
 
     /**
      * Initialize {@link SwerveDrive} with the directory provided.
@@ -45,7 +43,7 @@ public class DrivetrainSubsystem extends SubsystemBase
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        vision = new Vision();
+//        vision = new Vision();
 
         swerveDrive.setMotorIdleMode(false); // Set to Coast
 
@@ -78,9 +76,9 @@ public class DrivetrainSubsystem extends SubsystemBase
 
     @Override
     public void periodic() {
-        VisionPoseResult result = vision.getPose();
-        if (result != null)
-            swerveDrive.addVisionMeasurement(result.pose, result.timestamp, true, 1);
+//        VisionPoseResult result = vision.getPose();
+//        if (result != null)
+//            swerveDrive.addVisionMeasurement(result.pose, result.timestamp, true, 1);
         swerveDrive.updateOdometry();
 
         SmartDashboard.putNumber("Estimated X", swerveDrive.swerveDrivePoseEstimator.getEstimatedPosition().getX());

@@ -15,17 +15,6 @@ public class IntakeSetCommand extends CommandBase {
         this.speedSupplier = speed;
     }
 
-    public IntakeSetCommand(IntakeSubsystem intakeSubsystem, Double speed) {
-        addRequirements(intakeSubsystem);
-        this.intakeSubsystem = intakeSubsystem;
-        this.speedSupplier = new DoubleSupplier() {
-            @Override
-            public double getAsDouble() {
-                return speed;
-            }
-        };
-    }
-
     @Override
     public void execute() {
         intakeSubsystem.setSpeed(speedSupplier.getAsDouble());
