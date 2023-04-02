@@ -2,13 +2,13 @@
   "waypoints": [
     {
       "anchorPoint": {
-        "x": 14.810792712494512,
-        "y": 0.4645784746114955
+        "x": 14.80945645254439,
+        "y": 0.5162526246340522
       },
       "prevControl": null,
       "nextControl": {
-        "x": 14.145807837070217,
-        "y": 0.7560786939755711
+        "x": 13.791291553960566,
+        "y": 0.7456982355825191
       },
       "holonomicAngle": 0,
       "isReversal": false,
@@ -24,40 +24,15 @@
     },
     {
       "anchorPoint": {
-        "x": 12.615431685408824,
-        "y": 0.7469693121204434
+        "x": 9.804674063730955,
+        "y": 0.9321227944781477
       },
       "prevControl": {
-        "x": 13.544588634631815,
-        "y": 0.7196411665550614
-      },
-      "nextControl": {
-        "x": 11.686274736185833,
-        "y": 0.7742974576858254
-      },
-      "holonomicAngle": 0,
-      "isReversal": false,
-      "velOverride": null,
-      "isLocked": false,
-      "isStopPoint": false,
-      "stopEvent": {
-        "names": [],
-        "executionBehavior": "parallel",
-        "waitBehavior": "none",
-        "waitTime": 0
-      }
-    },
-    {
-      "anchorPoint": {
-        "x": 10.410961276468006,
-        "y": 0.7742974576858255
-      },
-      "prevControl": {
-        "x": 10.939305424065394,
-        "y": 0.7651880758306989
+        "x": 10.333018211328342,
+        "y": 0.9230134126230212
       },
       "nextControl": null,
-      "holonomicAngle": 145.0,
+      "holonomicAngle": 180.0,
       "isReversal": false,
       "velOverride": null,
       "isLocked": false,
@@ -70,8 +45,8 @@
       }
     }
   ],
-  "maxVelocity": 1.0,
-  "maxAcceleration": 0.25,
+  "maxVelocity": 2.5,
+  "maxAcceleration": 0.6,
   "isReversed": null,
   "markers": []
 }

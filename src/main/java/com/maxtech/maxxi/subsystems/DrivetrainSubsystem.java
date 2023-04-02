@@ -5,6 +5,7 @@ import com.maxtech.maxxi.util.VisionPoseResult;
 import com.maxtech.swervelib.SwerveController;
 import com.maxtech.swervelib.SwerveDrive;
 import com.maxtech.swervelib.math.SwerveKinematics2;
+import com.maxtech.swervelib.math.SwerveModuleState2;
 import com.maxtech.swervelib.parser.SwerveDriveConfiguration;
 import com.maxtech.swervelib.parser.SwerveParser;
 import com.maxtech.swervelib.telemetry.SwerveDriveTelemetry;
@@ -48,9 +49,9 @@ public class DrivetrainSubsystem extends SubsystemBase
 
         swerveDrive.setMotorIdleMode(false); // Set to Coast
 
-        SlewRateLimiter xSlewRateLimiter = new SlewRateLimiter(2.25);
-        SlewRateLimiter ySlewRateLimiter = new SlewRateLimiter(2.25);
-        SlewRateLimiter rSlewRateLimiter = new SlewRateLimiter(3.0);
+        SlewRateLimiter xSlewRateLimiter = new SlewRateLimiter(2);
+        SlewRateLimiter ySlewRateLimiter = new SlewRateLimiter(2);
+        SlewRateLimiter rSlewRateLimiter = new SlewRateLimiter(1.50);
         swerveDrive.swerveController.addSlewRateLimiters(xSlewRateLimiter, ySlewRateLimiter, rSlewRateLimiter);
 
     }
@@ -151,6 +152,14 @@ public class DrivetrainSubsystem extends SubsystemBase
         swerveDrive.zeroGyro();
     }
 
+    public void zeroSwerve() {
+        var zeroState = new SwerveModuleState2(0, new Rotation2d(0), 0);
+
+        var zeroStates = new SwerveModuleState2[]{zeroState, zeroState, zeroState, zeroState};
+
+        swerveDrive.setModuleStates(zeroStates, false);
+    }
+
     /**
      * Sets the drive motors to brake/coast mode.
      *
@@ -247,6 +256,9 @@ public class DrivetrainSubsystem extends SubsystemBase
      */
     public Rotation2d getPitch() {
         return swerveDrive.getPitch();
+    }
+    public Rotation2d getRoll() {
+        return swerveDrive.getRoll();
     }
 
     /**

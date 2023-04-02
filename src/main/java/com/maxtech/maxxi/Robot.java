@@ -101,6 +101,7 @@ public class Robot extends TimedRobot {
         arduino.match_started = true;
 
         CommandScheduler.getInstance().cancelAll();
+//        CommandScheduler.getInstance().schedule(robotContainer.getAutonomousCommand("RedOpen"));
         CommandScheduler.getInstance().schedule(robotContainer.getAutonomousCommand(chooser.getSelected()));
     }
 

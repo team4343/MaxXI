@@ -40,9 +40,9 @@ public class IntakeSubsystem extends SubsystemBase {
         if (state != State.DriverControl) {
             switch (state) {
                 case ConeIn:
-                    intake.set(-setIntakeSpeed); // TODO Confirm
+                    intake.set(setIntakeSpeed); // TODO Confirm
                 case ConeOut:
-                    intake.set(setIntakeSpeed);
+                    intake.set(-setIntakeSpeed);
                 case Stopped:
                     intake.set(0);
             }

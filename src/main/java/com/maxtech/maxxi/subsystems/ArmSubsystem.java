@@ -56,8 +56,8 @@ public class ArmSubsystem extends SubsystemBase {
     // Position Constants
     private final POS REST              = new POS(1, -2, -10);
     private final POS PICKUP_GROUND     = new POS(0, 15, 10);
-    private final POS PLACING_MIDDLE    = new POS(3, 7, 20);
-    private final POS PLACING_UPPER     = new POS(7, 15.7, 20);
+    private final POS PLACING_MIDDLE    = new POS(1.5, 7, 20);
+    private final POS PLACING_UPPER     = new POS(7.2, 15.5, 20);
     private final POS PICKUP_STATION    = new POS(6.9, 15, 20);
     private final POS INIT              = new POS(0, 0, 0);
     private final POS PLACEHOLDER_B     = new POS(0, 0, 0);
@@ -71,7 +71,7 @@ public class ArmSubsystem extends SubsystemBase {
     private static final PID SHOULDER_STEADY   = new PID(0.2, 0.0007, 0, 1);
     private static final PID ELBOW_DEFAULT     = new PID(0.045, 0.00001, 0, 0);
     private static final PID ELBOW_STEADY      = new PID(0.055, 0.00017, 0, 1);
-    private static final PID ELBOW_PICKUP      = new PID(0.035, 0.0000, 0, 2);
+    private static final PID ELBOW_PICKUP      = new PID(0.05, 0.00002, 0.0001, 2);
     private static final PID WRIST_DEFAULT     = new PID(0.02, 0.00000, 0, 0);
 
     private final Double retractDelay = 0.6;
@@ -224,6 +224,11 @@ public class ArmSubsystem extends SubsystemBase {
             case PlaceholderB: position= PLACEHOLDER_B; break;
             default: position=REST;
         }
+
+        if (state_desired == State.PickupGround)
+            elbow.setIdleMode(CANSparkMax.IdleMode.kCoast);
+        else
+            elbow.setIdleMode(CANSparkMax.IdleMode.kBrake);
 
         state_previous = state_actual;
         state_previous_timer = state_desired;
