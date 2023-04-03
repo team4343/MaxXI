@@ -57,8 +57,8 @@ public class ArmSubsystem extends SubsystemBase {
     private final POS REST              = new POS(1, -2, -10);
     private final POS PICKUP_GROUND     = new POS(0, 15, 10);
     private final POS PLACING_MIDDLE    = new POS(3, 7, 20);
-    private final POS PLACING_UPPER     = new POS(7, 15.5, 20);
-    private final POS PICKUP_STATION    = new POS(7, 15, 20);
+    private final POS PLACING_UPPER     = new POS(7, 15.7, 20);
+    private final POS PICKUP_STATION    = new POS(6.9, 15, 20);
     private final POS INIT              = new POS(0, 0, 0);
     private final POS PLACEHOLDER_B     = new POS(0, 0, 0);
 
@@ -70,11 +70,11 @@ public class ArmSubsystem extends SubsystemBase {
     private static final PID SHOULDER_DEFAULT  = new PID(0.13, 0.0, 0, 0);
     private static final PID SHOULDER_STEADY   = new PID(0.2, 0.0007, 0, 1);
     private static final PID ELBOW_DEFAULT     = new PID(0.045, 0.00001, 0, 0);
-    private static final PID ELBOW_STEADY      = new PID(0.055, 0.00015, 0, 1);
-    private static final PID ELBOW_PICKUP      = new PID(0.03, 0.0000, 0, 2);
+    private static final PID ELBOW_STEADY      = new PID(0.055, 0.00017, 0, 1);
+    private static final PID ELBOW_PICKUP      = new PID(0.035, 0.0000, 0, 2);
     private static final PID WRIST_DEFAULT     = new PID(0.02, 0.00000, 0, 0);
 
-    private final Double retractDelay = 0.5;
+    private final Double retractDelay = 0.6;
     private final Double SHOULDER_RAMP_RATE = 0.4;
     private final Double ELBOW_RAMP_RATE = 0.3; 
     private final Double WRIST_RAMP_RATE = 0.5;
@@ -257,10 +257,9 @@ public class ArmSubsystem extends SubsystemBase {
             state_actual = State.PLacingUpper;
         else if (inRange(shoulder_pos, PICKUP_STATION.shoulder) && inRange(elbow_pos, PICKUP_STATION.elbow))
             state_actual = State.PickupStation;
-        else if (inRange(shoulder_pos, INIT.shoulder) && inRange(elbow_pos, INIT.elbow))
-            state_actual = State.PlaceholderA;
-        else if (inRange(shoulder_pos, PLACEHOLDER_B.shoulder) && inRange(elbow_pos, PLACEHOLDER_B.elbow))
-            state_actual = State.PlaceholderB;
+
+        SmartDashboard.putString("Arm State Actual", state_actual.toString());
+        SmartDashboard.putString("Arm State Desired", state_desired.toString());
 
         if (state_actual != state_desired)
             state_actual = State.Transit;

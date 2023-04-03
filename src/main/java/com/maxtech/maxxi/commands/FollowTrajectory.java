@@ -15,16 +15,21 @@ public class FollowTrajectory extends SequentialCommandGroup {
             drivebase.resetOdometry(trajectory.getInitialHolonomicPose());
         }
 
-        addCommands(
-            new PPSwerveControllerCommand(
-                trajectory,
-                drivebase::getPoseAuto,
-                xAutoPIDConf.createPIDController(),
-                yAutoPIDConf.createPIDController(),
-                rAutoPIDConf.createPIDController(),
-                drivebase::setChassisSpeedsAuto,
-                drivebase),
-            new StopDrive(drivebase)
-        );
+        if (trajectory == null) return;
+        try {
+            addCommands(
+                new PPSwerveControllerCommand(
+                    trajectory,
+                    drivebase::getPoseAuto,
+                    xAutoPIDConf.createPIDController(),
+                    yAutoPIDConf.createPIDController(),
+                    rAutoPIDConf.createPIDController(),
+                    drivebase::setChassisSpeedsAuto,
+                    drivebase),
+                new StopDrive(drivebase)
+            );
+        } catch (NullPointerException e) {
+            addCommands(new StopDrive(drivebase));
+        }
     }
 }
