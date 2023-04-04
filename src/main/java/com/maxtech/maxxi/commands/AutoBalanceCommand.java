@@ -22,11 +22,11 @@ public class AutoBalanceCommand extends CommandBase {
 
     public AutoBalanceCommand(DrivetrainSubsystem DrivetrainSubsystem) {
         this.DrivetrainSubsystem = DrivetrainSubsystem;
-        xController = new ProfiledPIDController(.2, 0.0, 0.0, new Constraints(.4, .2));
+        xController = new ProfiledPIDController(.2, 0.0, 0.0, new Constraints(.3, .2));
         xController.setGoal(new State(0, 0));
         xController.setTolerance(1);
 
-        yController = new ProfiledPIDController(.2, 0, 0, new Constraints(.4, .2));
+        yController = new ProfiledPIDController(.2, 0, 0, new Constraints(.3, .2));
         yController.setGoal(new State(0, 0));
         yController.setTolerance(1);
 
