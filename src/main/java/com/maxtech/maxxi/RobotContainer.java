@@ -20,9 +20,7 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
+import edu.wpi.first.wpilibj2.command.*;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -61,19 +59,17 @@ public class RobotContainer {
     private void configureButtonBindings() {
         // Driver
         hid.setPlaystationCommand(2).onTrue(new ArmPositionCommand(armSubsystem, State.PickupGround));
+//        hid.setPlaystationCommand(3).onTrue(new AutoBalanceCommand(drivetrainSubsystem));
         hid.setPlaystationCommand(3).onTrue(new ArmPositionCommand(armSubsystem, State.Rest));
         hid.setPlaystationCommand(6).onTrue(new ArmPositionCommand(armSubsystem, State.PickupStation));
         hid.setPlaystationCommand(1).onTrue(new ArmPositionCommand(armSubsystem, State.PlacingMiddle));
         hid.setPlaystationCommand(4).onTrue(new ArmPositionCommand(armSubsystem, State.PLacingUpper));
-        hid.setPlaystationCommand(7).whileTrue(new AutoBalanceCommand(drivetrainSubsystem));
+        hid.setPlaystationPOV(180).onTrue(new AutoBalanceCommand(drivetrainSubsystem));
     }
 
     public Command getAbsoluteFieldDriveCommand() {
         return new AbsoluteFieldDrive(
             drivetrainSubsystem,
-//            hid::getOperatorX,
-//            hid::getOperatorY,
-//            hid::getOperatorR,
             hid::getPlaystationX,
             hid::getPlaystationY,
             hid::getPlaystationR,
@@ -85,41 +81,49 @@ public class RobotContainer {
         double startingY = nt_handle.getEntry("/SmartDashboard/startingY").getDouble(0.0);
         double startingX = nt_handle.getEntry("/SmartDashboard/startingX").getDouble(0.0);
         double startingR = nt_handle.getEntry("/SmartDashboard/startingR").getDouble(0.0);
-        double intakeSpeed = nt_handle.getEntry("/SmartDashboard/startingCube").getBoolean(false) ? 0.6 : -0.6;
+        double intakeSpeed = nt_handle.getEntry("/SmartDashboard/startingCube").getBoolean(false) ? -0.6 : 0.6;
 
         drivetrainSubsystem.resetOdometry(new Pose2d(startingX, startingY, Rotation2d.fromDegrees(startingR)));
 
-        PathPlannerTrajectory trajectory = PathPlanner.loadPath(auto, new PathConstraints(1, 0.25), false);
+        PathPlannerTrajectory trajectory = PathPlanner.loadPath(auto, new PathConstraints(2.5, 0.6), false);
+        PathPlannerTrajectory trajectoryBack = PathPlanner.loadPath(auto, new PathConstraints(2.5, 0.6), true);
 
         // Default to place the cone or cube
+        // 3 seconds
         SequentialCommandGroup autoCommands = new SequentialCommandGroup(
-            new ArmPositionCommand(armSubsystem, State.Rest),
-            new WaitCommand(1),
+//            new ArmPositionCommand(armSubsystem, State.Rest),
             new ArmPositionCommand(armSubsystem, State.PLacingUpper),
-            new WaitCommand(2),
-            new IntakeSetCommand(intakeSubsystem, intakeSpeed).withTimeout(0.75),
-            new IntakeSetCommand(intakeSubsystem, 0.0).withTimeout(0.0),
+            new WaitCommand(2.3),
+            new IntakeSetCommand(intakeSubsystem, () -> 1.0).withTimeout(0.3),
+            new IntakeSetCommand(intakeSubsystem, () -> 0.0).withTimeout(0.0),
             new ArmPositionCommand(armSubsystem, State.Rest)
         );
 
         nt_handle.getEntry("/runningAuto").setString(auto);
 
         switch (auto) {
-            case "BlueCover":
             case "BlueOpen":
-            case "RedCover":
             case "RedOpen":
+                trajectory = PathPlanner.loadPath(auto, new PathConstraints(3, 1.25), false);
+                trajectoryBack = PathPlanner.loadPath(auto, new PathConstraints(3, 1.25), true);
+            case "RedCover":
+            case "BlueCover":
                 autoCommands.addCommands(
-                    new FollowTrajectory(drivetrainSubsystem, trajectory, true),
-                    new PointRotate(drivetrainSubsystem, drivetrainSubsystem.getHeading().plus(Rotation2d.fromDegrees(180))),
-                    new ArmPositionCommand(armSubsystem, State.PickupGround),
-                    new IntakeStateCommand(intakeSubsystem, IntakeSubsystem.State.ConeIn),
-                    new WaitCommand(1),
-                    new IntakeStateCommand(intakeSubsystem, IntakeSubsystem.State.ConeOut)
+                    new ArmPositionCommand(armSubsystem, State.Rest),
+                    new ParallelRaceGroup(
+                        new FollowTrajectory(drivetrainSubsystem, trajectory, true).andThen(new WaitCommand(4)), // 5s
+                        new SequentialCommandGroup(
+                            new WaitCommand(1.5),
+                            new ArmPositionCommand(armSubsystem, State.PickupGround),
+                            new IntakeSetCommand(intakeSubsystem, () -> -0.8)
+                        )
+                    ),
+                    new IntakeSetCommand(intakeSubsystem, () -> 0.0).withTimeout(0.0)
                 );
                 return autoCommands;
             case "BluePlatform":
             case "RedPlatform":
+                trajectory = PathPlanner.loadPath(auto, new PathConstraints(1, 0.5), false);
                 autoCommands.addCommands(
                     new FollowTrajectory(drivetrainSubsystem, trajectory, true)
                 );

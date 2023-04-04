@@ -44,13 +44,14 @@ public class IntakeSubsystem extends SubsystemBase {
         if (state != State.DriverControl) {
             switch (state) {
                 case ConeIn:
-                    intake.set(-setIntakeSpeed); // TODO Confirm
+                    intake.set(setIntakeSpeed); // TODO Confirm
                     arduino.set_cone_intake_lights();
-
+                    break;
                 case ConeOut:
-                    intake.set(setIntakeSpeed);
+                    intake.set(-setIntakeSpeed);
                     arduino.set_cube_intake_lights();
-                case Stopped:
+                    break;
+                default:
                     intake.set(0);
             }
         } else {

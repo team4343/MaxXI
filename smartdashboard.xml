@@ -1,5 +1,23 @@
 <xml version="1.0">
 <dashboard>
+	<widget field="Arm State Desired" type="String" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="959" y="302"/>
+	</widget>
+	<widget field="Arm State Actual" type="String" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="959" y="281"/>
+	</widget>
+	<widget field="State Desired" type="String" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="959" y="208"/>
+	</widget>
+	<widget field="State Actual" type="String" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="959" y="103"/>
+	</widget>
+	<widget field="Auto Start Y" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="0" y="961"/>
+	</widget>
+	<widget field="Auto Start X" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="0" y="738"/>
+	</widget>
 	<widget field="Max Actual Angular Velocity" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
 		<location x="0" y="717"/>
 	</widget>
@@ -72,12 +90,6 @@
 	<widget field="Odometry Robot Velocity X" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
 		<location x="1524" y="8"/>
 	</widget>
-	<static-widget class="edu.wpi.first.smartdashboard.gui.elements.CameraServerViewer">
-		<location x="-3" y="-3"/>
-		<width>960</width>
-		<height>547</height>
-		<property name="Camera Choice" value="photonvision_Port_1182_MJPEG_Server"/>
-	</static-widget>
 	<static-widget class="edu.wpi.first.smartdashboard.gui.elements.ConnectionIndicator">
 		<location x="898" y="763"/>
 		<width>125</width>
@@ -253,6 +265,11 @@
 	<widget field="startingR" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
 		<location x="1569" y="243"/>
 	</widget>
+	<static-widget class="edu.wpi.first.smartdashboard.gui.elements.ConnectionIndicator">
+		<location x="898" y="763"/>
+		<width>125</width>
+		<height>110</height>
+	</static-widget>
 </dashboard>
 <live-window>
 </live-window>

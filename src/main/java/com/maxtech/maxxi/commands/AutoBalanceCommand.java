@@ -1,40 +1,94 @@
 package com.maxtech.maxxi.commands;
 
-import com.maxtech.maxxi.constants.DriveConstants;
 import com.maxtech.maxxi.subsystems.DrivetrainSubsystem;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
-public class AutoBalanceCommand extends CommandBase {
-    private final DrivetrainSubsystem m_drivetrainSubsystem;
 
-    public AutoBalanceCommand(DrivetrainSubsystem drivetrainSubsystem) {
-        this.m_drivetrainSubsystem = drivetrainSubsystem;
+/**
+ * Auto Balance command using a simple PID controller.
+ *
+ * Note that tilting the robot from the back changes the pitch.
+ */
+public class AutoBalanceCommand extends CommandBase
+{
 
-        addRequirements(drivetrainSubsystem);
+    private final DrivetrainSubsystem DrivetrainSubsystem;
+    private final PIDController xController;
+    private final PIDController yController;
+
+    public AutoBalanceCommand(DrivetrainSubsystem DrivetrainSubsystem)
+    {
+        this.DrivetrainSubsystem = DrivetrainSubsystem;
+        xController = new PIDController(.2, 0.0, 0.0);
+        xController.setSetpoint(0.0);
+        xController.setTolerance(1);
+
+        yController = new PIDController(.2, 0, 0);
+        yController.setSetpoint(0.0);
+        yController.setTolerance(1);
+
+        addRequirements(this.DrivetrainSubsystem);
     }
 
+    /**
+     * The main body of a command.  Called repeatedly while the command is scheduled. (That is, it is called repeatedly
+     * until {@link #isFinished()}) returns true.)
+     */
     @Override
-    public void execute() {
-        // Get these values in degrees.
-        var c_pitch = m_drivetrainSubsystem.getPitch().getRadians();
-        var c_roll = m_drivetrainSubsystem.getRoll().getRadians();
+    public void execute()
+    {
+        SmartDashboard.putBoolean("Auto balance at Tolerance", xController.atSetpoint() && yController.atSetpoint());
 
-        var maximum_velocity = 1;
+        // Get the pitch & roll of the bot, and calculate our next pitch and roll.
+        double adjustedPitch = xController.calculate(DrivetrainSubsystem.getPitch().getDegrees());
+        double adjustedRoll = yController.calculate(DrivetrainSubsystem.getRoll().getDegrees());
 
-        // Create the rates, in meters per second.
-        var c_xAxisRate =
-                Math.sin(c_pitch) * maximum_velocity;
-        var c_yAxisRate =
-                Math.sin(c_roll) * maximum_velocity;
+        SmartDashboard.putNumber("Auto balance adjusted pitch", adjustedPitch);
+        SmartDashboard.putNumber("Auto balance adjusted roll", adjustedRoll);
 
-        // Drive in the opposite direction
-        m_drivetrainSubsystem.drive(new Translation2d(-c_xAxisRate, -c_yAxisRate), 0, false, false);
+        // For every degree of desired rotation, drive 1/x meters/second.
+        // Current: at 45 degrees, drive 2 m/s.
+        double drivableX = adjustedPitch / 22.5;
+        double drivableY = adjustedRoll / 22.5;
+
+        SmartDashboard.putNumber("Auto balance desired X", adjustedPitch);
+        SmartDashboard.putNumber("Auto balance desired Y", adjustedRoll);
+
+        DrivetrainSubsystem.drive(new Translation2d(-drivableX, drivableY), 0.0, false, false);
     }
 
+    /**
+     * <p>
+     * Returns whether this command has finished. Once a command finishes -- indicated by this method returning true --
+     * the scheduler will call its {@link #end(boolean)} method.
+     * </p><p>
+     * Returning false will result in the command never ending automatically. It may still be cancelled manually or
+     * interrupted by another command. Hard coding this command to always return true will result in the command executing
+     * once and finishing immediately. It is recommended to use *
+     * {@link edu.wpi.first.wpilibj2.command.InstantCommand InstantCommand} for such an operation.
+     * </p>
+     *
+     * @return whether this command has finished.
+     */
     @Override
-    public boolean isFinished() {
-        return true;
+    public boolean isFinished()
+    {
+        return xController.atSetpoint() && yController.atSetpoint();
+    }
+
+    /**
+     * The action to take when the command ends. Called when either the command finishes normally -- that is it is called
+     * when {@link #isFinished()} returns true -- or when  it is interrupted/canceled. This is where you may want to wrap
+     * up loose ends, like shutting off a motor that was being used in the command.
+     *
+     * @param interrupted whether the command was interrupted/canceled
+     */
+    @Override
+    public void end(boolean interrupted)
+    {
+        DrivetrainSubsystem.lock();
     }
 }
