@@ -9,6 +9,7 @@ import com.maxtech.maxxi.subsystems.ArmSubsystem;
 import com.maxtech.maxxi.subsystems.ArmSubsystem.State;
 import com.maxtech.maxxi.subsystems.DrivetrainSubsystem;
 import com.maxtech.maxxi.subsystems.IntakeSubsystem;
+import com.maxtech.maxxi.subsystems.LightSubsystem;
 import com.maxtech.maxxi.util.HumanDevice;
 import com.pathplanner.lib.PathConstraints;
 import com.pathplanner.lib.PathPlanner;
@@ -35,6 +36,7 @@ public class RobotContainer {
     public final DrivetrainSubsystem drivetrainSubsystem = new DrivetrainSubsystem();
     public final ArmSubsystem armSubsystem = new ArmSubsystem();
     public final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
+    private final LightSubsystem lightSubsystem = new LightSubsystem();
     private final NetworkTableInstance nt_handle = NetworkTableInstance.getDefault();
 
     /**
@@ -63,7 +65,7 @@ public class RobotContainer {
         hid.setPlaystationCommand(6).onTrue(new ArmPositionCommand(armSubsystem, State.PickupStation));
         hid.setPlaystationCommand(1).onTrue(new ArmPositionCommand(armSubsystem, State.PlacingMiddle));
         hid.setPlaystationCommand(4).onTrue(new ArmPositionCommand(armSubsystem, State.PLacingUpper));
-
+        hid.setPlaystationCommand(7).whileTrue(new AutoBalanceCommand(drivetrainSubsystem));
     }
 
     public Command getAbsoluteFieldDriveCommand() {
