@@ -255,9 +255,6 @@ public class DrivetrainSubsystem extends SubsystemBase
     public Rotation2d getPitch() {
         return swerveDrive.getPitch();
     }
-    public Rotation2d getRoll() {
-        return swerveDrive.getRoll();
-    }
 
     /**
      * Gets the current roll angle of the robot, as reported by the imu.
