@@ -69,6 +69,8 @@ public class Robot extends TimedRobot {
     @Override
     public void disabledInit() {
         CommandScheduler.getInstance().cancelAll();
+        arduino.match_started = false;
+        arduino.get_team();
     }
 
     @Override
@@ -99,6 +101,7 @@ public class Robot extends TimedRobot {
 
 //        robotContainer.drivetrainSubsystem.swerveDrive.swerveController.addSlewRateLimiters(new SlewRateLimiter(0.0), new SlewRateLimiter(0.0), new SlewRateLimiter(0.0));
         arduino.match_started = true;
+        arduino.get_team();
 
         CommandScheduler.getInstance().cancelAll();
 //        CommandScheduler.getInstance().schedule(robotContainer.getAutonomousCommand("RedOpen"));

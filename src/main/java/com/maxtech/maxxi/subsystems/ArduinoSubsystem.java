@@ -28,13 +28,19 @@ public class ArduinoSubsystem extends SubsystemBase implements Loggable {
         spi.write(send, 2);
     }
 
-    void get_team() {
+    public void get_team() {
         team = nt_handle.getTable("/FMSInfo").getEntry("IsRedAlliance");
         if (!match_started)
-            send[1] = 22;
+            send[1] = 22; // Idle
         else if (team.getBoolean(false))
-            send[1] = 20;
+            send[1] = 20; // Red team
         else
-            send[1] = 21;
+            send[1] = 21; // Blue team
+    }
+    public void set_cone_intake_lights() {
+        send[1] = 23;
+    }
+    public void set_cube_intake_lights() {
+        send[1] = 24;
     }
 }
