@@ -63,6 +63,7 @@ public class RobotContainer {
         hid.setPlaystationCommand(1).onTrue(new ArmPositionCommand(armSubsystem, State.PlacingMiddle));
         hid.setPlaystationCommand(4).onTrue(new ArmPositionCommand(armSubsystem, State.PLacingUpper));
 
+        hid.setPlaystationPOV(180).onTrue(new AutoBalanceCommand(drivetrainSubsystem));
     }
 
     public Command getAbsoluteFieldDriveCommand() {

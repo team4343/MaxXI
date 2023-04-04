@@ -47,9 +47,9 @@ public class DrivetrainSubsystem extends SubsystemBase
 
         swerveDrive.setMotorIdleMode(false); // Set to Coast
 
-        SlewRateLimiter xSlewRateLimiter = new SlewRateLimiter(2);
-        SlewRateLimiter ySlewRateLimiter = new SlewRateLimiter(2);
-        SlewRateLimiter rSlewRateLimiter = new SlewRateLimiter(1.50);
+        SlewRateLimiter xSlewRateLimiter = new SlewRateLimiter(4.5);
+        SlewRateLimiter ySlewRateLimiter = new SlewRateLimiter(4.5);
+        SlewRateLimiter rSlewRateLimiter = new SlewRateLimiter(50);
         swerveDrive.swerveController.addSlewRateLimiters(xSlewRateLimiter, ySlewRateLimiter, rSlewRateLimiter);
 
     }
