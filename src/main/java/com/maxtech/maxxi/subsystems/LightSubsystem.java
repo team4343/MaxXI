@@ -11,7 +11,7 @@ public class LightSubsystem extends SubsystemBase {
         Rainbow, // Rainbow
     }
 
-    private State m_state = State.Rainbow;
+    private State m_state = State.Default;
 
     private final AddressableLED m_led = new AddressableLED(0);
     private final AddressableLEDBuffer m_buffer = new AddressableLEDBuffer(200);
@@ -28,7 +28,7 @@ public class LightSubsystem extends SubsystemBase {
             case Blank:
                 setSolid(0, 0, 0);
             case Default:
-                setSolid(0, 0, 255);
+                blue();
             case Rainbow:
                 rainbow();
         }
@@ -59,6 +59,16 @@ public class LightSubsystem extends SubsystemBase {
         m_rainbowFirstPixelHue %= 180;
     }
 
+    private void red(){
+        for (var i = 0; i < m_buffer.getLength(); i++){
+            m_buffer.setRGB(i, 255, 0,0);
+        }
+    }
+    private void blue(){
+        for (var i = 0; i < m_buffer.getLength(); i++){
+            m_buffer.setRGB(i, 0, 0,255);
+        }
+    }
     public void setState(State state) {
         this.m_state = state;
     }

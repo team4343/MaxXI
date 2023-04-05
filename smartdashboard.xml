@@ -1,5 +1,20 @@
 <xml version="1.0">
 <dashboard>
+	<widget field="Auto balance desired Y" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="0" y="84"/>
+	</widget>
+	<widget field="Auto balance desired X" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="0" y="63"/>
+	</widget>
+	<widget field="Auto balance adjusted roll" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="0" y="42"/>
+	</widget>
+	<widget field="Auto balance adjusted pitch" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="0" y="21"/>
+	</widget>
+	<widget field="Auto balance at Tolerance" type="Boolean" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="0" y="0"/>
+	</widget>
 	<widget field="Arm State Desired" type="String" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
 		<location x="959" y="302"/>
 	</widget>
