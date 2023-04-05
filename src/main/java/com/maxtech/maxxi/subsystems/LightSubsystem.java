@@ -9,10 +9,18 @@ public class LightSubsystem extends SubsystemBase {
         Blank, // Blank
         Default, // Blue and yellow gradient
         Rainbow, // Rainbow
+        Purple, // Purple
+        Red, // Red
+        RedBlinking, // Red Blinking
+        Green, // Green
+        GreenBlinking, // Green Blinking
+        Blue, // Blue
+        BlueBlinking, // Blue Blinking
+        Yellow, // Yellow
+        YellowBlinking, // Yellow Blinking
     }
 
     private State m_state = State.Default;
-
     private final AddressableLED m_led = new AddressableLED(0);
     private final AddressableLEDBuffer m_buffer = new AddressableLEDBuffer(200);
 
