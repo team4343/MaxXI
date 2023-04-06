@@ -2,6 +2,7 @@ package com.maxtech.maxxi.subsystems;
 
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class LightSubsystem extends SubsystemBase {
@@ -20,9 +21,11 @@ public class LightSubsystem extends SubsystemBase {
         YellowBlinking, // Yellow Blinking
     }
 
-    private State m_state = State.Default;
+    private State m_state = State.Purple;
     private final AddressableLED m_led = new AddressableLED(0);
     private final AddressableLEDBuffer m_buffer = new AddressableLEDBuffer(200);
+
+    private final int lastBlink = 0;
 
     public LightSubsystem() {
         m_led.setLength(m_buffer.getLength());
@@ -36,7 +39,18 @@ public class LightSubsystem extends SubsystemBase {
             case Blank:
                 setSolid(0, 0, 0);
             case Default:
+                break;
+            case Blue:
                 blue();
+                break;
+            case Purple:
+                if ((int)(Timer.getFPGATimestamp()*12) % 2 == 0)
+                    setSolid(100, 0, 0);
+                else
+                    setSolid(0,0,0);
+                break;
+
+
             case Rainbow:
                 rainbow();
         }

@@ -26,6 +26,7 @@ public class ArduinoSubsystem extends SubsystemBase implements Loggable {
         get_team();
         spi.read(true, buff, 1);
         spi.write(send, 2);
+        System.out.println(send[1]);
     }
 
     public void get_team() {
