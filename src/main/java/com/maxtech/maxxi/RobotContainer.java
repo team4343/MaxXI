@@ -9,7 +9,6 @@ import com.maxtech.maxxi.subsystems.ArmSubsystem;
 import com.maxtech.maxxi.subsystems.ArmSubsystem.State;
 import com.maxtech.maxxi.subsystems.DrivetrainSubsystem;
 import com.maxtech.maxxi.subsystems.IntakeSubsystem;
-import com.maxtech.maxxi.subsystems.LightSubsystem;
 import com.maxtech.maxxi.util.HumanDevice;
 import com.pathplanner.lib.PathConstraints;
 import com.pathplanner.lib.PathPlanner;
@@ -20,7 +19,10 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj2.command.*;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -34,7 +36,6 @@ public class RobotContainer {
     public final DrivetrainSubsystem drivetrainSubsystem = new DrivetrainSubsystem();
     public final ArmSubsystem armSubsystem = new ArmSubsystem();
     public final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
-    private final LightSubsystem lightSubsystem = new LightSubsystem();
     private final NetworkTableInstance nt_handle = NetworkTableInstance.getDefault();
 
     /**
@@ -91,7 +92,6 @@ public class RobotContainer {
         // Default to place the cone or cube
         // 3 seconds
         SequentialCommandGroup autoCommands = new SequentialCommandGroup(
-//            new ArmPositionCommand(armSubsystem, State.Rest),
             new ArmPositionCommand(armSubsystem, State.PLacingUpper),
             new WaitCommand(2.3),
             new IntakeSetCommand(intakeSubsystem, () -> 1.0).withTimeout(0.3),
