@@ -1,7 +1,6 @@
 package com.maxtech.maxxi.subsystems;
 
 import com.maxtech.maxxi.constants.MotorConstants;
-import com.maxtech.maxxi.subsystems.ArduinoSubsystem;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -58,5 +57,9 @@ public class IntakeSubsystem extends SubsystemBase {
             prevIntakeSpeed = setIntakeSpeed;
             intake.set(setIntakeSpeed);
         }
+    }
+
+    public double getCurrent() {
+        return intake.getOutputCurrent();
     }
 }

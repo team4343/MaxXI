@@ -1,6 +1,8 @@
 package com.maxtech.maxxi;
 
+import com.maxtech.maxxi.commands.LEDSetCommand;
 import com.maxtech.maxxi.subsystems.ArduinoSubsystem;
+import com.maxtech.maxxi.subsystems.LightSubsystem;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
@@ -104,8 +106,10 @@ public class Robot extends TimedRobot {
         arduino.get_team();
 
         CommandScheduler.getInstance().cancelAll();
-//        CommandScheduler.getInstance().schedule(robotContainer.getAutonomousCommand("RedOpen"));
-        CommandScheduler.getInstance().schedule(robotContainer.getAutonomousCommand(chooser.getSelected()));
+        CommandScheduler.getInstance().schedule(
+            robotContainer.getAutonomousCommand(chooser.getSelected()),
+            new LEDSetCommand(DriverStation.Alliance.Blue == DriverStation.getAlliance() ? LightSubsystem.State.Blue : LightSubsystem.State.Red)
+        );
     }
 
     @Override
