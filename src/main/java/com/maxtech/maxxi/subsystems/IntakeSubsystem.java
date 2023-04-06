@@ -3,6 +3,7 @@ package com.maxtech.maxxi.subsystems;
 import com.maxtech.maxxi.constants.MotorConstants;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 
@@ -33,6 +34,8 @@ public class IntakeSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
+        SmartDashboard.putNumber("Intake current", getCurrent());
+
         // Ignore a double set.
         if (prevIntakeSpeed == setIntakeSpeed)
             return;
@@ -53,6 +56,7 @@ public class IntakeSubsystem extends SubsystemBase {
             prevIntakeSpeed = setIntakeSpeed;
             intake.set(setIntakeSpeed);
         }
+
     }
 
     public double getCurrent() {

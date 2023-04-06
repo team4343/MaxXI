@@ -12,7 +12,7 @@ public class IntakeSetCommand extends CommandBase {
     private final LightSubsystem ledSubsystem = LightSubsystem.getInstance();
 
     public IntakeSetCommand(IntakeSubsystem intakeSubsystem, DoubleSupplier speed) {
-        addRequirements(intakeSubsystem);
+        addRequirements(intakeSubsystem, ledSubsystem);
         this.intakeSubsystem = intakeSubsystem;
         this.speedSupplier = speed;
     }
@@ -20,6 +20,13 @@ public class IntakeSetCommand extends CommandBase {
     @Override
     public void execute() {
         double speed = speedSupplier.getAsDouble();
+        intakeSubsystem.setSpeed(speed);
+
+        if (intakeSubsystem.getCurrent() > 10) {
+            ledSubsystem.setState(LightSubsystem.State.GreenBlinking);
+            return;
+        }
+
         if (speed > 0) {
             ledSubsystem.setState(LightSubsystem.State.Purple);
         } else if (speed < 0) {
@@ -27,11 +34,7 @@ public class IntakeSetCommand extends CommandBase {
         } else {
             ledSubsystem.setState(LightSubsystem.State.Blank);
         }
-        intakeSubsystem.setSpeed(speed);
 
-        if (intakeSubsystem.getCurrent() > 10) {
-            ledSubsystem.setState(LightSubsystem.State.Red);
-        }
     }
 
     @Override

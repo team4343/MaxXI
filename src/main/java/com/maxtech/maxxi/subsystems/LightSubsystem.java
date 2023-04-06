@@ -3,6 +3,7 @@ package com.maxtech.maxxi.subsystems;
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class LightSubsystem extends SubsystemBase {
@@ -45,11 +46,14 @@ public class LightSubsystem extends SubsystemBase {
             case Red:
                 setSolid(100, 0, 0);
                 break;
+            case RedBlinking:
+                blink(100, 0, 0);
+                break;
             case PurpleBlinking:
-                blink(92, 0, 153);
+                blink(129, 0, 255);
                 break;
             case Purple:
-                setSolid(92, 0, 153);
+                setSolid(86, 0, 140);
                 break;
             case YellowBlinking:
                 blink(100, 100, 0);
@@ -69,9 +73,6 @@ public class LightSubsystem extends SubsystemBase {
             case BlueBlinking:
                 blink(0, 0, 100);
                 break;
-            case RedBlinking:
-                blink(100, 0, 0);
-                break;
             default:
                 setSolid(0, 0, 0);
                 break;
@@ -89,7 +90,7 @@ public class LightSubsystem extends SubsystemBase {
     private int m_rainbowFirstPixelHue = 0;
 
     private void blink(int r, int g, int b) {
-        if ((int)(Timer.getFPGATimestamp()*12) % 2 == 0)
+        if ((int)(Timer.getFPGATimestamp()*6) % 2 == 0)
             setSolid(r, g, b);
         else
             setSolid(0,0,0);

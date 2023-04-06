@@ -1,7 +1,5 @@
 package com.maxtech.maxxi;
 
-import com.maxtech.maxxi.commands.AutoLEDSetCommand;
-import com.maxtech.maxxi.commands.LEDSetCommand;
 import com.maxtech.maxxi.subsystems.LightSubsystem;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -25,8 +23,6 @@ public class Robot extends TimedRobot {
     private RobotContainer robotContainer;
     private NetworkTableInstance nt_handle;
     public static final SendableChooser<String> autoChooser = new SendableChooser<>();
-    private final SendableChooser<String> ledChooser = new SendableChooser<>();
-
 
     /**
      * This function is run when the robot is first started up and should be used for any
@@ -48,15 +44,8 @@ public class Robot extends TimedRobot {
         }
         SmartDashboard.putData("AutoChoices", autoChooser);
 
-        ledChooser.setDefaultOption("Cone", "Cone");
-        ledChooser.addOption("Cube", "Cube");
-        ledChooser.addOption("Blank", "Blank");
-        SmartDashboard.putData("LEDColor", ledChooser);
-
         // Set up logging.
         Logger.configureLoggingAndConfig(robotContainer, false);
-
-        LightSubsystem.getInstance().setDefaultCommand(new AutoLEDSetCommand(ledChooser));
     }
 
     /**
@@ -109,6 +98,8 @@ public class Robot extends TimedRobot {
 
 //        robotContainer.drivetrainSubsystem.swerveDrive.swerveController.addSlewRateLimiters(new SlewRateLimiter(0.0), new SlewRateLimiter(0.0), new SlewRateLimiter(0.0));
 
+        LightSubsystem.getInstance().setState(DriverStation.Alliance.Blue == DriverStation.getAlliance() ? LightSubsystem.State.Blue : LightSubsystem.State.Red);
+
         CommandScheduler.getInstance().cancelAll();
         CommandScheduler.getInstance().schedule(
             robotContainer.getAutonomousCommand(autoChooser.getSelected())
@@ -122,7 +113,6 @@ public class Robot extends TimedRobot {
     public void teleopInit() {
 //        robotContainer.drivetrainSubsystem.swerveDrive.swerveController.addSlewRateLimiters(xSlewRateLimiter, ySlewRateLimiter, rSlewRateLimiter);
         CommandScheduler.getInstance().cancelAll();
-
     }
 
     @Override
