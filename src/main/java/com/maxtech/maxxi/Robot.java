@@ -1,7 +1,7 @@
 package com.maxtech.maxxi;
 
+import com.maxtech.maxxi.commands.AutoLEDSetCommand;
 import com.maxtech.maxxi.commands.LEDSetCommand;
-import com.maxtech.maxxi.subsystems.ArduinoSubsystem;
 import com.maxtech.maxxi.subsystems.LightSubsystem;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -22,10 +22,10 @@ import java.util.Objects;
  * project.
  */
 public class Robot extends TimedRobot {
-    ArduinoSubsystem arduino = new ArduinoSubsystem();
     private RobotContainer robotContainer;
     private NetworkTableInstance nt_handle;
-    public static final SendableChooser<String> chooser = new SendableChooser<>();
+    public static final SendableChooser<String> autoChooser = new SendableChooser<>();
+    private final SendableChooser<String> ledChooser = new SendableChooser<>();
 
 
     /**
@@ -36,21 +36,27 @@ public class Robot extends TimedRobot {
     public void robotInit() {
         // Instantiate our RobotContainer. This will perform all our button bindings
         robotContainer = new RobotContainer();
-        arduino.match_started = false;
         nt_handle = NetworkTableInstance.getDefault();
         nt_handle.getEntry("/SmartDashboard/startingX").setDouble(14.75);
         nt_handle.getEntry("/SmartDashboard/startingY").setDouble(5.0);
         nt_handle.getEntry("/SmartDashboard/startingR").setDouble(0.0);
 
-        chooser.setDefaultOption("Default Auto", "Default");
+        autoChooser.setDefaultOption("Default Auto", "Default");
         for (File file: Objects.requireNonNull(new File(Filesystem.getDeployDirectory(), "pathplanner/").listFiles())) {
             String name = file.getName().replaceAll("[.][^.]+$", "");
-            chooser.addOption(name, name);
+            autoChooser.addOption(name, name);
         }
-        SmartDashboard.putData("AutoChoices", chooser);
+        SmartDashboard.putData("AutoChoices", autoChooser);
+
+        ledChooser.setDefaultOption("Cone", "Cone");
+        ledChooser.addOption("Cube", "Cube");
+        ledChooser.addOption("Blank", "Blank");
+        SmartDashboard.putData("LEDColor", ledChooser);
 
         // Set up logging.
         Logger.configureLoggingAndConfig(robotContainer, false);
+
+        LightSubsystem.getInstance().setDefaultCommand(new AutoLEDSetCommand(ledChooser));
     }
 
     /**
@@ -71,8 +77,8 @@ public class Robot extends TimedRobot {
     @Override
     public void disabledInit() {
         CommandScheduler.getInstance().cancelAll();
-        arduino.match_started = false;
-        arduino.get_team();
+
+        LightSubsystem.getInstance().setState(DriverStation.Alliance.Blue == DriverStation.getAlliance() ? LightSubsystem.State.Blue : LightSubsystem.State.Red);
     }
 
     @Override
@@ -87,9 +93,9 @@ public class Robot extends TimedRobot {
 
         nt_handle.getEntry("/autonomous").setString(desiredAuto);
 
-        nt_handle.getEntry("/autoConfirmSelection").setString(chooser.getSelected());
+        nt_handle.getEntry("/autoConfirmSelection").setString(autoChooser.getSelected());
 
-        if (chooser.getSelected().contains("Default") || chooser.getSelected().contains("default") || chooser.getSelected().contains("DEFAULT"))
+        if (autoChooser.getSelected().contains("Default") || autoChooser.getSelected().contains("default") || autoChooser.getSelected().contains("DEFAULT"))
             DriverStation.reportWarning("SOMEONE DID NOT SELECT AUTO", false);
     }
 
@@ -102,13 +108,10 @@ public class Robot extends TimedRobot {
         SmartDashboard.putNumber("Auto Start Y", robotContainer.drivetrainSubsystem.getPose().getTranslation().getY());
 
 //        robotContainer.drivetrainSubsystem.swerveDrive.swerveController.addSlewRateLimiters(new SlewRateLimiter(0.0), new SlewRateLimiter(0.0), new SlewRateLimiter(0.0));
-        arduino.match_started = true;
-        arduino.get_team();
 
         CommandScheduler.getInstance().cancelAll();
         CommandScheduler.getInstance().schedule(
-            robotContainer.getAutonomousCommand(chooser.getSelected()),
-            new LEDSetCommand(DriverStation.Alliance.Blue == DriverStation.getAlliance() ? LightSubsystem.State.Blue : LightSubsystem.State.Red)
+            robotContainer.getAutonomousCommand(autoChooser.getSelected())
         );
     }
 
@@ -119,6 +122,7 @@ public class Robot extends TimedRobot {
     public void teleopInit() {
 //        robotContainer.drivetrainSubsystem.swerveDrive.swerveController.addSlewRateLimiters(xSlewRateLimiter, ySlewRateLimiter, rSlewRateLimiter);
         CommandScheduler.getInstance().cancelAll();
+
     }
 
     @Override

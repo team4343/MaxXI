@@ -19,7 +19,7 @@
         <frc-field-robot
             source-key="/SmartDashboard/Field/Robot"
             source-provider="NetworkTables"
-            style="width: 32.5541px; height: 32.5541px; transform: translate(334.264px, 479.76px) rotate(-79.666deg);"
+            style="width: 32.5541px; height: 32.5541px; transform: translate(18.6295px, 394.794px) rotate(86.1991deg);"
             opacity="100"
             pose="[0,0,0]"
             width="0.68"
@@ -113,7 +113,7 @@
     ><input
             slot="input"
             type="text"
-            id="vaadin-text-field-174"
+            id="vaadin-text-field-2"
             aria-labelledby="label-vaadin-text-field-1378"
             aria-describedby=""
             placeholder="NA"
@@ -121,7 +121,7 @@
         ><label
             slot="label"
             id="label-vaadin-text-field-1378"
-            for="vaadin-text-field-174"
+            for="vaadin-text-field-2"
         >Elbow State</label>
         <div
             slot="error-message"
@@ -140,7 +140,7 @@
     ><input
             slot="input"
             type="text"
-            id="vaadin-text-field-175"
+            id="vaadin-text-field-3"
             aria-labelledby="label-vaadin-text-field-1492"
             aria-describedby=""
             tabindex="0"
@@ -148,7 +148,7 @@
         ><label
             slot="label"
             id="label-vaadin-text-field-1492"
-            for="vaadin-text-field-175"
+            for="vaadin-text-field-3"
         >Shoulder State</label>
         <div
             slot="error-message"
@@ -166,12 +166,67 @@
         source-provider="NetworkTables"
         style="width: 300px; height: 66px; transform: translate(290px, 413px);"
     ></frc-voltage-view>
-    <frc-toggle-button
+
+
+    <vaadin-text-field
         source-provider="NetworkTables"
-        style="transform: translate(1028px, 733px); width: 237px; height: 50px;"
-        source-key="/SmartDashboard/startingCube"
-        label="Select for Cube"
-    ></frc-toggle-button>
+        style="transform: translate(1019px, 541px); width: 64px; height: 50px;"
+        has-value=""
+        readonly=""
+        value="cone"
+        label=""
+    ><input
+            slot="input"
+            type="text"
+            id="vaadin-text-field-4"
+            aria-labelledby=""
+            aria-describedby=""
+            readonly=""
+            value="cone"
+        ><label
+            slot="label"
+            id="label-vaadin-text-field-117"
+            for="vaadin-text-field-4"
+        ></label>
+        <div
+            slot="error-message"
+            id="error-message-vaadin-text-field-97"
+            hidden=""
+        ></div>
+    </vaadin-text-field>
+    <vaadin-text-field
+        source-provider="NetworkTables"
+        style="transform: translate(1163px, 542px); width: 71px; height: 52px;"
+        has-value=""
+        readonly=""
+        value="cube"
+        label=""
+    ><input
+            slot="input"
+            type="text"
+            id="vaadin-text-field-5"
+            aria-labelledby=""
+            aria-describedby=""
+            readonly=""
+            value="cube"
+        ><label
+            slot="label"
+            id="label-vaadin-text-field-140"
+            for="vaadin-text-field-5"
+        ></label>
+        <div
+            slot="error-message"
+            id="error-message-vaadin-text-field-113"
+            hidden=""
+        ></div>
+    </vaadin-text-field>
+    <frc-sendable-chooser
+        source-key="/SmartDashboard/LEDColor"
+        source-provider="NetworkTables"
+        style="transform: translate(1040px, 641px);"
+        options="[]"
+        label="LED Color"
+    ></frc-sendable-chooser>
 </dashboard-tab>
 <dashboard-tab
     tab-name="Setup"
@@ -204,7 +259,7 @@
         <frc-field-robot
             source-key="/SmartDashboard/Field/Robot"
             source-provider="NetworkTables"
-            style="width: 0px; height: 0px; transform: translate(0px, 0px) rotate(-79.666deg);"
+            style="width: 0px; height: 0px; transform: translate(0px, 0px) rotate(86.1991deg);"
             width="0.68"
             height="0.68"
             opacity="100"
@@ -240,7 +295,7 @@
             slot="input"
             value="0"
             type="number"
-            id="vaadin-number-field-176"
+            id="vaadin-number-field-6"
             aria-labelledby="label-vaadin-number-field-95"
             aria-describedby=""
             min="NaN"
@@ -249,7 +304,7 @@
         ><label
             slot="label"
             id="label-vaadin-number-field-95"
-            for="vaadin-number-field-176"
+            for="vaadin-number-field-6"
         >X</label>
         <div
             slot="error-message"
@@ -272,7 +327,7 @@
             slot="input"
             value="0"
             type="number"
-            id="vaadin-number-field-177"
+            id="vaadin-number-field-7"
             aria-labelledby="label-vaadin-number-field-155"
             aria-describedby=""
             min="NaN"
@@ -281,7 +336,7 @@
         ><label
             slot="label"
             id="label-vaadin-number-field-155"
-            for="vaadin-number-field-177"
+            for="vaadin-number-field-7"
         >Y</label>
         <div
             slot="error-message"
@@ -304,7 +359,7 @@
             slot="input"
             value="0"
             type="number"
-            id="vaadin-number-field-178"
+            id="vaadin-number-field-8"
             aria-labelledby="label-vaadin-number-field-210"
             aria-describedby=""
             min="NaN"
@@ -313,7 +368,7 @@
         ><label
             slot="label"
             id="label-vaadin-number-field-210"
-            for="vaadin-number-field-178"
+            for="vaadin-number-field-8"
         >R</label>
         <div
             slot="error-message"
@@ -336,7 +391,7 @@
         <frc-field-robot
             source-key="/SmartDashboard/startingConfirmRobot"
             source-provider="NetworkTables"
-            style="width: 0px; height: 0px; transform: translate(0px, 0px) rotate(-90deg);"
+            style="width: 0px; height: 0px; transform: translate(0px, 0px) rotate(90deg);"
             color="#64ce7e"
             opacity="100"
             pose="[0,0,0]"
@@ -346,7 +401,7 @@
         <frc-field-robot
             source-key="/SmartDashboard/Field/Robot"
             source-provider="NetworkTables"
-            style="width: 0px; height: 0px; transform: translate(0px, 0px) rotate(-79.666deg);"
+            style="width: 0px; height: 0px; transform: translate(0px, 0px) rotate(86.1991deg);"
             opacity="100"
             pose="[0,0,0]"
             width="0.68"
@@ -369,7 +424,7 @@
             slot="input"
             value="0"
             type="number"
-            id="vaadin-number-field-179"
+            id="vaadin-number-field-9"
             aria-labelledby="label-vaadin-number-field-45"
             aria-describedby=""
             min="NaN"
@@ -378,7 +433,7 @@
         ><label
             slot="label"
             id="label-vaadin-number-field-45"
-            for="vaadin-number-field-179"
+            for="vaadin-number-field-9"
         >Starting X</label>
         <div
             slot="error-message"
@@ -402,7 +457,7 @@
             slot="input"
             value="0"
             type="number"
-            id="vaadin-number-field-180"
+            id="vaadin-number-field-10"
             aria-labelledby="label-vaadin-number-field-46"
             aria-describedby=""
             min="NaN"
@@ -411,7 +466,7 @@
         ><label
             slot="label"
             id="label-vaadin-number-field-46"
-            for="vaadin-number-field-180"
+            for="vaadin-number-field-10"
         >Starting Y</label>
         <div
             slot="error-message"
@@ -435,7 +490,7 @@
             slot="input"
             value="0"
             type="number"
-            id="vaadin-number-field-181"
+            id="vaadin-number-field-11"
             aria-labelledby="label-vaadin-number-field-47"
             aria-describedby=""
             min="NaN"
@@ -444,7 +499,7 @@
         ><label
             slot="label"
             id="label-vaadin-number-field-47"
-            for="vaadin-number-field-181"
+            for="vaadin-number-field-11"
         >Starting R</label>
         <div
             slot="error-message"

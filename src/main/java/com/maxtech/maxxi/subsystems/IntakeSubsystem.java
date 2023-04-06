@@ -7,8 +7,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 
 public class IntakeSubsystem extends SubsystemBase {
-
-    ArduinoSubsystem arduino = new ArduinoSubsystem();
     public enum State {
         DriverControl, ConeIn, ConeOut, Stopped
     }
@@ -44,11 +42,9 @@ public class IntakeSubsystem extends SubsystemBase {
             switch (state) {
                 case ConeIn:
                     intake.set(setIntakeSpeed); // TODO Confirm
-                    arduino.set_cone_intake_lights();
                     break;
                 case ConeOut:
                     intake.set(-setIntakeSpeed);
-                    arduino.set_cube_intake_lights();
                     break;
                 default:
                     intake.set(0);

@@ -125,7 +125,8 @@ public class RobotContainer {
             case "RedPlatform":
                 trajectory = PathPlanner.loadPath(auto, new PathConstraints(1, 0.5), false);
                 autoCommands.addCommands(
-                    new FollowTrajectory(drivetrainSubsystem, trajectory, true)
+                    new FollowTrajectory(drivetrainSubsystem, trajectory, true),
+                        new AutoBalanceCommand(drivetrainSubsystem)
                 );
                 return autoCommands;
         }

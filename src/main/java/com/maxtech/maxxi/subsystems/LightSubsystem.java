@@ -34,7 +34,6 @@ public class LightSubsystem extends SubsystemBase {
         led.setLength(buffer.getLength());
         led.setData(buffer);
         led.start();
-
     }
 
     @Override
@@ -47,10 +46,10 @@ public class LightSubsystem extends SubsystemBase {
                 setSolid(100, 0, 0);
                 break;
             case PurpleBlinking:
-                blink(100, 0, 100);
+                blink(92, 0, 153);
                 break;
             case Purple:
-                setSolid(100, 0, 100);
+                setSolid(92, 0, 153);
                 break;
             case YellowBlinking:
                 blink(100, 100, 0);
