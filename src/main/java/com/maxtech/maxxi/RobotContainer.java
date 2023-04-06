@@ -19,10 +19,7 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
+import edu.wpi.first.wpilibj2.command.*;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -65,7 +62,7 @@ public class RobotContainer {
         hid.setPlaystationCommand(6).onTrue(new ArmPositionCommand(armSubsystem, State.PickupStation));
         hid.setPlaystationCommand(1).onTrue(new ArmPositionCommand(armSubsystem, State.PlacingMiddle));
         hid.setPlaystationCommand(4).onTrue(new ArmPositionCommand(armSubsystem, State.PLacingUpper));
-        hid.setPlaystationPOV(180).whileTrue(new AutoBalanceCommand(drivetrainSubsystem));
+        // hid.setPlaystationPOV(180).whileTrue(new AutoBalanceCommand(drivetrainSubsystem));
     }
 
     public Command getAbsoluteFieldDriveCommand() {
@@ -86,8 +83,8 @@ public class RobotContainer {
 
         drivetrainSubsystem.resetOdometry(new Pose2d(startingX, startingY, Rotation2d.fromDegrees(startingR)));
 
-        PathPlannerTrajectory trajectory = PathPlanner.loadPath(auto, new PathConstraints(2.5, 0.6), false);
-        PathPlannerTrajectory trajectoryBack = PathPlanner.loadPath(auto, new PathConstraints(2.5, 0.6), true);
+        PathPlannerTrajectory trajectory = PathPlanner.loadPath(auto, new PathConstraints(1, .5), false);
+        PathPlannerTrajectory trajectoryReturn = PathPlanner.loadPath(auto + "Return", new PathConstraints(1, .5), false);
 
         // Default to place the cone or cube
         // 3 seconds
@@ -104,29 +101,35 @@ public class RobotContainer {
         switch (auto) {
             case "BlueOpen":
             case "RedOpen":
-                trajectory = PathPlanner.loadPath(auto, new PathConstraints(3, 1.25), false);
-                trajectoryBack = PathPlanner.loadPath(auto, new PathConstraints(3, 1.25), true);
+                trajectory = PathPlanner.loadPath(auto, new PathConstraints(1, .5), false);
+                trajectoryReturn = PathPlanner.loadPath(auto + "Return", new PathConstraints(1, .5), false);
             case "RedCover":
             case "BlueCover":
                 autoCommands.addCommands(
-                    new ArmPositionCommand(armSubsystem, State.Rest),
                     new ParallelRaceGroup(
-                        new FollowTrajectory(drivetrainSubsystem, trajectory, true).andThen(new WaitCommand(4)), // 5s
+                        new FollowTrajectory(drivetrainSubsystem, trajectory, true),
                         new SequentialCommandGroup(
-                            new WaitCommand(1.5),
-                            new ArmPositionCommand(armSubsystem, State.PickupGround),
-                            new IntakeSetCommand(intakeSubsystem, () -> -0.8)
+                            new WaitCommand(2),
+                            new ParallelDeadlineGroup(
+                                new WaitCommand(3),
+                                new ArmPositionCommand(armSubsystem, State.PickupGround),
+                                new IntakeSetCommand(intakeSubsystem, () -> -0.8)
+                            ),
+                            new WaitCommand(1.5)
                         )
                     ),
-                    new IntakeSetCommand(intakeSubsystem, () -> 0.0).withTimeout(0.0)
+                    new ArmPositionCommand(armSubsystem, State.Rest),
+                    new IntakeSetCommand(intakeSubsystem, () -> 0.0).withTimeout(0.0),
+                    new FollowTrajectory(drivetrainSubsystem, trajectoryReturn, false)
                 );
                 return autoCommands;
             case "BluePlatform":
             case "RedPlatform":
-                trajectory = PathPlanner.loadPath(auto, new PathConstraints(1, 0.5), false);
+                trajectory = PathPlanner.loadPath(auto, new PathConstraints(1, 1), false);
                 autoCommands.addCommands(
                     new FollowTrajectory(drivetrainSubsystem, trajectory, true),
-                        new AutoBalanceCommand(drivetrainSubsystem)
+                    new AutoBalanceCommand(drivetrainSubsystem),
+                    new FollowTrajectory(drivetrainSubsystem, trajectoryReturn, false)
                 );
                 return autoCommands;
         }

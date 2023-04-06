@@ -113,6 +113,7 @@ public class Robot extends TimedRobot {
     public void teleopInit() {
 //        robotContainer.drivetrainSubsystem.swerveDrive.swerveController.addSlewRateLimiters(xSlewRateLimiter, ySlewRateLimiter, rSlewRateLimiter);
         CommandScheduler.getInstance().cancelAll();
+        LightSubsystem.getInstance().setState(DriverStation.Alliance.Blue == DriverStation.getAlliance() ? LightSubsystem.State.Blue : LightSubsystem.State.Red);
     }
 
     @Override

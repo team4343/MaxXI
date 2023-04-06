@@ -11,6 +11,8 @@ public class LightSubsystem extends SubsystemBase {
         Blank, // Blank
         Default, // Blue and yellow gradient
         Rainbow, // Rainbow
+        White,
+        WhiteBlinking,
         Purple, // Purple
         PurpleBlinking, // Purple Blinking
         Red, // Red
@@ -40,6 +42,12 @@ public class LightSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         switch (state) {
+            case White:
+                setSolid(255, 255, 255);
+                break;
+            case WhiteBlinking:
+                blink(255, 255, 255);
+                break;
             case Blue:
                 setSolid(0, 0, 100);
                 break;
