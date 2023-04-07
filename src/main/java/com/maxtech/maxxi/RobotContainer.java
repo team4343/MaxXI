@@ -83,8 +83,8 @@ public class RobotContainer {
 
         drivetrainSubsystem.resetOdometry(new Pose2d(startingX, startingY, Rotation2d.fromDegrees(startingR)));
 
-        PathPlannerTrajectory trajectory = PathPlanner.loadPath(auto, new PathConstraints(1, .5), false);
-        PathPlannerTrajectory trajectoryReturn = PathPlanner.loadPath(auto + "Return", new PathConstraints(1, .5), false);
+        PathPlannerTrajectory trajectory = PathPlanner.loadPath(auto, new PathConstraints(3, 1), false);
+        PathPlannerTrajectory trajectoryReturn = PathPlanner.loadPath(auto + "Return", new PathConstraints(3, 1), false);
 
         // Default to place the cone or cube
         // 3 seconds
@@ -101,15 +101,15 @@ public class RobotContainer {
         switch (auto) {
             case "BlueOpen":
             case "RedOpen":
-                trajectory = PathPlanner.loadPath(auto, new PathConstraints(1, .5), false);
-                trajectoryReturn = PathPlanner.loadPath(auto + "Return", new PathConstraints(1, .5), false);
+                trajectory = PathPlanner.loadPath(auto, new PathConstraints(3, 1), false);
+                trajectoryReturn = PathPlanner.loadPath(auto + "Return", new PathConstraints(3, 1), false);
             case "RedCover":
             case "BlueCover":
                 autoCommands.addCommands(
                     new ParallelRaceGroup(
                         new FollowTrajectory(drivetrainSubsystem, trajectory, true),
                         new SequentialCommandGroup(
-                            new WaitCommand(2),
+                            new WaitCommand(3),
                             new ParallelDeadlineGroup(
                                 new WaitCommand(3),
                                 new ArmPositionCommand(armSubsystem, State.PickupGround),
