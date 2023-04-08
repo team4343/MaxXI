@@ -72,7 +72,7 @@ public class ArmSubsystem extends SubsystemBase {
     private static final PID SHOULDER_STEADY   = new PID(0.2, 0.0007, 0, 1);
     private static final PID ELBOW_DEFAULT     = new PID(0.045, 0.00001, 0, 0);
     private static final PID ELBOW_STEADY      = new PID(0.055, 0.00017, 0, 1);
-    private static final PID ELBOW_PICKUP      = new PID(0.05, 0.00003, 0.00013, 2);
+    private static final PID ELBOW_PICKUP      = new PID(0.035, 0.00002, 0.00013, 2);
     private static final PID WRIST_DEFAULT     = new PID(0.02, 0.00000, 0, 0);
 
     private final Double retractDelay = 0.6;
@@ -187,6 +187,9 @@ public class ArmSubsystem extends SubsystemBase {
         int elbow_pid_slot;
         int wrist_pid_slot;
 
+        if (state_desired == state_actual && state_actual == state_previous)
+            return;
+
         if (state_desired != state_previous_timer)
             startTime = Timer.getFPGATimestamp();
 
@@ -215,14 +218,13 @@ public class ArmSubsystem extends SubsystemBase {
             SmartDashboard.putString("Arm State", "Steady");
         }
 
-
         switch (state_desired) {
             case PickupGround: position= PICKUP_GROUND; break;
             case PlacingMiddle: position= PLACING_MIDDLE; break;
             case PLacingUpper: position= PLACING_UPPER; break;
             case PickupStation: position= PICKUP_STATION; break;
-            case PlaceholderA: position= INIT; break;
-            case PlaceholderB: position= PLACEHOLDER_B; break;
+//            case PlaceholderA: position= INIT; break;
+//            case PlaceholderB: position= PLACEHOLDER_B; break;
             default: position=REST;
         }
 
@@ -234,6 +236,7 @@ public class ArmSubsystem extends SubsystemBase {
         state_previous = state_actual;
         state_previous_timer = state_desired;
 
+        // Actual Control
         elbow.getPIDController().setReference(position.elbow, CANSparkMax.ControlType.kPosition, elbow_pid_slot);
         if (startTime + retractDelay < Timer.getFPGATimestamp() || state_desired != State.Rest)
             shoulder.getPIDController().setReference(position.shoulder, CANSparkMax.ControlType.kPosition, shoulder_pid_slot);

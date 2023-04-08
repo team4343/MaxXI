@@ -16,6 +16,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.Trajectory;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -49,9 +50,9 @@ public class DrivetrainSubsystem extends SubsystemBase
 
         swerveDrive.setMotorIdleMode(false); // Set to Coast
 
-        SlewRateLimiter xSlewRateLimiter = new SlewRateLimiter(3);
-        SlewRateLimiter ySlewRateLimiter = new SlewRateLimiter(3);
-        SlewRateLimiter rSlewRateLimiter = new SlewRateLimiter(20);
+        SlewRateLimiter xSlewRateLimiter = new SlewRateLimiter(3.75);
+        SlewRateLimiter ySlewRateLimiter = new SlewRateLimiter(3.75);
+        SlewRateLimiter rSlewRateLimiter = new SlewRateLimiter(30);
         swerveDrive.swerveController.addSlewRateLimiters(xSlewRateLimiter, ySlewRateLimiter, rSlewRateLimiter);
 
     }

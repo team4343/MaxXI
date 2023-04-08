@@ -57,7 +57,6 @@ public class RobotContainer {
     private void configureButtonBindings() {
         // Driver
         hid.setPlaystationCommand(2).onTrue(new ArmPositionCommand(armSubsystem, State.PickupGround));
-//        hid.setPlaystationCommand(3).onTrue(new AutoBalanceCommand(drivetrainSubsystem));
         hid.setPlaystationCommand(3).onTrue(new ArmPositionCommand(armSubsystem, State.Rest));
         hid.setPlaystationCommand(6).onTrue(new ArmPositionCommand(armSubsystem, State.PickupStation));
         hid.setPlaystationCommand(1).onTrue(new ArmPositionCommand(armSubsystem, State.PlacingMiddle));
@@ -83,8 +82,8 @@ public class RobotContainer {
 
         drivetrainSubsystem.resetOdometry(new Pose2d(startingX, startingY, Rotation2d.fromDegrees(startingR)));
 
-        PathPlannerTrajectory trajectory = PathPlanner.loadPath(auto, new PathConstraints(3, 1), false);
-        PathPlannerTrajectory trajectoryReturn = PathPlanner.loadPath(auto + "Return", new PathConstraints(3, 1), false);
+        PathPlannerTrajectory trajectory = PathPlanner.loadPath(auto, new PathConstraints(3, .75), false);
+//        PathPlannerTrajectory trajectoryReturn = PathPlanner.loadPath(auto + "Return", new PathConstraints(3, .75), false);
 
         // Default to place the cone or cube
         // 3 seconds
@@ -101,26 +100,25 @@ public class RobotContainer {
         switch (auto) {
             case "BlueOpen":
             case "RedOpen":
-                trajectory = PathPlanner.loadPath(auto, new PathConstraints(3, 1), false);
-                trajectoryReturn = PathPlanner.loadPath(auto + "Return", new PathConstraints(3, 1), false);
+                trajectory = PathPlanner.loadPath(auto, new PathConstraints(3, .75), false);
+//                trajectoryReturn = PathPlanner.loadPath(auto + "Return", new PathConstraints(3, .75), false);
             case "RedCover":
             case "BlueCover":
                 autoCommands.addCommands(
-                    new ParallelRaceGroup(
-                        new FollowTrajectory(drivetrainSubsystem, trajectory, true),
-                        new SequentialCommandGroup(
-                            new WaitCommand(3),
-                            new ParallelDeadlineGroup(
-                                new WaitCommand(3),
-                                new ArmPositionCommand(armSubsystem, State.PickupGround),
-                                new IntakeSetCommand(intakeSubsystem, () -> -0.8)
-                            ),
-                            new WaitCommand(1.5)
-                        )
-                    ),
-                    new ArmPositionCommand(armSubsystem, State.Rest),
-                    new IntakeSetCommand(intakeSubsystem, () -> 0.0).withTimeout(0.0),
-                    new FollowTrajectory(drivetrainSubsystem, trajectoryReturn, false)
+//                    new ParallelRaceGroup(
+                        new FollowTrajectory(drivetrainSubsystem, trajectory, true).andThen(new WaitCommand(2))
+//                        new SequentialCommandGroup(
+//                            new WaitCommand(4.5),
+//                            new ParallelDeadlineGroup(
+//                                new WaitCommand(4),
+//                                new ArmPositionCommand(armSubsystem, State.PickupGround),
+//                                new IntakeSetCommand(intakeSubsystem, () -> -0.8)
+//                            )
+//                        )
+//                    ),
+                    //new ArmPositionCommand(armSubsystem, State.Rest),
+//                    new IntakeSetCommand(intakeSubsystem, () -> 0.0).withTimeout(0.0)
+                    // new FollowTrajectory(drivetrainSubsystem, trajectoryReturn, false)
                 );
                 return autoCommands;
             case "BluePlatform":
@@ -128,8 +126,7 @@ public class RobotContainer {
                 trajectory = PathPlanner.loadPath(auto, new PathConstraints(1, 1), false);
                 autoCommands.addCommands(
                     new FollowTrajectory(drivetrainSubsystem, trajectory, true),
-                    new AutoBalanceCommand(drivetrainSubsystem),
-                    new FollowTrajectory(drivetrainSubsystem, trajectoryReturn, false)
+                    new AutoBalanceCommand(drivetrainSubsystem)
                 );
                 return autoCommands;
         }
