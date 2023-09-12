@@ -1,14 +1,17 @@
 package com.maxtech.maxxi;
 
-import com.maxtech.maxxi.subsystems.ArduinoSubsystem;
-import edu.wpi.first.math.filter.SlewRateLimiter;
+import com.maxtech.maxxi.subsystems.LightSubsystem;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import io.github.oblarg.oblog.Logger;
 
-import static com.maxtech.maxxi.constants.DriveConstants.*;
+import java.io.File;
+import java.util.Objects;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -17,10 +20,9 @@ import static com.maxtech.maxxi.constants.DriveConstants.*;
  * project.
  */
 public class Robot extends TimedRobot {
-    ArduinoSubsystem arduino = new ArduinoSubsystem();
     private RobotContainer robotContainer;
     private NetworkTableInstance nt_handle;
-
+    public static final SendableChooser<String> autoChooser = new SendableChooser<>();
 
     /**
      * This function is run when the robot is first started up and should be used for any
@@ -30,11 +32,17 @@ public class Robot extends TimedRobot {
     public void robotInit() {
         // Instantiate our RobotContainer. This will perform all our button bindings
         robotContainer = new RobotContainer();
-        arduino.match_started = false;
         nt_handle = NetworkTableInstance.getDefault();
         nt_handle.getEntry("/SmartDashboard/startingX").setDouble(14.75);
         nt_handle.getEntry("/SmartDashboard/startingY").setDouble(5.0);
         nt_handle.getEntry("/SmartDashboard/startingR").setDouble(0.0);
+
+        autoChooser.setDefaultOption("Default Auto", "Default");
+        for (File file: Objects.requireNonNull(new File(Filesystem.getDeployDirectory(), "pathplanner/").listFiles())) {
+            String name = file.getName().replaceAll("[.][^.]+$", "");
+            autoChooser.addOption(name, name);
+        }
+        SmartDashboard.putData("AutoChoices", autoChooser);
 
         // Set up logging.
         Logger.configureLoggingAndConfig(robotContainer, false);
@@ -58,6 +66,8 @@ public class Robot extends TimedRobot {
     @Override
     public void disabledInit() {
         CommandScheduler.getInstance().cancelAll();
+
+        LightSubsystem.getInstance().setState(DriverStation.Alliance.Blue == DriverStation.getAlliance() ? LightSubsystem.State.Blue : LightSubsystem.State.Red);
     }
 
     @Override
@@ -71,6 +81,11 @@ public class Robot extends TimedRobot {
         nt_handle.getEntry("/SmartDashboard/startingConfirmRobot").setDoubleArray(new double[]{startingX, startingY, startingR});
 
         nt_handle.getEntry("/autonomous").setString(desiredAuto);
+
+        nt_handle.getEntry("/autoConfirmSelection").setString(autoChooser.getSelected());
+
+        if (autoChooser.getSelected().contains("Default") || autoChooser.getSelected().contains("default") || autoChooser.getSelected().contains("DEFAULT"))
+            DriverStation.reportWarning("SOMEONE DID NOT SELECT AUTO", false);
     }
 
     /**
@@ -81,11 +96,14 @@ public class Robot extends TimedRobot {
         SmartDashboard.putNumber("Auto Start X", robotContainer.drivetrainSubsystem.getPose().getTranslation().getX());
         SmartDashboard.putNumber("Auto Start Y", robotContainer.drivetrainSubsystem.getPose().getTranslation().getY());
 
-        robotContainer.drivetrainSubsystem.swerveDrive.swerveController.addSlewRateLimiters(new SlewRateLimiter(0.0), new SlewRateLimiter(0.0), new SlewRateLimiter(0.0));
-        arduino.match_started = true;
+//        robotContainer.drivetrainSubsystem.swerveDrive.swerveController.addSlewRateLimiters(new SlewRateLimiter(0.0), new SlewRateLimiter(0.0), new SlewRateLimiter(0.0));
+
+        LightSubsystem.getInstance().setState(DriverStation.Alliance.Blue == DriverStation.getAlliance() ? LightSubsystem.State.Blue : LightSubsystem.State.Red);
 
         CommandScheduler.getInstance().cancelAll();
-        CommandScheduler.getInstance().schedule(robotContainer.getAutonomousCommand());
+        CommandScheduler.getInstance().schedule(
+            robotContainer.getAutonomousCommand(autoChooser.getSelected())
+        );
     }
 
     @Override
@@ -93,8 +111,9 @@ public class Robot extends TimedRobot {
 
     @Override
     public void teleopInit() {
-        robotContainer.drivetrainSubsystem.swerveDrive.swerveController.addSlewRateLimiters(xSlewRateLimiter, ySlewRateLimiter, rSlewRateLimiter);
+//        robotContainer.drivetrainSubsystem.swerveDrive.swerveController.addSlewRateLimiters(xSlewRateLimiter, ySlewRateLimiter, rSlewRateLimiter);
         CommandScheduler.getInstance().cancelAll();
+        LightSubsystem.getInstance().setState(DriverStation.Alliance.Blue == DriverStation.getAlliance() ? LightSubsystem.State.Blue : LightSubsystem.State.Red);
     }
 
     @Override

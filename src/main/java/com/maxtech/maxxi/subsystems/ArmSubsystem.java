@@ -26,6 +26,7 @@ public class ArmSubsystem extends SubsystemBase {
 
     // System State - init in rest state
     private static State state_desired = State.Rest;
+    private static State state_desired_previous = State.Rest;
     private static State state_actual = State.Rest;
     private static State state_previous_timer = State.Rest;
     private static State state_previous = State.Rest;
@@ -55,10 +56,10 @@ public class ArmSubsystem extends SubsystemBase {
 
     // Position Constants
     private final POS REST              = new POS(1, -2, -10);
-    private final POS PICKUP_GROUND     = new POS(0, 15, 10);
-    private final POS PLACING_MIDDLE    = new POS(3, 7, 20);
-    private final POS PLACING_UPPER     = new POS(7, 15.5, 20);
-    private final POS PICKUP_STATION    = new POS(7, 15, 20);
+    private final POS PICKUP_GROUND     = new POS(0, 15, 13);
+    private final POS PLACING_MIDDLE    = new POS(1.5, 7, 20);
+    private final POS PLACING_UPPER     = new POS(7.2, 15.5, 20);
+    private final POS PICKUP_STATION    = new POS(6.9, 15, 20);
     private final POS INIT              = new POS(0, 0, 0);
     private final POS PLACEHOLDER_B     = new POS(0, 0, 0);
 
@@ -67,14 +68,14 @@ public class ArmSubsystem extends SubsystemBase {
     // I. Sum of error over time. This increases output to counteract steady state error
     // D. Rate of change of error. This decreases output to counteract oscillation
     // Slot. So we can rapidly switch between PID configurations.
-    private static final PID SHOULDER_DEFAULT  = new PID(0.13, 0.0, 0, 0);
+    private static final PID SHOULDER_DEFAULT  = new PID(0.13, 0.000025, 0, 0);
     private static final PID SHOULDER_STEADY   = new PID(0.2, 0.0007, 0, 1);
     private static final PID ELBOW_DEFAULT     = new PID(0.045, 0.00001, 0, 0);
-    private static final PID ELBOW_STEADY      = new PID(0.055, 0.00015, 0, 1);
-    private static final PID ELBOW_PICKUP      = new PID(0.03, 0.0000, 0, 2);
+    private static final PID ELBOW_STEADY      = new PID(0.055, 0.00017, 0, 1);
+    private static final PID ELBOW_PICKUP      = new PID(0.035, 0.00002, 0.00013, 2);
     private static final PID WRIST_DEFAULT     = new PID(0.02, 0.00000, 0, 0);
 
-    private final Double retractDelay = 0.5;
+    private final Double retractDelay = 0.6;
     private final Double SHOULDER_RAMP_RATE = 0.4;
     private final Double ELBOW_RAMP_RATE = 0.3; 
     private final Double WRIST_RAMP_RATE = 0.5;
@@ -186,6 +187,9 @@ public class ArmSubsystem extends SubsystemBase {
         int elbow_pid_slot;
         int wrist_pid_slot;
 
+        if (state_desired == state_actual && state_actual == state_previous)
+            return;
+
         if (state_desired != state_previous_timer)
             startTime = Timer.getFPGATimestamp();
 
@@ -214,20 +218,25 @@ public class ArmSubsystem extends SubsystemBase {
             SmartDashboard.putString("Arm State", "Steady");
         }
 
-
         switch (state_desired) {
             case PickupGround: position= PICKUP_GROUND; break;
             case PlacingMiddle: position= PLACING_MIDDLE; break;
             case PLacingUpper: position= PLACING_UPPER; break;
             case PickupStation: position= PICKUP_STATION; break;
-            case PlaceholderA: position= INIT; break;
-            case PlaceholderB: position= PLACEHOLDER_B; break;
+//            case PlaceholderA: position= INIT; break;
+//            case PlaceholderB: position= PLACEHOLDER_B; break;
             default: position=REST;
         }
+
+        if (state_desired == State.PickupGround)
+            elbow.setIdleMode(CANSparkMax.IdleMode.kCoast);
+        else
+            elbow.setIdleMode(CANSparkMax.IdleMode.kBrake);
 
         state_previous = state_actual;
         state_previous_timer = state_desired;
 
+        // Actual Control
         elbow.getPIDController().setReference(position.elbow, CANSparkMax.ControlType.kPosition, elbow_pid_slot);
         if (startTime + retractDelay < Timer.getFPGATimestamp() || state_desired != State.Rest)
             shoulder.getPIDController().setReference(position.shoulder, CANSparkMax.ControlType.kPosition, shoulder_pid_slot);
@@ -257,10 +266,9 @@ public class ArmSubsystem extends SubsystemBase {
             state_actual = State.PLacingUpper;
         else if (inRange(shoulder_pos, PICKUP_STATION.shoulder) && inRange(elbow_pos, PICKUP_STATION.elbow))
             state_actual = State.PickupStation;
-        else if (inRange(shoulder_pos, INIT.shoulder) && inRange(elbow_pos, INIT.elbow))
-            state_actual = State.PlaceholderA;
-        else if (inRange(shoulder_pos, PLACEHOLDER_B.shoulder) && inRange(elbow_pos, PLACEHOLDER_B.elbow))
-            state_actual = State.PlaceholderB;
+
+        SmartDashboard.putString("Arm State Actual", state_actual.toString());
+        SmartDashboard.putString("Arm State Desired", state_desired.toString());
 
         if (state_actual != state_desired)
             state_actual = State.Transit;

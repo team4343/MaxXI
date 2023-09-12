@@ -9,26 +9,17 @@ import com.maxtech.maxxi.subsystems.ArmSubsystem;
 import com.maxtech.maxxi.subsystems.ArmSubsystem.State;
 import com.maxtech.maxxi.subsystems.DrivetrainSubsystem;
 import com.maxtech.maxxi.subsystems.IntakeSubsystem;
-import com.maxtech.maxxi.util.Auto;
 import com.maxtech.maxxi.util.HumanDevice;
 import com.pathplanner.lib.PathConstraints;
 import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
-import com.pathplanner.lib.PathPoint;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-
-import static com.maxtech.maxxi.constants.LocationConstants.RED_GRID_CENTER;
+import edu.wpi.first.wpilibj2.command.*;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -37,12 +28,11 @@ import static com.maxtech.maxxi.constants.LocationConstants.RED_GRID_CENTER;
  * subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
-    private final HumanDevice hid = new HumanDevice(1, 0, 2);
+    private final HumanDevice hid = new HumanDevice(2);
 
     public final DrivetrainSubsystem drivetrainSubsystem = new DrivetrainSubsystem();
     public final ArmSubsystem armSubsystem = new ArmSubsystem();
     public final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
-    private final ArrayList<Auto> autos = new ArrayList<>();
     private final NetworkTableInstance nt_handle = NetworkTableInstance.getDefault();
 
     /**
@@ -52,12 +42,10 @@ public class RobotContainer {
         drivetrainSubsystem.setDefaultCommand(getAbsoluteFieldDriveCommand());
         intakeSubsystem.setDefaultCommand(new IntakeSetCommand(
             intakeSubsystem,
-//            () -> hid.getOperatorTriggerL() - hid.getOperatorTriggerR()
             () -> hid.getPlaystationTriggerL() - hid.getPlaystationTriggerR()
         ));
 
         configureButtonBindings();
-        createAutos();
     }
 
     /**
@@ -68,32 +56,17 @@ public class RobotContainer {
      */
     private void configureButtonBindings() {
         // Driver
-        hid.setDriverCommand(3).onTrue(new ArmPositionCommand(armSubsystem, State.PickupGround));
-        hid.setDriverCommand(5).onTrue(new ArmPositionCommand(armSubsystem, State.Rest));
-        hid.setDriverCommand(4).onTrue(new ArmPositionCommand(armSubsystem, State.PlacingMiddle));
-        hid.setDriverCommand(6).onTrue(new ArmPositionCommand(armSubsystem, State.PLacingUpper));
-        hid.setDriverCommand(2).onTrue(new ArmPositionCommand(armSubsystem, State.PickupStation));
-
-        hid.setOperatorCommand(1).onTrue(new ArmPositionCommand(armSubsystem, State.PickupGround));
-        hid.setOperatorCommand(2).onTrue(new ArmPositionCommand(armSubsystem, State.Rest));
-        hid.setOperatorCommand(6).onTrue(new ArmPositionCommand(armSubsystem, State.PickupStation));
-        hid.setOperatorCommand(3).onTrue(new ArmPositionCommand(armSubsystem, State.PlacingMiddle));
-        hid.setOperatorCommand(4).onTrue(new ArmPositionCommand(armSubsystem, State.PLacingUpper));
-
         hid.setPlaystationCommand(2).onTrue(new ArmPositionCommand(armSubsystem, State.PickupGround));
         hid.setPlaystationCommand(3).onTrue(new ArmPositionCommand(armSubsystem, State.Rest));
         hid.setPlaystationCommand(6).onTrue(new ArmPositionCommand(armSubsystem, State.PickupStation));
         hid.setPlaystationCommand(1).onTrue(new ArmPositionCommand(armSubsystem, State.PlacingMiddle));
         hid.setPlaystationCommand(4).onTrue(new ArmPositionCommand(armSubsystem, State.PLacingUpper));
-
+        // hid.setPlaystationPOV(180).whileTrue(new AutoBalanceCommand(drivetrainSubsystem));
     }
 
     public Command getAbsoluteFieldDriveCommand() {
         return new AbsoluteFieldDrive(
             drivetrainSubsystem,
-//            hid::getOperatorX,
-//            hid::getOperatorY,
-//            hid::getOperatorR,
             hid::getPlaystationX,
             hid::getPlaystationY,
             hid::getPlaystationR,
@@ -101,78 +74,66 @@ public class RobotContainer {
         );
     }
 
-    public Command getTeleopDriveCommand() {
-        // Not needed
-        return new TeleopDrive(
-            drivetrainSubsystem,
-            hid::getOperatorX,
-            hid::getOperatorY,
-            hid::getOperatorR,
-            ()-> true,
-            false,
-            true
-        );
-    }
-
-    public Command getAutonomousCommand() {
+    public Command getAutonomousCommand(String auto) {
         double startingY = nt_handle.getEntry("/SmartDashboard/startingY").getDouble(0.0);
         double startingX = nt_handle.getEntry("/SmartDashboard/startingX").getDouble(0.0);
         double startingR = nt_handle.getEntry("/SmartDashboard/startingR").getDouble(0.0);
+        double intakeSpeed = nt_handle.getEntry("/SmartDashboard/startingCube").getBoolean(false) ? -0.6 : 0.6;
 
         drivetrainSubsystem.resetOdometry(new Pose2d(startingX, startingY, Rotation2d.fromDegrees(startingR)));
 
-        PathPlannerTrajectory trajectory = PathPlanner.generatePath(
-            new PathConstraints(1, 0.25),
-            new PathPoint(drivetrainSubsystem.getPose().getTranslation(), drivetrainSubsystem.getHeading(), drivetrainSubsystem.getHeading()),
-            new PathPoint(new Translation2d(12, 4.75), drivetrainSubsystem.getHeading(), drivetrainSubsystem.getHeading())
-//            new PathPoint(new Translation2d(10, 4.5), drivetrainSubsystem.getHeading(), Rotation2d.fromDegrees(180))
+        PathPlannerTrajectory trajectory = PathPlanner.loadPath(auto, new PathConstraints(3, .75), false);
+//        PathPlannerTrajectory trajectoryReturn = PathPlanner.loadPath(auto + "Return", new PathConstraints(3, .75), false);
+
+        // Default to place the cone or cube
+        // 3 seconds
+        SequentialCommandGroup autoCommands = new SequentialCommandGroup(
+            new ArmPositionCommand(armSubsystem, State.PLacingUpper),
+            new WaitCommand(2.3),
+            new IntakeSetCommand(intakeSubsystem, () -> 1.0).withTimeout(0.3),
+            new IntakeSetCommand(intakeSubsystem, () -> 0.0).withTimeout(0.0),
+            new ArmPositionCommand(armSubsystem, State.Rest)
         );
 
-        PathPlannerTrajectory trajectoryToCone = PathPlanner.generatePath(
-            new PathConstraints(1, 0.25),
-            new PathPoint(new Translation2d(12, 4.75), drivetrainSubsystem.getHeading(), drivetrainSubsystem.getHeading()),
-            new PathPoint(new Translation2d(10, 4.5), drivetrainSubsystem.getHeading(), Rotation2d.fromDegrees(180))
-        );
+        nt_handle.getEntry("/runningAuto").setString(auto);
 
-        PathPlannerTrajectory basic = PathPlanner.loadPath("Basic", new PathConstraints(1, 0.25), false);
-        HashMap<String, Command> eventMap = new HashMap<>();
-        eventMap.put("setArmGround", new ArmPositionCommand(armSubsystem, State.PickupGround));
+        switch (auto) {
+            case "BlueOpen":
+            case "RedOpen":
+                trajectory = PathPlanner.loadPath(auto, new PathConstraints(3, .75), false);
+//                trajectoryReturn = PathPlanner.loadPath(auto + "Return", new PathConstraints(3, .75), false);
+            case "RedCover":
+            case "BlueCover":
+                autoCommands.addCommands(
+//                    new ParallelRaceGroup(
+                        new FollowTrajectory(drivetrainSubsystem, trajectory, true).andThen(new WaitCommand(2))
+//                        new SequentialCommandGroup(
+//                            new WaitCommand(4.5),
+//                            new ParallelDeadlineGroup(
+//                                new WaitCommand(4),
+//                                new ArmPositionCommand(armSubsystem, State.PickupGround),
+//                                new IntakeSetCommand(intakeSubsystem, () -> -0.8)
+//                            )
+//                        )
+//                    ),
+                    //new ArmPositionCommand(armSubsystem, State.Rest),
+//                    new IntakeSetCommand(intakeSubsystem, () -> 0.0).withTimeout(0.0)
+                    // new FollowTrajectory(drivetrainSubsystem, trajectoryReturn, false)
+                );
+                return autoCommands;
+            case "BluePlatform":
+            case "RedPlatform":
+                trajectory = PathPlanner.loadPath(auto, new PathConstraints(1, 1), false);
+                autoCommands.addCommands(
+                    new FollowTrajectory(drivetrainSubsystem, trajectory, true),
+                    new AutoBalanceCommand(drivetrainSubsystem)
+                );
+                return autoCommands;
+        }
 
+        DriverStation.reportError("SOMEONE DID NOT SELECT AUTO", false);
 
-        return new SequentialCommandGroup(
-            new ArmPositionCommand(armSubsystem, State.PLacingUpper),
-            new ArmPositionCommand(armSubsystem, State.PLacingUpper),
-            new ArmPositionCommand(armSubsystem, State.PLacingUpper),
-            new WaitCommand(2),
-            new IntakeSetCommand(intakeSubsystem, 0.5).withTimeout(0.75),
-            new IntakeSetCommand(intakeSubsystem, 0.0).withTimeout(0.0),
-            new ArmPositionCommand(armSubsystem, State.Rest),
-            new FollowTrajectory(drivetrainSubsystem, basic, true)
-//            new DriveToPoint(drivetrainSubsystem, new Pose2d(12, 4, new Rotation2d()))
-//            new FollowTrajectory( drivetrainSubsystem, trajectory, true),
-//            new ParallelCommandGroup(
-//                new ArmPositionCommand(armSubsystem, State.PickupGround),
-//                new FollowTrajectory(drivetrainSubsystem, trajectoryToCone, true),
-//                new IntakeSetCommand(intakeSubsystem, 0.5).withTimeout(4)
-//            ),
-//            new IntakeSetCommand(intakeSubsystem, 0.0).withTimeout(0),
-//            new ArmPositionCommand(armSubsystem, State.Rest),
-//            new DriveToPoint(drivetrainSubsystem, new Pose2d(12, 4.75, new Rotation2d()))
-        );
+        // Defualt to place the cone.
+        return autoCommands;
     }
-
-    private void createAutos() {
-        this.autos.add(new Auto("Default")); // Default Do Nothing
-        this.autos.add(new Auto("Red 1", new DriveToPoint(drivetrainSubsystem, RED_GRID_CENTER.pose))); // Drive to center grid pose.
-    }
-
-    public Auto matchAuto(String autoName) {
-        for (Auto auto : this.autos)
-            if (auto.name.equals(autoName))
-                return auto;
-
-        return new Auto("Errored Out On matchAuto()");
-    }
-
-
 }

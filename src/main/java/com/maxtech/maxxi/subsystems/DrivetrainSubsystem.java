@@ -5,15 +5,18 @@ import com.maxtech.maxxi.util.VisionPoseResult;
 import com.maxtech.swervelib.SwerveController;
 import com.maxtech.swervelib.SwerveDrive;
 import com.maxtech.swervelib.math.SwerveKinematics2;
+import com.maxtech.swervelib.math.SwerveModuleState2;
 import com.maxtech.swervelib.parser.SwerveDriveConfiguration;
 import com.maxtech.swervelib.parser.SwerveParser;
 import com.maxtech.swervelib.telemetry.SwerveDriveTelemetry;
 import com.maxtech.swervelib.telemetry.SwerveDriveTelemetry.TelemetryVerbosity;
+import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.Trajectory;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -47,6 +50,10 @@ public class DrivetrainSubsystem extends SubsystemBase
 
         swerveDrive.setMotorIdleMode(false); // Set to Coast
 
+        SlewRateLimiter xSlewRateLimiter = new SlewRateLimiter(3.75);
+        SlewRateLimiter ySlewRateLimiter = new SlewRateLimiter(3.75);
+        SlewRateLimiter rSlewRateLimiter = new SlewRateLimiter(30);
+        swerveDrive.swerveController.addSlewRateLimiters(xSlewRateLimiter, ySlewRateLimiter, rSlewRateLimiter);
 
     }
 
@@ -146,6 +153,14 @@ public class DrivetrainSubsystem extends SubsystemBase
         swerveDrive.zeroGyro();
     }
 
+    public void zeroSwerve() {
+        var zeroState = new SwerveModuleState2(0, new Rotation2d(0), 0);
+
+        var zeroStates = new SwerveModuleState2[]{zeroState, zeroState, zeroState, zeroState};
+
+        swerveDrive.setModuleStates(zeroStates, false);
+    }
+
     /**
      * Sets the drive motors to brake/coast mode.
      *
@@ -242,6 +257,15 @@ public class DrivetrainSubsystem extends SubsystemBase
      */
     public Rotation2d getPitch() {
         return swerveDrive.getPitch();
+    }
+
+    /**
+     * Gets the current roll angle of the robot, as reported by the imu.
+     *
+     * @return The heading as a {@link Rotation2d} angle
+     */
+    public Rotation2d getRoll() {
+        return swerveDrive.getRoll();
     }
 
     /**

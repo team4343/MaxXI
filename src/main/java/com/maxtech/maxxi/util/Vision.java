@@ -1,6 +1,7 @@
 package com.maxtech.maxxi.util;
 
 import com.maxtech.maxxi.constants.VisionConstants;
+import com.maxtech.maxxi.subsystems.LightSubsystem;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
@@ -47,6 +48,8 @@ public class Vision {
 
         if (tagPoseOptional.isEmpty()) return null;
         else {
+            LightSubsystem.getInstance().setState(LightSubsystem.State.WhiteBlinking);
+
             Pose3d tagPose = tagPoseOptional.get();
             Pose3d camPose = tagPose.transformBy(camToTargetTrans.inverse());
             Pose2d robotPose = camPose.transformBy(VisionConstants.robotToCam).toPose2d();

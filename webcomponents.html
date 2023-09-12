@@ -2,6 +2,7 @@
     tab-name="TeleOperated"
     slot="tab"
     source-provider="NetworkTables"
+    selected=""
 >
     <frc-field
         source-key="/SmartDashboard/Field"
@@ -18,7 +19,7 @@
         <frc-field-robot
             source-key="/SmartDashboard/Field/Robot"
             source-provider="NetworkTables"
-            style="width: 0px; height: 0px; transform: translate(0px, 0px) rotate(86.8706deg);"
+            style="width: 32.5541px; height: 32.5541px; transform: translate(18.6295px, 394.794px) rotate(86.1991deg);"
             opacity="100"
             pose="[0,0,0]"
             width="0.68"
@@ -112,7 +113,7 @@
     ><input
             slot="input"
             type="text"
-            id="vaadin-text-field-4"
+            id="vaadin-text-field-2"
             aria-labelledby="label-vaadin-text-field-1378"
             aria-describedby=""
             placeholder="NA"
@@ -120,7 +121,7 @@
         ><label
             slot="label"
             id="label-vaadin-text-field-1378"
-            for="vaadin-text-field-4"
+            for="vaadin-text-field-2"
         >Elbow State</label>
         <div
             slot="error-message"
@@ -139,7 +140,7 @@
     ><input
             slot="input"
             type="text"
-            id="vaadin-text-field-5"
+            id="vaadin-text-field-3"
             aria-labelledby="label-vaadin-text-field-1492"
             aria-describedby=""
             tabindex="0"
@@ -147,7 +148,7 @@
         ><label
             slot="label"
             id="label-vaadin-text-field-1492"
-            for="vaadin-text-field-5"
+            for="vaadin-text-field-3"
         >Shoulder State</label>
         <div
             slot="error-message"
@@ -155,16 +156,79 @@
             hidden=""
         ></div>
     </vaadin-text-field>
+    <frc-sendable-chooser
+        source-key="/SmartDashboard/AutoChoices"
+        source-provider="NetworkTables"
+        style="transform: translate(1029px, 794px); width: 240px; height: 80px;"
+        options="[]"
+    ></frc-sendable-chooser>
+    <frc-voltage-view
+        source-provider="NetworkTables"
+        style="width: 300px; height: 66px; transform: translate(290px, 413px);"
+    ></frc-voltage-view>
+
+
+    <vaadin-text-field
+        source-provider="NetworkTables"
+        style="transform: translate(1019px, 541px); width: 64px; height: 50px;"
+        has-value=""
+        readonly=""
+        value="cone"
+        label=""
+    ><input
+            slot="input"
+            type="text"
+            id="vaadin-text-field-4"
+            aria-labelledby=""
+            aria-describedby=""
+            readonly=""
+            value="cone"
+        ><label
+            slot="label"
+            id="label-vaadin-text-field-117"
+            for="vaadin-text-field-4"
+        ></label>
+        <div
+            slot="error-message"
+            id="error-message-vaadin-text-field-97"
+            hidden=""
+        ></div>
+    </vaadin-text-field>
+    <vaadin-text-field
+        source-provider="NetworkTables"
+        style="transform: translate(1163px, 542px); width: 71px; height: 52px;"
+        has-value=""
+        readonly=""
+        value="cube"
+        label=""
+    ><input
+            slot="input"
+            type="text"
+            id="vaadin-text-field-5"
+            aria-labelledby=""
+            aria-describedby=""
+            readonly=""
+            value="cube"
+        ><label
+            slot="label"
+            id="label-vaadin-text-field-140"
+            for="vaadin-text-field-5"
+        ></label>
+        <div
+            slot="error-message"
+            id="error-message-vaadin-text-field-113"
+            hidden=""
+        ></div>
+    </vaadin-text-field>
 </dashboard-tab>
 <dashboard-tab
-    tab-name="Vision"
+    tab-name="Setup"
     slot="tab"
     source-provider="NetworkTables"
-    selected=""
 >
     <frc-camera
         source-provider="NetworkTables"
-        style="--image-width:864px; --image-height:486px; --crosshair-width:2px; --crosshair-color:#ffffff; --image-display:block; transform: translate(0px, 442px); width: 865px; height: 486px;"
+        style="--image-width:0px; --image-height:0px; --crosshair-width:2px; --crosshair-color:#ffffff; --image-display:block; transform: translate(0px, 442px); width: 865px; height: 486px;"
         source-key="/CameraPublisher/photonvision_Port_1182_MJPEG_Server"
         streams="[]"
     ></frc-camera>
@@ -188,7 +252,7 @@
         <frc-field-robot
             source-key="/SmartDashboard/Field/Robot"
             source-provider="NetworkTables"
-            style="width: 32.7492px; height: 32.7492px; transform: translate(713.026px, 165.656px) rotate(86.8706deg);"
+            style="width: 0px; height: 0px; transform: translate(0px, 0px) rotate(86.1991deg);"
             width="0.68"
             height="0.68"
             opacity="100"
@@ -197,7 +261,7 @@
         <frc-field-robot
             source-key="/SmartDashboard/PPSwerveControllerCommand_field/Robot"
             source-provider="NetworkTables"
-            style="width: 32.7492px; height: 32.7492px; transform: translate(18.7947px, 397.093px) rotate(90deg);"
+            style="width: 0px; height: 0px; transform: translate(0px, 0px) rotate(90deg);"
             width="0.68"
             height="0.68"
             opacity="100"
@@ -206,7 +270,7 @@
         <frc-field-trajectory
             source-key="/SmartDashboard/PPSwerveControllerCommand_field/traj"
             source-provider="NetworkTables"
-            style="width: 48.1606px; height: 48.1606px; transform: translate(11.089px, 389.388px) rotate(90deg);"
+            style="width: 0px; height: 0px; transform: translate(0px, 0px) rotate(90deg);"
         ></frc-field-trajectory>
     </frc-field>
     <vaadin-number-field
@@ -219,6 +283,7 @@
         source-key="/SmartDashboard/Estimated X"
         min="NaN"
         max="NaN"
+        placeholder=""
     ><input
             slot="input"
             value="0"
@@ -250,6 +315,7 @@
         source-key="/SmartDashboard/Estimated Y"
         min="NaN"
         max="NaN"
+        placeholder=""
     ><input
             slot="input"
             value="0"
@@ -281,6 +347,7 @@
         source-key="/SmartDashboard/navX-Sensor[1]/Value"
         min="NaN"
         max="NaN"
+        placeholder=""
     ><input
             slot="input"
             value="0"
@@ -305,7 +372,7 @@
     <frc-field
         source-key="/SmartDashboard/Field"
         source-provider="NetworkTables"
-        style="transform: translate(850px, 445px); width: 975px; height: 483px;"
+        style="transform: translate(868px, 444px); width: 951px; height: 483px;"
         width="54.27083"
         height="26.2916"
         image="/field-images/2023-field.jpg"
@@ -317,46 +384,49 @@
         <frc-field-robot
             source-key="/SmartDashboard/startingConfirmRobot"
             source-provider="NetworkTables"
-            style="width: 31.4743px; height: 47.2115px; transform: translate(796.314px, 164.463px) rotate(90deg);"
-            color="#00ff40"
+            style="width: 0px; height: 0px; transform: translate(0px, 0px) rotate(90deg);"
+            color="#64ce7e"
             opacity="100"
             pose="[0,0,0]"
+            width="0.68"
+            height="0.68"
         ></frc-field-robot>
         <frc-field-robot
             source-key="/SmartDashboard/Field/Robot"
             source-provider="NetworkTables"
-            style="width: 31.4743px; height: 47.2115px; transform: translate(778.736px, 174.665px) rotate(86.8706deg);"
+            style="width: 0px; height: 0px; transform: translate(0px, 0px) rotate(86.1991deg);"
             opacity="100"
             pose="[0,0,0]"
+            width="0.68"
+            height="0.68"
         ></frc-field-robot>
     </frc-field>
     <vaadin-number-field
         label="Starting X"
         value="0"
-        has-value=""
         has-label=""
         source-provider="NetworkTables"
         source-key="/SmartDashboard/startingX"
         has-controls=""
         style="transform: translate(1025px, 6px);"
-        placeholder=""
         min="NaN"
         max="NaN"
         hascontrols=""
+        has-value=""
     ><input
             slot="input"
             value="0"
             type="number"
-            id="vaadin-number-field-45"
+            id="vaadin-number-field-9"
             aria-labelledby="label-vaadin-number-field-45"
             aria-describedby=""
-            min="undefined"
-            max="undefined"
+            min="NaN"
+            max="NaN"
             step="any"
         ><label
             slot="label"
             id="label-vaadin-number-field-45"
-            for="vaadin-number-field-45"
+            for="vaadin-number-field-9"
         >Starting X</label>
         <div
             slot="error-message"
@@ -367,30 +437,29 @@
     <vaadin-number-field
         label="Starting Y"
         value="0"
-        has-value=""
         has-label=""
         source-provider="NetworkTables"
         source-key="/SmartDashboard/startingY"
         has-controls=""
         style="transform: translate(1020px, 92px);"
-        placeholder=""
         min="NaN"
         max="NaN"
         hascontrols=""
+        has-value=""
     ><input
             slot="input"
             value="0"
             type="number"
-            id="vaadin-number-field-46"
+            id="vaadin-number-field-10"
             aria-labelledby="label-vaadin-number-field-46"
             aria-describedby=""
-            min="undefined"
-            max="undefined"
+            min="NaN"
+            max="NaN"
             step="any"
         ><label
             slot="label"
             id="label-vaadin-number-field-46"
-            for="vaadin-number-field-46"
+            for="vaadin-number-field-10"
         >Starting Y</label>
         <div
             slot="error-message"
@@ -401,30 +470,29 @@
     <vaadin-number-field
         label="Starting R"
         value="0"
-        has-value=""
         has-label=""
         source-provider="NetworkTables"
         source-key="/SmartDashboard/startingR"
         has-controls=""
         style="transform: translate(1019px, 184px);"
-        placeholder=""
         min="NaN"
         max="NaN"
         hascontrols=""
+        has-value=""
     ><input
             slot="input"
             value="0"
             type="number"
-            id="vaadin-number-field-47"
+            id="vaadin-number-field-11"
             aria-labelledby="label-vaadin-number-field-47"
             aria-describedby=""
-            min="undefined"
-            max="undefined"
+            min="NaN"
+            max="NaN"
             step="any"
         ><label
             slot="label"
             id="label-vaadin-number-field-47"
-            for="vaadin-number-field-47"
+            for="vaadin-number-field-11"
         >Starting R</label>
         <div
             slot="error-message"
@@ -432,4 +500,21 @@
             hidden=""
         ></div>
     </vaadin-number-field>
+    <frc-sendable-chooser
+        source-key="/SmartDashboard/AutoChoices"
+        source-provider="NetworkTables"
+        style="transform: translate(887px, 345px); width: 240px; height: 71px;"
+        options="[]"
+    ></frc-sendable-chooser>
+    <frc-voltage-view
+        source-provider="NetworkTables"
+        style="width: 300px; height: 66px; transform: translate(290px, 413px);"
+    ></frc-voltage-view>
+    <frc-toggle-button
+        source-provider="NetworkTables"
+        style="transform: translate(884px, 298px); width: 237px; height: 50px;"
+        source-key="/SmartDashboard/startingCube"
+        label="Select for Cube"
+        toggled=""
+    ></frc-toggle-button>
 </dashboard-tab>
